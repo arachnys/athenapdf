@@ -1,0 +1,13 @@
+FROM golang:1.6-alpine
+MAINTAINER Arachnys <techteam@arachnys.com>
+
+RUN apk add --update git
+
+COPY . /go/src/github.com/arachnys/athenapdf/weaver
+WORKDIR /go/src/github.com/arachnys/athenapdf/weaver
+
+RUN go get -v -d
+RUN go install -v
+RUN CGO_ENABLED=0 go build -ldflags "-s" -a -installsuffix cgo -o weaver .
+
+CMD ["/bin/sh"]

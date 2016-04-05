@@ -1,0 +1,14 @@
+# Docker
+.dockerfile
+docker-compose.yml
+Dockerfile
+Dockerfile.build
+
+# Docs
+README.md
+docs/
+
+# Others
+**/.DS_STORE
+**/.git*
+**/*.env

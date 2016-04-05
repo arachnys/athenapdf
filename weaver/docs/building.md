@@ -1,0 +1,5 @@
+# Building
+
+```bash
+make buildservice
+```

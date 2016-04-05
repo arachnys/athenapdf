@@ -1,0 +1,17 @@
+FROM mhart/alpine-node:5.9.1
+MAINTAINER Arachnys <techteam@arachnys.com>
+
+RUN mkdir -p /athenapdf/build/artifacts/
+WORKDIR /athenapdf/
+
+ADD package.json /athenapdf/
+RUN npm install
+
+ADD package.json /athenapdf/build/artifacts/
+RUN cp -r /athenapdf/node_modules/ /athenapdf/build/artifacts/
+
+ADD src /athenapdf/build/artifacts/
+RUN sed -i "1s/^/process.argv.unshift(\"--\");\n /" /athenapdf/build/artifacts/athenapdf.js
+RUN npm run build:linux
+
+CMD ["/bin/sh"]
