@@ -1,0 +1,16 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build --rm -t arachnysdocker/athenapdf-service-test -f weaver/Dockerfile.build weaver/
+  - docker run --rm -t arachnysdocker/athenapdf-service-test go test ./...
+
+script:
+  - make build
+
+after_success:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker push arachnysdocker/athenapdf
+  - docker push arachnysdocker/athenapdf-service
