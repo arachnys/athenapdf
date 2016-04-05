@@ -1,6 +1,7 @@
 # weaver
 
 [![](https://badge.imagelayers.io/arachnysdocker/athenapdf-service:latest.svg)](https://imagelayers.io/?images=arachnysdocker/athenapdf-service:latest 'Get your own badge on imagelayers.io')
+[![GoDoc](https://godoc.org/github.com/arachnys/athenapdf/weaver?status.svg)](https://godoc.org/github.com/arachnys/athenapdf/weaver)
 
 **The microservice component of athenapdf.**
 

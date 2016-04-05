@@ -1,5 +1,7 @@
 # Athena
 
+[![Build Status](https://travis-ci.org/arachnys/athenapdf.svg?branch=master)](https://travis-ci.org/arachnys/athenapdf)
+
 [**Live Demo / Screenshots**][athenapdf]
 
 Simple, Docker-powered PDF conversions.
