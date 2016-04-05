@@ -3,7 +3,7 @@ sudo: required
 services:
   - docker
 
-before_install:
+before_script:
   - docker build --rm -t arachnysdocker/athenapdf-service-test -f weaver/Dockerfile.build weaver/
   - docker run --rm -t arachnysdocker/athenapdf-service-test go test ./...
 
