@@ -1,7 +1,9 @@
 package gcmd
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"log"
 	"os/exec"
 )
@@ -21,9 +23,11 @@ func Execute(c []string, terminate <-chan struct{}) ([]byte, error) {
 	cerr := make(chan error, 1)
 
 	go func(cmd *exec.Cmd, cout chan<- []byte, cerr chan<- error) {
+		var stderr bytes.Buffer
+		cmd.Stderr = &stderr
 		out, err := cmd.Output()
 		if err != nil {
-			cerr <- err
+			cerr <- fmt.Errorf("%+v : %+v", err, stderr.String())
 			return
 		}
 		cout <- out
