@@ -1,5 +1,7 @@
 # weaver
 
+[![](https://badge.imagelayers.io/arachnysdocker/athenapdf-service:latest.svg)](https://imagelayers.io/?images=arachnysdocker/athenapdf-service:latest 'Get your own badge on imagelayers.io')
+
 **The microservice component of athenapdf.**
 
 A scalable, Go microservice for running HTML to PDF conversions using [`athenapdf`][athenapdf].

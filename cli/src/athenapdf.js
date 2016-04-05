@@ -99,7 +99,8 @@ const _output = (data) => {
     const outputPath = path.join(process.cwd(), outputArg);
     if (athena.stdout) {
         process.stdout.write(data);
-        _complete();
+        // Hack to fix error when exiting too early
+        setTimeout(_complete, 0);
     } else {
         fs.writeFile(outputPath, data, (err) => {
             if (err) console.error(err);

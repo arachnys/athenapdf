@@ -1,6 +1,6 @@
 # Athena
 
-[Main Website][athenapdf]
+[**Live Demo / Screenshots**][athenapdf]
 
 Simple, Docker-powered PDF conversions.
 
@@ -14,10 +14,6 @@ Athena is comprised of an [Electron][electron] command line interface (CLI) tool
 - Original: [Panamanian Law Firm Is Gatekeeper To Vast Flow of Murky Offshore Secrets][example-2] **(Converted: [PDF][example-2-pdf] | [Aggressive][example-2-aggressive])**
 
 _When [aggressive mode][aggressive] is toggled, only the essential contents of a page are kept in the generated PDF document. It is a clutter-free version of the web page, perfect for reading._
-
-**HTML, PDF, PDF (Aggressive):**
-
-![Conversion](https://s3-eu-west-1.amazonaws.com/athena-pdf-public/examples/conversion.gif)
 
 
 ## Background
