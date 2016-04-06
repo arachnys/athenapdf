@@ -15,7 +15,7 @@ Athena is comprised of an [Electron][electron] command line interface (CLI) tool
 - Original: [Google isn’t even close as a tool for proper due diligence. Why not?][example-1] **(Converted: [PDF][example-1-pdf] | [Aggressive][example-1-aggressive])**
 - Original: [Panamanian Law Firm Is Gatekeeper To Vast Flow of Murky Offshore Secrets][example-2] **(Converted: [PDF][example-2-pdf] | [Aggressive][example-2-aggressive])**
 
-_When [aggressive mode][aggressive] is toggled, only the essential contents of a page are kept in the generated PDF document. It is a clutter-free version of the web page, perfect for reading._
+_When [aggressive mode][aggressive] is enabled, only the essential contents of a page are kept in the generated PDF document. It is a clutter-free version of the web page, perfect for reading._
 
 
 ## Background
@@ -24,12 +24,13 @@ Athena is an open source project.
 
 It was designed to [do one thing and to do it well][unixphil] - PDF conversions; to work together with other programs; and to be able to handle text streams, because that is a universal interface.
 
-It aims to empower individuals, and organisations with an on-demand capability to convert HTML to PDF without frills.
+It aims to give users an on-demand capability to convert HTML to PDF without frills.
 
-At the lowest level, its [CLI][cli] component ([`athenapdf`][cli]) was designed to be an alternative / drop-in replacement for [wkhtmltopdf], a popular CLI tool for HTML to PDF conversions.
+At the lowest level, its [CLI][cli] component ([`athenapdf`][cli]) was designed to be an alternative / drop-in replacement for [wkhtmltopdf], a popular CLI tool for HTML to PDF conversions. Because of Docker the CLI syntax is a bit more complex but it's much more reliable.
 
-There is also a [microservice][weaver] component ([`weaver`][weaver]), and it was designed to be an alternative / drop-in replacement for paid services like [CloudConvert][cloudconvert], but with more freedom, and flexibility, and without limitations, long support response times, and price plans.
+(For what it's worth, wkhtmltopdf is great, but it has a horrible habit of crashing unexpectedly - especially when printing documents with invalid HTML, problematic CSS or other issues).
 
+There is also a [microservice][weaver] component ([`weaver`][weaver]), allowing you to leverage Athena over HTTP.
 
 ## Getting Started
 
@@ -79,6 +80,7 @@ Example: `docker run --rm -v $(pwd):/converted/ arachnysdocker/athenapdf athenap
 
 The default authentication key is `arachnys-weaver`. This can be changed through the `WEAVER_AUTH_KEY` environment variable.
 
+The microservice can be deployed scalably to [ECS][ecs] if you want to build your own conversion farm.
 
 ## License
 
@@ -112,3 +114,4 @@ An [Arachnys][arachnys] Christmas project.
 [docker-machine]: https://docs.docker.com/mac/step_one/
 [headless]: http://internetofthingsagenda.techtarget.com/definition/headless-system
 [arachnys]: https://www.arachnys.com/?utm_campaign=athena&utm_medium=external%20website&utm_source=github&utm_content=readme
+[ecs]: https://aws.amazon.com/ecs/details/
