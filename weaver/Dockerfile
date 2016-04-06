@@ -1,4 +1,5 @@
 FROM arachnysdocker/athenapdf
+MAINTAINER Arachnys <techteam@arachnys.com>
 
 ENV GIN_MODE release
 
