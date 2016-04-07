@@ -1,6 +1,7 @@
 # Athena
 
 [![Build Status](https://travis-ci.org/arachnys/athenapdf.svg?branch=master)](https://travis-ci.org/arachnys/athenapdf)
+[![License](http://img.shields.io/badge/license-MIT-orange.svg?style=flat)](http://opensource.org/licenses/MIT)
 
 [**Live Demo / Screenshots**][athenapdf]
 
