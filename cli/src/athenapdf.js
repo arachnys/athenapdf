@@ -98,8 +98,7 @@ const _complete = () => {
 const _output = (data) => {
     const outputPath = path.join(process.cwd(), outputArg);
     if (athena.stdout) {
-        let ok = process.stdout.write(data);
-        process.stdout.on("drain", _complete);
+        process.stdout.write(data, _complete);
     } else {
         fs.writeFile(outputPath, data, (err) => {
             if (err) console.error(err);
