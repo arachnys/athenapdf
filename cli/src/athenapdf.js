@@ -47,7 +47,7 @@ if (!uriArg) {
 }
 
 // Handle local paths
-if (uriArg.indexOf("http") !== 0) {
+if (uriArg.toLowerCase().indexOf("http") !== 0) {
     uriArg = url.format({
         protocol: "file",
         pathname: path.resolve(uriArg),
