@@ -11,7 +11,9 @@ P="\\033[34m[+]\\033[0m"
 help:
 	@echo
 	@echo "  \033[34mbuildcli\033[0m – builds athenapdf (cli) docker image"
+	@echo "  \033[34mtestcli\033[0m – tests athenapdf (cli) stdout conversion"
 	@echo "  \033[34mbuildservice\033[0m – builds athenapdf-service docker image"
+	@echo "  \033[34mtestservice\033[0m – tests athenapdf-service Go source"
 	@echo "  \033[34mbuild\033[0m – builds both the cli, and service docker image"
 	@echo
 
@@ -25,6 +27,10 @@ buildcli:
 	@docker build --rm -t $(CLI_IMAGE) -f $(CLI_DIR)/Dockerfile $(CLI_DIR)/
 	@rm -rf $(CLI_DIR)/build/
 
+testcli:
+	@echo "  $(P) testcli"
+	@docker run --rm -t arachnysdocker/athenapdf athenapdf -S https://www.traviscistatus.com/ | grep "PDF-1.4"
+
 buildservice:
 	@echo "  $(P) buildservice"
 	@rm -rf $(SERVICE_DIR)/build/
@@ -36,9 +42,14 @@ buildservice:
 	@docker build --rm -t $(SERVICE_IMAGE) -f $(SERVICE_DIR)/Dockerfile $(SERVICE_DIR)/
 	@rm -rf $(SERVICE_DIR)/build/
 
+testservice:
+	@echo "  $(P) testservice"
+	@docker build --rm -t $(SERVICE_IMAGE)-test -f $(SERVICE_DIR)/Dockerfile.build $(SERVICE_DIR)/
+	@docker run --rm -t $(SERVICE_IMAGE)-test go test ./...
+
 build:
 	@echo "  $(P) build"
 	@make buildcli
 	@make buildservice
 
-.PHONY: help buildcli buildservice build
+.PHONY: help buildcli testcli buildservice testservice build
