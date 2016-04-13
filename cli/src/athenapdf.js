@@ -4,6 +4,8 @@ const fs = require("fs");
 const crypto = require("crypto");
 const path = require("path");
 const url = require("url");
+const temp = require("temp").track();
+const rw = require("rw");
 
 const athena = require("commander");
 const electron = require("electron");
@@ -44,6 +46,15 @@ if (!process.argv.slice(2).length) {
 if (!uriArg) {
     console.error("No URI given.");
     process.exit(1);
+}
+
+// Handle stdin
+if (uriArg === '-') {
+	const tmpFileInfo = temp.openSync('athena');
+	var html = rw.readFileSync("/dev/stdin", "utf8");
+	fs.writeSync(tmpFileInfo.fd, html);
+	fs.closeSync(tmpFileInfo.fd);
+	uriArg = tmpFileInfo.path;
 }
 
 // Handle local paths
