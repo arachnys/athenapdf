@@ -18,7 +18,7 @@ var uriArg = null;
 var outputArg = null;
 
 athena
-    .version("2.1.0")
+    .version("2.1.2")
     .option("--debug", "show GUI", false)
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
     .option("-D, --delay <milliseconds>", "milliseconds delay before saving (default: 200)", parseInt)
@@ -138,10 +138,10 @@ app.on("ready", () => {
         });
     }
 
-    bw.webContents.on("did-fail-load", (e, code, desc, url) => {
+    bw.webContents.on("did-fail-load", (e, code, desc, url, isMainFrame) => {
         if (parseInt(code, 10) >= -3) return;
         console.error(`Failed to load: ${code} ${desc} (${url})`);
-        if (url.indexOf(uriArg) !== -1) {
+        if (isMainFrame) {
             app.exit(1);
         }
     });
