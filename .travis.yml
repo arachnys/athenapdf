@@ -4,14 +4,14 @@ services:
   - docker
 
 before_script:
-  - docker build --rm -t arachnysdocker/athenapdf-service-test -f weaver/Dockerfile.build weaver/
-  - docker run --rm -t arachnysdocker/athenapdf-service-test go test ./...
+  - make testservice
 
 script:
   - make build
+  - make testcli
 
 after_success:
-  - if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "master" ]; then exit 0; fi
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "master" -o -n "$TRAVIS_TAG" ]; then exit 0; fi
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push arachnysdocker/athenapdf
   - docker push arachnysdocker/athenapdf-service
