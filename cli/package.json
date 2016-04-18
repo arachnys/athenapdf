@@ -1,6 +1,6 @@
 {
   "name": "athenapdf",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "A simple CLI tool to convert HTML to PDF from a local file or a URL to a web page using Electron (Chromium).",
   "keywords": "electron, chrome, cli, html, pdf, converter, generate",
   "homepage": "https://www.athenapdf.com/",
@@ -19,13 +19,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf build/",
     "build:prepare": "mkdir -p build/ && cp -r src/ build/artifacts/ && cp package.json build/artifacts/ && cd build/artifacts/ && npm i --production",
-    "build:linux": "electron-packager build/artifacts/ athenapdf --platform=linux --arch=x64 --version=0.37.5 --out=build/ --overwrite --asar=true",
-    "build:osx": "electron-packager build/artifacts/ athenapdf --platform=darwin --arch=x64 --version=0.37.5 --out=build/ --overwrite --asar=true",
+    "build:linux": "electron-packager build/artifacts/ athenapdf --platform=linux --arch=x64 --version=0.37.6 --out=build/ --overwrite --asar=true",
+    "build:osx": "electron-packager build/artifacts/ athenapdf --platform=darwin --arch=x64 --version=0.37.6 --out=build/ --overwrite --asar=true",
     "build": "npm run clean && npm run build:prepare && npm run build:linux && npm run build:osx"
   },
   "dependencies": {
     "commander": "^2.9.0",
-    "electron-prebuilt": "^0.37.5"
+    "electron-prebuilt": "^0.37.6"
   },
   "devDependencies": {
     "electron-packager": "^6.0.0"
