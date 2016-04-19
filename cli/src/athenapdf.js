@@ -29,6 +29,7 @@ athena
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
     .option("--no-cache", "disables caching")
+    .option("-p, --proxy <url>", "use proxy to load remote HTML")
     .arguments("<URL> [output]")
     .action((url, output) => {
         uriArg = url;
@@ -68,6 +69,11 @@ if (!athena.debug) {
         console.error("PDF generation timed out.");
         app.exit(2);
     }, (athena.timeout || 120) * 1000);
+}
+
+if (athena.proxy) {
+    console.log("Using proxy", athena.proxy);
+    app.commandLine.appendSwitch('proxy-server', athena.proxy);
 }
 
 // Preferences
