@@ -29,7 +29,7 @@ athena
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
     .option("--no-cache", "disables caching")
-    .option("-p, --proxy <url>", "use proxy to load remote HTML")
+    .option("--proxy <url>", "use proxy to load remote HTML")
     .arguments("<URL> [output]")
     .action((url, output) => {
         uriArg = url;
