@@ -4,6 +4,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const path = require("path");
 const url = require("url");
+const rw = require("rw");
 
 const athena = require("commander");
 const electron = require("electron");
@@ -47,8 +48,15 @@ if (!uriArg) {
     process.exit(1);
 }
 
+//Handle stdin
+if (uriArg === '-') {
+	var base64Html = new Buffer(rw.readFileSync('/dev/stdin', 'utf8'), 'utf8').toString('base64');
+	var dataUri = "data:text/html;base64," + base64Html;
+	uriArg = dataUri;
+}
+
 // Handle local paths
-if (uriArg.toLowerCase().indexOf("http") !== 0) {
+else if (uriArg.toLowerCase().indexOf("http") !== 0) {
     uriArg = url.format({
         protocol: "file",
         pathname: path.resolve(uriArg),
