@@ -63,7 +63,7 @@ func TestNewWork_upload(t *testing.T) {
 	select {
 	case <-w.Uploaded():
 	case <-time.After(time.Second):
-		t.Errorf("Expected work uploaded channel to be closed before timeout")
+		t.Errorf("expected work uploaded channel to be closed before timeout")
 	}
 }
 

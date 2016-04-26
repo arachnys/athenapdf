@@ -109,7 +109,7 @@ func (c Client) QuickConversion(path string, awsS3 converter.AWSS3, inputFormat 
 		if err = json.NewDecoder(res.Body).Decode(&data); err != nil {
 			return nil, err
 		}
-		return nil, errors.New(fmt.Sprintf("[CloudConvert] did not receive HTTP 200, response: %+v\n", data))
+		return nil, fmt.Errorf("[CloudConvert] did not receive HTTP 200, response: %+v\n", data)
 	}
 
 	o, err := ioutil.ReadAll(res.Body)
@@ -142,7 +142,7 @@ func (c Client) NewProcess(inputFormat, ouputFormat string) (Process, error) {
 		if err = json.NewDecoder(res.Body).Decode(&data); err != nil {
 			return process, err
 		}
-		return process, errors.New(fmt.Sprintf("[CloudConvert] did not receive HTTP 200, response: %+v\n", data))
+		return process, fmt.Errorf("[CloudConvert] did not receive HTTP 200, response: %+v\n", data)
 	}
 
 	err = json.NewDecoder(res.Body).Decode(&process)
@@ -171,7 +171,7 @@ func (p Process) StartConversion(c Conversion) ([]byte, error) {
 		if err = json.NewDecoder(res.Body).Decode(&data); err != nil {
 			return nil, err
 		}
-		return nil, errors.New(fmt.Sprintf("[CloudConvert] did not receive HTTP 200, response: %+v\n", data))
+		return nil, fmt.Errorf("[CloudConvert] did not receive HTTP 200, response: %+v\n", data)
 	}
 
 	if c.Download == "inline" {
@@ -191,6 +191,7 @@ func (c CloudConvert) Convert(s converter.ConversionSource, done <-chan struct{}
 	var b []byte
 
 	if s.IsLocal {
+		defer os.Remove(s.URI)
 		b, err := c.Client.QuickConversion(s.URI, c.AWSS3, "html", "pdf")
 		if err != nil {
 			return nil, err

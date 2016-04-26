@@ -66,6 +66,12 @@ func readerTmpFile(r io.Reader) (string, string, error) {
 		return "", "", err
 	}
 
+	// Reset read / write offset to 0
+	_, err = f.Seek(0, 0)
+	if err != nil {
+		return "", "", err
+	}
+
 	// Determine file content type from file reader
 	t, err := readerContentType(f)
 	if err != nil {
