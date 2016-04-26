@@ -75,7 +75,7 @@ var (
 	ErrTestConversionError = errors.New("test conversion error")
 )
 
-func (c TestConversionError) Convert(done <-chan struct{}) ([]byte, error) {
+func (c TestConversionError) Convert(s ConversionSource, done <-chan struct{}) ([]byte, error) {
 	return []byte{}, ErrTestConversionError
 }
 
@@ -96,7 +96,7 @@ type TestConversionTimeout struct {
 	Conversion
 }
 
-func (c TestConversionTimeout) Convert(done <-chan struct{}) ([]byte, error) {
+func (c TestConversionTimeout) Convert(s ConversionSource, done <-chan struct{}) ([]byte, error) {
 	time.Sleep(time.Second * 2)
 	return []byte("test work timeout"), nil
 }

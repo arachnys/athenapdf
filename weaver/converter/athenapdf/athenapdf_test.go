@@ -25,12 +25,12 @@ func TestConstructCMD_aggressive(t *testing.T) {
 	}
 }
 
-func mockConversion(path, original, cmd string) ([]byte, error) {
+func mockConversion(path string, tmp bool, cmd string) ([]byte, error) {
 	c := AthenaPDF{}
 	c.CMD = cmd
 	s := converter.ConversionSource{}
 	s.URI = path
-	s.OriginalURI = original
+	s.IsLocal = tmp
 	t := make(chan struct{}, 1)
 	return c.Convert(s, t)
 }
@@ -38,7 +38,7 @@ func mockConversion(path, original, cmd string) ([]byte, error) {
 func TestConvert(t *testing.T) {
 	ts := testutil.MockHTTPServer("", "test AthenaPDF convert")
 	defer ts.Close()
-	got, err := mockConversion(ts.URL, "", "echo")
+	got, err := mockConversion(ts.URL, false, "echo")
 	if err != nil {
 		t.Fatalf("convert returned an unexpected error: %+v", err)
 	}
@@ -56,7 +56,7 @@ func TestConvert_local(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get full temporary file path: %+v", err)
 	}
-	got, err := mockConversion(p, "test url", "echo")
+	got, err := mockConversion(p, true, "echo")
 	if err != nil {
 		t.Fatalf("convert returned an unexpected error: %+v", err)
 	}
@@ -71,7 +71,7 @@ func TestConvert_local(t *testing.T) {
 func TestConvert_badCMD(t *testing.T) {
 	ts := testutil.MockHTTPServer("", "test Athena convert")
 	defer ts.Close()
-	got, err := mockConversion(ts.URL, "", "echo-broken")
+	got, err := mockConversion(ts.URL, false, "echo-broken")
 	if err == nil {
 		t.Fatalf("expected error to be returned")
 	}

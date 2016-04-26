@@ -11,7 +11,7 @@ type Conversion struct{}
 // synchronously.
 // It should terminate any long-running processes (and Goroutines) if the done
 // channel is returned.
-func (c Conversion) Convert(ConversionSource, done <-chan struct{}) ([]byte, error) {
+func (c Conversion) Convert(s ConversionSource, done <-chan struct{}) ([]byte, error) {
 	return []byte{}, nil
 }
 
