@@ -23,14 +23,15 @@ type TestConversion struct {
 	Conversion
 }
 
-func (c TestConversion) Convert(done <-chan struct{}) ([]byte, error) {
+func (c TestConversion) Convert(s ConversionSource, done <-chan struct{}) ([]byte, error) {
 	return []byte("test work"), nil
 }
 
 func TestNewWork(t *testing.T) {
 	wq := InitWorkers(10, 10, 10)
 	c := TestConversion{}
-	w := NewWork(wq, c)
+	s := ConversionSource{}
+	w := NewWork(wq, c, s)
 	if w.out == nil {
 		t.Fatalf("expected work output channel to be initialised, not nil")
 	}
@@ -57,7 +58,8 @@ func TestNewWork_upload(t *testing.T) {
 	wq := InitWorkers(10, 10, 10)
 	defer close(wq)
 	c := TestConversionUpload{}
-	w := NewWork(wq, c)
+	s := ConversionSource{}
+	w := NewWork(wq, c, s)
 	select {
 	case <-w.Uploaded():
 	case <-time.After(time.Second):
@@ -81,7 +83,8 @@ func TestNewWork_error(t *testing.T) {
 	wq := InitWorkers(10, 10, 10)
 	defer close(wq)
 	c := TestConversionError{}
-	w := NewWork(wq, c)
+	s := ConversionSource{}
+	w := NewWork(wq, c, s)
 	select {
 	case <-w.Error():
 	case <-time.After(time.Second):
@@ -102,7 +105,8 @@ func TestNewWork_timeout(t *testing.T) {
 	wq := InitWorkers(10, 10, 1)
 	defer close(wq)
 	c := TestConversionTimeout{}
-	w := NewWork(wq, c)
+	s := ConversionSource{}
+	w := NewWork(wq, c, s)
 	go func(w Work) {
 		time.Sleep(time.Second * 2)
 		close(w.err)

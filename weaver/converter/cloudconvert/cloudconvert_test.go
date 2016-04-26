@@ -94,7 +94,7 @@ func TestStartConversion(t *testing.T) {
 }
 
 func expectUploadStatus(t *testing.T, c CloudConvert, want bool) {
-	got, err := c.Upload([]byte{})
+	got, err := c.Upload(nil)
 	if err != nil {
 		t.Fatalf("upload returned an unexpected error: %+v", err)
 	}

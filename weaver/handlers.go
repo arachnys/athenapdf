@@ -17,6 +17,8 @@ import (
 var (
 	// ErrURLInvalid should be returned when a conversion URL is invalid.
 	ErrURLInvalid = errors.New("invalid URL provided")
+	// ErrFileInvalid should be returned when a conversion file is invalid.
+	ErrFileInvalid = errors.New("invalid file provided")
 )
 
 // indexHandler returns a JSON string indicating that the microservice is online.
@@ -37,11 +39,9 @@ func statsHandler(c *gin.Context) {
 	})
 }
 
-// convertByURLHandler is the main v1 API handler for converting a HTML to a PDF
-// via a GET request. It can either return a JSON string indicating that the
-// output of the conversion has been uploaded or it can return the output of
-// the conversion to the client (raw bytes).
-func convertByURLHandler(c *gin.Context) {
+func conversionHandler(c *gin.Context, source converter.ConversionSource) {
+	_, aggressive := c.GetQuery("aggressive")
+
 	conf := c.MustGet("config").(Config)
 	wq := c.MustGet("queue").(chan<- converter.Work)
 	s := c.MustGet("statsd").(*statsd.Client)
@@ -49,8 +49,6 @@ func convertByURLHandler(c *gin.Context) {
 
 	t := s.NewTiming()
 
-	url := c.Query("url")
-	_, aggressive := c.GetQuery("aggressive")
 	awsConf := converter.AWSS3{
 		c.Query("aws_region"),
 		c.Query("aws_id"),
@@ -59,17 +57,11 @@ func convertByURLHandler(c *gin.Context) {
 		c.Query("s3_key"),
 	}
 
-	if url == "" {
-		c.AbortWithError(http.StatusBadRequest, ErrURLInvalid).SetType(gin.ErrorTypePublic)
-		s.Increment("invalid_url")
-		return
-	}
-
 	var conversion converter.Converter
 	var work converter.Work
-	attempts := 0
+	attempts := 1
 
-	baseConversion := converter.Conversion{url}
+	baseConversion := converter.Conversion{}
 	uploadConversion := converter.UploadConversion{baseConversion, awsConf}
 
 StartConversion:
@@ -78,7 +70,7 @@ StartConversion:
 		cc := cloudconvert.Client{conf.CloudConvert.APIUrl, conf.CloudConvert.APIKey}
 		conversion = cloudconvert.CloudConvert{uploadConversion, cc}
 	}
-	work = converter.NewWork(wq, conversion)
+	work = converter.NewWork(wq, conversion, source)
 
 	select {
 	case <-c.Writer.CloseNotify():
@@ -100,12 +92,12 @@ StartConversion:
 		} else if _, awsError := err.(awserr.Error); awsError {
 			s.Increment("s3_upload_error")
 			if ravenOk {
-				r.(*raven.Client).CaptureError(err, map[string]string{"url": url})
+				r.(*raven.Client).CaptureError(err, map[string]string{"url": source.GetActualURI()})
 			}
 		} else {
 			s.Increment("conversion_error")
 			if ravenOk {
-				r.(*raven.Client).CaptureError(err, map[string]string{"url": url})
+				r.(*raven.Client).CaptureError(err, map[string]string{"url": source.GetActualURI()})
 			}
 		}
 
@@ -125,4 +117,56 @@ StartConversion:
 
 		c.Error(err)
 	}
+}
+
+// convertByURLHandler is the main v1 API handler for converting a HTML to a PDF
+// via a GET request. It can either return a JSON string indicating that the
+// output of the conversion has been uploaded or it can return the output of
+// the conversion to the client (raw bytes).
+func convertByURLHandler(c *gin.Context) {
+	s := c.MustGet("statsd").(*statsd.Client)
+	r, ravenOk := c.Get("sentry")
+
+	url := c.Query("url")
+	if url == "" {
+		c.AbortWithError(http.StatusBadRequest, ErrURLInvalid).SetType(gin.ErrorTypePublic)
+		s.Increment("invalid_url")
+		return
+	}
+
+	source, err := converter.NewConversionSource(url, nil)
+	if err != nil {
+		s.Increment("conversion_error")
+		if ravenOk {
+			r.(*raven.Client).CaptureError(err, map[string]string{"url": url})
+		}
+		c.Error(err)
+		return
+	}
+
+	conversionHandler(c, *source)
+}
+
+func convertByFileHandler(c *gin.Context) {
+	s := c.MustGet("statsd").(*statsd.Client)
+	r, ravenOk := c.Get("sentry")
+
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, ErrFileInvalid).SetType(gin.ErrorTypePublic)
+		s.Increment("invalid_file")
+		return
+	}
+
+	source, err := converter.NewConversionSource("", file)
+	if err != nil {
+		s.Increment("conversion_error")
+		if ravenOk {
+			r.(*raven.Client).CaptureError(err, map[string]string{"url": header.Filename})
+		}
+		c.Error(err)
+		return
+	}
+
+	conversionHandler(c, *source)
 }

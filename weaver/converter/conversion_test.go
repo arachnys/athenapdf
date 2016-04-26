@@ -7,8 +7,9 @@ import (
 
 func TestConversion_Convert(t *testing.T) {
 	mockConversion := Conversion{}
+	mockSource := ConversionSource{}
 	mockDone := make(chan struct{}, 1)
-	got, err := mockConversion.Convert(mockDone)
+	got, err := mockConversion.Convert(mockSource, mockDone)
 	if err != nil {
 		t.Fatalf("convert returned an unexpected error: %+v", err)
 	}

@@ -32,15 +32,17 @@ func InitWorkers(maxWorkers, maxQueue, t int) chan<- Work {
 
 type Work struct {
 	converter Converter
+	source    ConversionSource
 	out       chan []byte
 	err       chan error
 	uploaded  chan struct{}
 	done      chan struct{}
 }
 
-func NewWork(wq chan<- Work, c Converter) Work {
+func NewWork(wq chan<- Work, c Converter, s ConversionSource) Work {
 	w := Work{}
 	w.converter = c
+	w.source = s
 	w.out = make(chan []byte, 1)
 	w.err = make(chan error, 1)
 	w.uploaded = make(chan struct{}, 1)
@@ -59,7 +61,7 @@ func (w Work) Process(t int) {
 	werr := make(chan error, 1)
 
 	go func(w Work, done <-chan struct{}, wout chan<- []byte, werr chan<- error) {
-		out, err := w.converter.Convert(done)
+		out, err := w.converter.Convert(w.source, done)
 		if err != nil {
 			werr <- err
 			return
