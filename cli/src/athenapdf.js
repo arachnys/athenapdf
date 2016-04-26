@@ -49,8 +49,7 @@ if (!uriArg) {
 }
 
 //Handle stdin
-if (uriArg === '-')
-{
+if (uriArg === '-') {
 	var base64Html = new Buffer(rw.readFileSync('/dev/stdin', 'utf8'), 'utf8').toString('base64');
 	var dataUri = "data:text/html;base64," + base64Html;
 	uriArg = dataUri;
