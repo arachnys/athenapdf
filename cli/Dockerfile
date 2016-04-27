@@ -5,19 +5,20 @@ RUN echo 'deb http://httpredir.debian.org/debian/ stable main contrib non-free' 
 
 RUN apt-get -yq update && \
     apt-get -yq install \
+        wget \
         xvfb \
         libgtk2.0-0 \
         libgconf-2-4 \
         libXtst6 \
         libnss3 \
         libnotify4 \
-        ttf-mscorefonts-installer \
-        ttf-liberation \
-        ttf-wqy-zenhei \
-        ttf-unfonts-core \
-        fonts-sil-padauk \
         fonts-lklug-sinhala \
+        fonts-sil-abyssinica \
+        fonts-sil-padauk \
         fonts-thai-tlwg \
+        ttf-liberation \
+        ttf-unfonts-core \
+        ttf-wqy-zenhei \
     && apt-get -yq autoremove \
     && apt-get -yq clean \
     && rm -rf /var/lib/apt/lists/* \

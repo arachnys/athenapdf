@@ -83,13 +83,22 @@ if (athena.proxy) {
 }
 
 // Preferences
-const bwOpts = {
+var bwOpts = {
     show: (athena.debug || false),
     webPreferences: {
         nodeIntegration: false,
         webSecurity: false
     }
 };
+
+if (process.platform === "linux") {
+    bwOpts["webPreferences"]["defaultFontFamily"] = {
+        standard: "Liberation Serif",
+        serif: "Liberation Serif",
+        sansSerif: "Liberation Sans",
+        monospace: "Liberation Mono"
+    };
+}
 
 const loadOpts = {
     "extraHeaders": athena.cache ? "" : "pragma: no-cache\n"
