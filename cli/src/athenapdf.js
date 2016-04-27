@@ -19,7 +19,7 @@ var uriArg = null;
 var outputArg = null;
 
 athena
-    .version("2.1.2")
+    .version("2.1.3")
     .description("convert HTML to PDF via stdin or a local / remote URI")
     .option("--debug", "show GUI", false)
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
