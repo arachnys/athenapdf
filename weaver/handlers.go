@@ -59,7 +59,7 @@ func conversionHandler(c *gin.Context, source converter.ConversionSource) {
 
 	var conversion converter.Converter
 	var work converter.Work
-	attempts := 1
+	attempts := 0
 
 	baseConversion := converter.Conversion{}
 	uploadConversion := converter.UploadConversion{baseConversion, awsConf}

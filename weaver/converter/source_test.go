@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/arachnys/athenapdf/weaver/testutil"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -26,7 +27,7 @@ func expectLocalConversion(t *testing.T, s *ConversionSource, uri string, mime s
 	if got, want := s.Mime, mime; got != want {
 		t.Errorf("expected content type of conversion source to be %s, got %s", want, got)
 	}
-	// Test if IsLocal flag is set
+	// Test if IsLocal flag is not set
 	if !s.IsLocal {
 		t.Errorf("expected IsLocal to be set to true for raw source conversions")
 	}
@@ -37,6 +38,25 @@ func expectLocalConversion(t *testing.T, s *ConversionSource, uri string, mime s
 	}
 	if want := data; !reflect.DeepEqual(got, want) {
 		t.Errorf("expected created temporary file bytes to be %+v, got %+v", want, got)
+	}
+}
+
+func expectRemoteConversion(t *testing.T, s *ConversionSource, uri string, mime string) {
+	// Test if URI matches
+	if got, want := s.URI, uri; got != want {
+		t.Errorf("expected URI of conversion source to be %s, got %s", want, got)
+	}
+	// Test content type
+	if got, want := s.Mime, mime; got != want {
+		t.Errorf("expected content type of conversion source to be %s, got %s", want, got)
+	}
+	// Test if original URI is set
+	if got := s.OriginalURI; got != "" {
+		t.Errorf("expected original URI of conversion source to be empty, got %s", got)
+	}
+	// Test if IsLocal flag is set
+	if s.IsLocal {
+		t.Errorf("expected IsLocal to be set to false for remote conversions")
 	}
 }
 
@@ -69,19 +89,19 @@ func TestReaderTmpFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("readertmpfile returned an unexpected error: %+v", err)
 	}
+	defer os.Remove(fp)
 	if !filepath.IsAbs(fp) {
 		t.Errorf("expected temporary file path to be absolute, got %s", fp)
 	}
-	defer os.Remove(fp)
+	if got, want := ft, "text/html; charset=utf-8"; got != want {
+		t.Errorf("expected content type of byte stream to be %s, got %s", want, got)
+	}
 	got, err := ioutil.ReadFile(fp)
 	if err != nil {
 		t.Fatalf("unable to read temporary file: %+v", err)
 	}
 	if want := []byte(mockData); !reflect.DeepEqual(got, want) {
 		t.Errorf("expected created temporary file bytes to be %+v, got %+v", want, got)
-	}
-	if got, want := ft, "text/html; charset=utf-8"; got != want {
-		t.Errorf("expected content type of byte stream to be %s, got %s", want, got)
 	}
 }
 
@@ -100,27 +120,51 @@ func TestRawSource(t *testing.T) {
 
 func TestUriSource(t *testing.T) {
 	s := new(ConversionSource)
-	ts := testutil.MockHTTPServer("", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+	ts := testutil.MockHTTPServer("", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", false)
 	defer ts.Close()
 	err := uriSource(s, ts.URL)
 	if err != nil {
 		t.Fatalf("urisource returned an unexpected error: %+v", err)
 	}
-	if got, want := s.URI, ts.URL; got != want {
-		t.Errorf("expected URI of conversion source to be %s, got %s", want, got)
+	expectRemoteConversion(t, s, ts.URL, "text/xml; charset=utf-8")
+}
+
+func TestUriSource_basicAuth(t *testing.T) {
+	s := new(ConversionSource)
+	ts := testutil.MockHTTPServer("", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", true)
+	defer ts.Close()
+
+	// Test unauthenticated
+	err := uriSource(s, ts.URL)
+	if err != nil {
+		t.Fatalf("urisource (unauthenticated) returned an unexpected error: %+v", err)
 	}
-	if got, want := s.Mime, "text/xml; charset=utf-8"; got != want {
+	// Unauthenticated content type (wrong)
+	if got, want := s.Mime, "text/plain; charset=utf-8"; got != want {
 		t.Errorf("expected content type of conversion source to be %s, got %s", want, got)
 	}
-	if got := s.OriginalURI; got != "" {
-		t.Errorf("expected original URI of conversion source to be empty, got %s", got)
+
+	// Test authenticated
+	u, err := url.Parse(ts.URL)
+	if err != nil {
+		t.Fatalf("failed to parse mock server url: %+v", err)
+	}
+
+	u.User = url.UserPassword("test", "test")
+	err = uriSource(s, u.String())
+	if err != nil {
+		t.Fatalf("urisource (authenticated) returned an unexpected error: %+v", err)
+	}
+	// Authenticated content type (correct)
+	if got, want := s.Mime, "text/xml; charset=utf-8"; got != want {
+		t.Errorf("expected content type of conversion source to be %s, got %s", want, got)
 	}
 }
 
 func TestUriSource_octet(t *testing.T) {
 	s := new(ConversionSource)
 	mockData := "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-	ts := testutil.MockHTTPServer("application/octet-stream", mockData)
+	ts := testutil.MockHTTPServer("application/octet-stream", mockData, false)
 	defer ts.Close()
 	err := uriSource(s, ts.URL)
 	if err != nil {
@@ -144,20 +188,22 @@ func TestNewConversionSource(t *testing.T) {
 }
 
 func TestNewConversionSource_remote(t *testing.T) {
-	ts := testutil.MockHTTPServer("", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+	ts := testutil.MockHTTPServer("", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", false)
 	defer ts.Close()
 	s, err := NewConversionSource(ts.URL, nil)
 	if err != nil {
 		t.Fatalf("newconversionsource returned an unexpected error: %+v", err)
 	}
-	if got, want := s.URI, ts.URL; got != want {
-		t.Errorf("expected URI of conversion source to be %s, got %s", want, got)
+	expectRemoteConversion(t, s, ts.URL, "text/xml; charset=utf-8")
+}
+
+func TestNewConversionSource_invalidURL(t *testing.T) {
+	s, err := NewConversionSource("http://invalid-url", nil)
+	if err == nil {
+		t.Fatalf("expected error to be returned")
 	}
-	if got, want := s.Mime, "text/xml; charset=utf-8"; got != want {
-		t.Errorf("expected content type of conversion source to be %s, got %s", want, got)
-	}
-	if got := s.OriginalURI; got != "" {
-		t.Errorf("expected original URI of conversion source to be empty, got %s", got)
+	if s != nil {
+		t.Fatalf("expected result of newconversionsource to be nil, got %+v", s)
 	}
 }
 

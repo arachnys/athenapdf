@@ -36,7 +36,7 @@ func mockConversion(path string, tmp bool, cmd string) ([]byte, error) {
 }
 
 func TestConvert(t *testing.T) {
-	ts := testutil.MockHTTPServer("", "test AthenaPDF convert")
+	ts := testutil.MockHTTPServer("", "test AthenaPDF convert", false)
 	defer ts.Close()
 	got, err := mockConversion(ts.URL, false, "echo")
 	if err != nil {
@@ -69,7 +69,7 @@ func TestConvert_local(t *testing.T) {
 }
 
 func TestConvert_badCMD(t *testing.T) {
-	ts := testutil.MockHTTPServer("", "test Athena convert")
+	ts := testutil.MockHTTPServer("", "test Athena convert", false)
 	defer ts.Close()
 	got, err := mockConversion(ts.URL, false, "echo-broken")
 	if err == nil {
