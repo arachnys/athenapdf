@@ -3,7 +3,6 @@ package cloudconvert
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/arachnys/athenapdf/weaver/converter"
 	"github.com/satori/go.uuid"
