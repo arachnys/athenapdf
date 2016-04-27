@@ -1,10 +1,10 @@
 "use strict";
 
-const fs = require("fs");
 const crypto = require("crypto");
+const fs = require("fs");
 const path = require("path");
-const url = require("url");
 const rw = require("rw");
+const url = require("url");
 
 const athena = require("commander");
 const electron = require("electron");
@@ -20,6 +20,7 @@ var outputArg = null;
 
 athena
     .version("2.1.2")
+    .description("convert HTML to PDF via stdin or a local / remote URI")
     .option("--debug", "show GUI", false)
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
     .option("-D, --delay <milliseconds>", "milliseconds delay before saving (default: 200)", parseInt)
@@ -31,9 +32,9 @@ athena
     .option("--no-background", "omit CSS backgrounds")
     .option("--no-cache", "disables caching")
     .option("--proxy <url>", "use proxy to load remote HTML")
-    .arguments("<URL> [output]")
-    .action((url, output) => {
-        uriArg = url;
+    .arguments("<URI> [output]")
+    .action((uri, output) => {
+        uriArg = uri;
         outputArg = output;
     })
     .parse(process.argv);
@@ -44,19 +45,16 @@ if (!process.argv.slice(2).length) {
 }
 
 if (!uriArg) {
-    console.error("No URI given.");
+    console.error("No URI given. Set the URI to `-` to pipe HTML via stdin.");
     process.exit(1);
 }
 
-//Handle stdin
-if (uriArg === '-') {
-	var base64Html = new Buffer(rw.readFileSync('/dev/stdin', 'utf8'), 'utf8').toString('base64');
-	var dataUri = "data:text/html;base64," + base64Html;
-	uriArg = dataUri;
-}
-
+// Handle stdin
+if (uriArg === "-") {
+    let base64Html = new Buffer(rw.readFileSync("/dev/stdin", "utf8"), "utf8").toString("base64");
+    uriArg = "data:text/html;base64," + base64Html;
 // Handle local paths
-else if (uriArg.toLowerCase().indexOf("http") !== 0) {
+} else if (uriArg.toLowerCase().indexOf("http") !== 0) {
     uriArg = url.format({
         protocol: "file",
         pathname: path.resolve(uriArg),
@@ -81,7 +79,7 @@ if (!athena.debug) {
 
 if (athena.proxy) {
     console.log("Using proxy", athena.proxy);
-    app.commandLine.appendSwitch('proxy-server', athena.proxy);
+    app.commandLine.appendSwitch("proxy-server", athena.proxy);
 }
 
 // Preferences
