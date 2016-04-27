@@ -29,7 +29,8 @@ buildcli:
 
 testcli:
 	@echo "  $(P) testcli"
-	@docker run --rm -t arachnysdocker/athenapdf athenapdf -S https://www.traviscistatus.com/ | grep "PDF-1.4"
+	@docker run --rm arachnysdocker/athenapdf athenapdf -S https://www.traviscistatus.com/ | grep "PDF-1.4"
+	@echo "<h1>stdin test</h1>" | docker run --rm -i arachnysdocker/athenapdf athenapdf -S - | grep "PDF-1.4"
 
 buildservice:
 	@echo "  $(P) buildservice"
