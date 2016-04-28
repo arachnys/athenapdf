@@ -4,7 +4,6 @@ import (
 	"github.com/arachnys/athenapdf/weaver/converter"
 	"github.com/arachnys/athenapdf/weaver/testutil"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
@@ -62,9 +61,6 @@ func TestConvert_local(t *testing.T) {
 	}
 	if want := []byte(p + "\n"); !reflect.DeepEqual(got, want) {
 		t.Errorf("expected output of athenapdf conversion to be %s, got %s", want, got)
-	}
-	if _, err := os.Stat(p); !os.IsNotExist(err) {
-		t.Errorf("expected temporary file to be removed after local conversion")
 	}
 }
 

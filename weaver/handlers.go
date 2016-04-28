@@ -11,6 +11,7 @@ import (
 	"gopkg.in/alexcesaro/statsd.v2"
 	"log"
 	"net/http"
+	"os"
 	"runtime"
 )
 
@@ -40,6 +41,11 @@ func statsHandler(c *gin.Context) {
 }
 
 func conversionHandler(c *gin.Context, source converter.ConversionSource) {
+	// GC if converting temporary file
+	if source.IsLocal {
+		defer os.Remove(source.URI)
+	}
+
 	_, aggressive := c.GetQuery("aggressive")
 
 	conf := c.MustGet("config").(Config)
