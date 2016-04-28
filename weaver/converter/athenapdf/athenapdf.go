@@ -3,7 +3,6 @@ package athenapdf
 import (
 	"github.com/arachnys/athenapdf/weaver/converter"
 	"github.com/arachnys/athenapdf/weaver/gcmd"
-	"github.com/arachnys/athenapdf/weaver/util"
 	"log"
 	"os"
 	"strings"
@@ -43,23 +42,16 @@ func constructCMD(base string, path string, aggressive bool) []string {
 // Convert returns a byte slice containing a PDF converted from HTML
 // using athenapdf CLI.
 // See the Convert method for Conversion for more information.
-func (c AthenaPDF) Convert(done <-chan struct{}) ([]byte, error) {
-	// TODO: Check content type
-	p, err := util.HandleOctetStream(c.Path)
-	// TODO: Distinguish between "REAL" errors, and a bad URL
-	if err != nil {
-		return nil, err
-	}
-	if p != "" {
-		// GC
-		defer os.Remove(p)
-		c.Path = p
+func (c AthenaPDF) Convert(s converter.ConversionSource, done <-chan struct{}) ([]byte, error) {
+	// GC if converting temporary file
+	if s.IsLocal {
+		defer os.Remove(s.URI)
 	}
 
-	log.Printf("[AthenaPDF] converting to PDF: %s\n", c.Path)
+	log.Printf("[AthenaPDF] converting to PDF: %s\n", s.GetActualURI())
 
 	// Construct the command to execute
-	cmd := constructCMD(c.CMD, c.Path, c.Aggressive)
+	cmd := constructCMD(c.CMD, s.URI, c.Aggressive)
 	out, err := gcmd.Execute(cmd, done)
 	if err != nil {
 		return nil, err

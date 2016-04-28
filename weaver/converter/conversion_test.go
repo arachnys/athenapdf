@@ -7,8 +7,9 @@ import (
 
 func TestConversion_Convert(t *testing.T) {
 	mockConversion := Conversion{}
+	mockSource := ConversionSource{}
 	mockDone := make(chan struct{}, 1)
-	got, err := mockConversion.Convert(mockDone)
+	got, err := mockConversion.Convert(mockSource, mockDone)
 	if err != nil {
 		t.Fatalf("convert returned an unexpected error: %+v", err)
 	}
@@ -19,7 +20,7 @@ func TestConversion_Convert(t *testing.T) {
 
 func TestConversion_Upload(t *testing.T) {
 	mockConversion := Conversion{}
-	got, err := mockConversion.Upload([]byte{})
+	got, err := mockConversion.Upload(nil)
 	if err != nil {
 		t.Fatalf("upload returned an unexpected error: %+v", err)
 	}

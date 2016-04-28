@@ -1,7 +1,11 @@
 package athenapdf
 
 import (
+	"github.com/arachnys/athenapdf/weaver/converter"
 	"github.com/arachnys/athenapdf/weaver/testutil"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 )
@@ -21,56 +25,57 @@ func TestConstructCMD_aggressive(t *testing.T) {
 	}
 }
 
-func mockConversion(path, cmd string) ([]byte, error) {
+func mockConversion(path string, tmp bool, cmd string) ([]byte, error) {
 	c := AthenaPDF{}
-	c.Path = path
 	c.CMD = cmd
+	s := converter.ConversionSource{}
+	s.URI = path
+	s.IsLocal = tmp
 	t := make(chan struct{}, 1)
-	return c.Convert(t)
+	return c.Convert(s, t)
 }
 
 func TestConvert(t *testing.T) {
-	ts := testutil.MockHTTPServer("", "test AthenaPDF convert")
+	ts := testutil.MockHTTPServer("", "test AthenaPDF convert", false)
 	defer ts.Close()
-	got, err := mockConversion(ts.URL, "echo")
+	got, err := mockConversion(ts.URL, false, "echo")
 	if err != nil {
 		t.Fatalf("convert returned an unexpected error: %+v", err)
 	}
 	if want := []byte(ts.URL + "\n"); !reflect.DeepEqual(got, want) {
-		t.Errorf("expected output of athenapdf conversion to be %+v, got %+v", want, got)
+		t.Errorf("expected output of athenapdf conversion to be %s, got %s", want, got)
 	}
 }
 
-func TestConvert_badURL(t *testing.T) {
-	got, err := mockConversion("bad URL", "echo")
-	if err == nil {
-		t.Fatalf("expected error to be returned")
+func TestConvert_local(t *testing.T) {
+	f, err := ioutil.TempFile("/tmp", "tmp")
+	if err != nil {
+		t.Fatalf("unable to create temporary file for testing: %+v", err)
 	}
-	if got != nil {
-		t.Errorf("expected output of athenapdf conversion to be nil, got %+v", got)
+	p, err := filepath.Abs(f.Name())
+	if err != nil {
+		t.Fatalf("unable to get full temporary file path: %+v", err)
+	}
+	got, err := mockConversion(p, true, "echo")
+	if err != nil {
+		t.Fatalf("convert returned an unexpected error: %+v", err)
+	}
+	if want := []byte(p + "\n"); !reflect.DeepEqual(got, want) {
+		t.Errorf("expected output of athenapdf conversion to be %s, got %s", want, got)
+	}
+	if _, err := os.Stat(p); !os.IsNotExist(err) {
+		t.Errorf("expected temporary file to be removed after local conversion")
 	}
 }
 
 func TestConvert_badCMD(t *testing.T) {
-	ts := testutil.MockHTTPServer("", "test Athena convert")
+	ts := testutil.MockHTTPServer("", "test Athena convert", false)
 	defer ts.Close()
-	got, err := mockConversion(ts.URL, "echo-broken")
+	got, err := mockConversion(ts.URL, false, "echo-broken")
 	if err == nil {
 		t.Fatalf("expected error to be returned")
 	}
 	if got != nil {
-		t.Errorf("expected output of athenapdf conversion to be nil, got %+v", got)
-	}
-}
-
-func TestConvert_octet(t *testing.T) {
-	ts := testutil.MockHTTPServer("application/octet-stream", "test application/octet-stream bytes")
-	defer ts.Close()
-	got, err := mockConversion(ts.URL, "echo")
-	if err != nil {
-		t.Fatalf("convert returned an unexpected error: %+v", err)
-	}
-	if want := []byte(ts.URL + "\n"); reflect.DeepEqual(got, want) {
-		t.Errorf("expected value should not be equal (new conversion path should be a local tmp file)")
+		t.Errorf("expected output of athenapdf conversion to be nil, got %s", got)
 	}
 }

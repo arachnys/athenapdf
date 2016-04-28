@@ -5,16 +5,13 @@ package converter
 // and the output is a PDF.
 // Conversion implements the Converter interface with dummy methods.
 // Any child conversion type should overwrite these methods.
-type Conversion struct {
-	// Path is the URI to the resource to be converted.
-	Path string
-}
+type Conversion struct{}
 
 // Convert should return a byte slice containing the converted resource,
 // synchronously.
 // It should terminate any long-running processes (and Goroutines) if the done
 // channel is returned.
-func (c Conversion) Convert(done <-chan struct{}) ([]byte, error) {
+func (c Conversion) Convert(s ConversionSource, done <-chan struct{}) ([]byte, error) {
 	return []byte{}, nil
 }
 
