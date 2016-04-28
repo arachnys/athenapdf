@@ -190,7 +190,6 @@ func (c CloudConvert) Convert(s converter.ConversionSource, done <-chan struct{}
 	var b []byte
 
 	if s.IsLocal {
-		defer os.Remove(s.URI)
 		b, err := c.Client.QuickConversion(s.URI, c.AWSS3, "html", "pdf")
 		if err != nil {
 			return nil, err
