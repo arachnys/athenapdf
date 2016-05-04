@@ -12,14 +12,23 @@ RUN apt-get -yq update && \
         libXtst6 \
         libnss3 \
         libnotify4 \
+        culmus \
+        fonts-beng \
+        fonts-hosny-amiri \
         fonts-lklug-sinhala \
+        fonts-lohit-guru \
+        fonts-lohit-knda \
+        fonts-samyak-gujr \
+        fonts-samyak-mlym \
+        fonts-samyak-taml \
+        fonts-sarai \
         fonts-sil-abyssinica \
         fonts-sil-padauk \
+        fonts-telu \
         fonts-thai-tlwg \
         ttf-liberation \
         ttf-unfonts-core \
         ttf-wqy-zenhei \
-        culmus \
     && apt-get -yq autoremove \
     && apt-get -yq clean \
     && rm -rf /var/lib/apt/lists/* \
