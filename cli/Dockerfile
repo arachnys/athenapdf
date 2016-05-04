@@ -20,6 +20,15 @@ RUN apt-get -yq update && \
         ttf-unfonts-core \
         ttf-wqy-zenhei \
         culmus \
+        fonts-hosny-amiri \
+        fonts-sarai \
+        fonts-beng \
+        fonts-telu \
+        fonts-samyak-taml \
+        fonts-samyak-gujr \
+        fonts-samyak-mlym \
+        fonts-lohit-knda \
+        fonts-lohit-guru \
     && apt-get -yq autoremove \
     && apt-get -yq clean \
     && rm -rf /var/lib/apt/lists/* \
