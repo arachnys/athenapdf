@@ -25,6 +25,7 @@ athena
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
     .option("-D, --delay <milliseconds>", "milliseconds delay before saving (default: 200)", parseInt)
     .option("-P, --pagesize <size>", "page size of the generated PDF (default: A4)", /^(A3|A4|A5|Legal|Letter|Tabloid)$/i, "A4")
+    .option("-Z --zoom <factor>", "zoom factor for higher scale rendering (default: 1 - represents 100%)", parseInt)
     .option("-S, --stdout", "write conversion to stdout")
     .option("-A, --aggressive", "aggressive mode / runs dom-distiller")
     .option("-B, --bypass", "bypasses paywalls on digital publications (experimental feature)")
@@ -87,7 +88,8 @@ var bwOpts = {
     show: (athena.debug || false),
     webPreferences: {
         nodeIntegration: false,
-        webSecurity: false
+        webSecurity: false,
+        zoomFactor: (athena.zoom || 1)
     }
 };
 
