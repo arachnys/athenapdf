@@ -19,7 +19,7 @@ var uriArg = null;
 var outputArg = null;
 
 athena
-    .version("2.1.3")
+    .version("2.2.0")
     .description("convert HTML to PDF via stdin or a local / remote URI")
     .option("--debug", "show GUI", false)
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
@@ -29,10 +29,10 @@ athena
     .option("-S, --stdout", "write conversion to stdout")
     .option("-A, --aggressive", "aggressive mode / runs dom-distiller")
     .option("-B, --bypass", "bypasses paywalls on digital publications (experimental feature)")
+    .option("--proxy <url>", "use proxy to load remote HTML")
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
     .option("--no-cache", "disables caching")
-    .option("--proxy <url>", "use proxy to load remote HTML")
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -79,7 +79,7 @@ if (!athena.debug) {
 }
 
 if (athena.proxy) {
-    console.log("Using proxy", athena.proxy);
+    console.info("Using proxy: ", athena.proxy);
     app.commandLine.appendSwitch("proxy-server", athena.proxy);
 }
 
