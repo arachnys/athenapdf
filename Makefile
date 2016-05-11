@@ -11,7 +11,7 @@ P="\\033[34m[+]\\033[0m"
 help:
 	@echo
 	@echo "  \033[34mbuildcli\033[0m – builds athenapdf (cli) docker image"
-	@echo "  \033[34mtestcli\033[0m – tests athenapdf (cli) stdout conversion"
+	@echo "  \033[34mtestcli\033[0m – tests athenapdf (cli) standard streams"
 	@echo "  \033[34mbuildservice\033[0m – builds athenapdf-service docker image"
 	@echo "  \033[34mtestservice\033[0m – tests athenapdf-service Go source"
 	@echo "  \033[34mbuild\033[0m – builds both the cli, and service docker image"
@@ -29,8 +29,8 @@ buildcli:
 
 testcli:
 	@echo "  $(P) testcli"
-	@docker run --rm arachnysdocker/athenapdf athenapdf -S https://www.traviscistatus.com/ | grep "PDF-1.4"
-	@echo "<h1>stdin test</h1>" | docker run --rm -i arachnysdocker/athenapdf athenapdf -S - | grep "PDF-1.4"
+	@docker run --rm arachnysdocker/athenapdf athenapdf -S https://www.traviscistatus.com/ | grep -a "PDF-1.4"
+	@echo "<h1>stdin test</h1>" | docker run --rm -i arachnysdocker/athenapdf athenapdf -S - | grep -a "PDF-1.4"
 
 buildservice:
 	@echo "  $(P) buildservice"
