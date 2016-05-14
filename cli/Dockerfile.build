@@ -11,7 +11,6 @@ ADD package.json /athenapdf/build/artifacts/
 RUN cp -r /athenapdf/node_modules/ /athenapdf/build/artifacts/
 
 ADD src /athenapdf/build/artifacts/
-RUN sed -i "1s/^/process.argv.unshift(\"--\");\n /" /athenapdf/build/artifacts/athenapdf.js
 RUN npm run build:linux
 
 CMD ["/bin/sh"]
