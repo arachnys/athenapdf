@@ -18,8 +18,12 @@ var ses = null;
 var uriArg = null;
 var outputArg = null;
 
+if (!process.defaultApp) {
+    process.argv.unshift("--");
+}
+
 athena
-    .version("2.2.0")
+    .version("2.3.0")
     .description("convert HTML to PDF via stdin or a local / remote URI")
     .option("--debug", "show GUI", false)
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
