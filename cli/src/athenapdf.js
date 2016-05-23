@@ -140,10 +140,14 @@ app.on("ready", () => {
 
     bw = new BrowserWindow(bwOpts);
 
-    bw.on("closed", () => { bw = null; });
+    bw.on("closed", () => {
+        bw = null;
+        ses = null;
+    });
 
     bw.loadURL(uriArg, loadOpts);
 
+    ses = bw.webContents.session;
     if (athena.bypass) {
         const _cookieWhitelist = ["nytimes", "ft.com"];
         const _inCookieWhitelist = (url) => {
@@ -152,7 +156,6 @@ app.on("ready", () => {
             });
             return (matches.length !== 0);
         };
-        ses = bw.webContents.session;
         ses.webRequest.onBeforeSendHeaders((details, callback) => {
             if (details.resourceType === "mainFrame") {
                 if (!_inCookieWhitelist(details.url)) {
@@ -164,6 +167,12 @@ app.on("ready", () => {
             callback({cancel: false, requestHeaders: details.requestHeaders});
         });
     }
+
+    ses.on("will-download", (e, item, webContents) => {
+        e.preventDefault();
+        console.error(`Unable to convert an octet-stream, use stdin.`);
+        app.exit(1);
+    });
 
     bw.webContents.on("did-fail-load", (e, code, desc, url, isMainFrame) => {
         if (parseInt(code, 10) >= -3) return;
