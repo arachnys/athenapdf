@@ -7,11 +7,12 @@ RUN apt-get -yq update && \
     apt-get -yq install \
         wget \
         xvfb \
-        libgtk2.0-0 \
         libgconf-2-4 \
-        libXtst6 \
-        libnss3 \
+        libgtk2.0-0 \
         libnotify4 \
+        libnss3 \
+        libxss1 \
+        libXtst6 \
         culmus \
         fonts-beng \
         fonts-hosny-amiri \
