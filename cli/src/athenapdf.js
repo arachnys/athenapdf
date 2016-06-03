@@ -29,7 +29,7 @@ athena
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
     .option("-D, --delay <milliseconds>", "milliseconds delay before saving (default: 200)", parseInt)
     .option("-P, --pagesize <size>", "page size of the generated PDF (default: A4)", /^(A3|A4|A5|Legal|Letter|Tabloid)$/i, "A4")
-    .option("-M, --margin <marginType>", "margins to use when generating the PDF (default: standard)", /^(standard|minimal|none)$/i, "standard")
+    .option("-M, --margins <marginsType>", "margins to use when generating the PDF (default: standard)", /^(standard|minimal|none)$/i, "standard")
     .option("-Z --zoom <factor>", "zoom factor for higher scale rendering (default: 1 - represents 100%)", parseInt)
     .option("-S, --stdout", "write conversion to stdout")
     .option("-A, --aggressive", "aggressive mode / runs dom-distiller")
@@ -120,7 +120,7 @@ var MarginEnum = {
 
 const pdfOpts = {
     pageSize: athena.pagesize,
-    marginType: MarginEnum[athena.margin],
+    marginsType: MarginEnum[athena.margins],
     printBackground: athena.background,
     landscape: !athena.portrait
 };
