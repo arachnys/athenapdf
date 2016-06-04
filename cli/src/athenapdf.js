@@ -112,7 +112,7 @@ const loadOpts = {
 };
 
 // Enum for Electron's marginType codes
-var MarginEnum = {
+const MarginEnum = {
   "standard": 0,
   "none": 1,
   "minimal": 2,
