@@ -26,6 +26,7 @@ It can be used anywhere with [Docker][docker] installed, even in a headless envi
 - Adjustable, built-in timeout mechanism
 - Adjustable cache control
 - Adjustable browser zoom settings
+- Adjustable margin sizes
 - Automatically falls back to `screen` stylesheets if no `print` stylesheet is defined
 - [Aggressive mode](docs/aggressive.md): declutter web pages, and improves readability
 - Bypass paywalls for most digital publications with a single `-B` flag (experimental feature)
