@@ -140,7 +140,9 @@ func convertByURLHandler(c *gin.Context) {
 		return
 	}
 
-	source, err := converter.NewConversionSource(url, nil)
+	ext := c.Query("ext")
+
+	source, err := converter.NewConversionSource(url, nil, ext)
 	if err != nil {
 		s.Increment("conversion_error")
 		if ravenOk {
@@ -164,7 +166,9 @@ func convertByFileHandler(c *gin.Context) {
 		return
 	}
 
-	source, err := converter.NewConversionSource("", file)
+	ext := c.Query("ext")
+
+	source, err := converter.NewConversionSource("", file, ext)
 	if err != nil {
 		s.Increment("conversion_error")
 		if ravenOk {

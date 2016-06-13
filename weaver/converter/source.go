@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
+	"os"
 	"path/filepath"
 )
 
@@ -140,12 +141,23 @@ func uriSource(s *ConversionSource, uri string) error {
 	return nil
 }
 
+func setCustomExtension(s *ConversionSource, ext string) error {
+	if s.IsLocal && len(ext) > 0 {
+		newPath := s.URI + "." + ext
+		if err := os.Rename(s.URI, newPath); err != nil {
+			return err
+		}
+		s.URI = newPath
+	}
+	return nil
+}
+
 // NewConversionSource creates, and returns a new ConversionSource.
 // It accepts either a URI to a remote resource or a reader containing a stream
 // of bytes. If both parameters are specified, the reader takes precedence.
 // The ConversionSource is prepared using one of two strategies: a local
 // conversion (see rawSource) or a remote conversion (see uriSource).
-func NewConversionSource(uri string, body io.Reader) (*ConversionSource, error) {
+func NewConversionSource(uri string, body io.Reader, ext string) (*ConversionSource, error) {
 	s := new(ConversionSource)
 
 	var err error
@@ -156,6 +168,10 @@ func NewConversionSource(uri string, body io.Reader) (*ConversionSource, error) 
 	}
 
 	if err != nil {
+		return nil, err
+	}
+
+	if err := setCustomExtension(s, ext); err != nil {
 		return nil, err
 	}
 
