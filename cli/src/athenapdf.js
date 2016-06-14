@@ -191,6 +191,15 @@ app.on("ready", () => {
         }
     });
 
+    bw.webContents.on("did-get-response-details", (e, status, newURL, originalURL, httpResponseCode, requestMethod, referrer, headers, resourceType) => {
+        if (httpResponseCode >= 400) {
+            console.error(`Failed to load ${newURL} - got HTTP code ${httpResponseCode}`);
+            if (originalURL === uriArg) {
+                app.exit(1);
+            }
+        }
+    });
+
     bw.webContents.on("crashed", () => {
         console.error(`The renderer process has crashed.`);
         app.exit(1);
