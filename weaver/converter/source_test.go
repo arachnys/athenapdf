@@ -60,6 +60,20 @@ func expectRemoteConversion(t *testing.T, s *ConversionSource, uri string, mime 
 	}
 }
 
+func setMockURI(t *testing.T, s *ConversionSource) {
+	mockFile, err := ioutil.TempFile("/tmp", "tmp")
+	if err != nil {
+		t.Fatalf("unable to create temporary mock file: %+v", err)
+	}
+
+	p, err := filepath.Abs(mockFile.Name())
+	if err != nil {
+		t.Fatalf("unable to create absolute representation of mock file path: %+v", err)
+	}
+
+	s.URI = p
+}
+
 func TestReaderContentType(t *testing.T) {
 	mockReader := strings.NewReader("<!DOCTYPE HTML>")
 	got, err := readerContentType(mockReader)
@@ -176,11 +190,75 @@ func TestUriSource_octet(t *testing.T) {
 	}
 }
 
+func TestSetCustomExtension(t *testing.T) {
+	s := new(ConversionSource)
+	setMockURI(t, s)
+	defer os.Remove(s.URI)
+
+	s.IsLocal = true
+	original := s.URI
+
+	err := setCustomExtension(s, "mhtml")
+	if err != nil {
+		t.Fatalf("setcustomextension returned an unexpected error: %+v", err)
+	}
+
+	if got, want := s.URI, original+".mhtml"; got != want {
+		t.Errorf("expected conversion source URI to be %s, got %s", want, got)
+	}
+}
+
+func TestSetCustomExtension_error(t *testing.T) {
+	s := new(ConversionSource)
+	s.URI = "/tmp/doesnotexist"
+	s.IsLocal = true
+
+	err := setCustomExtension(s, "mhtml")
+	if err == nil {
+		t.Fatalf("expected error to be returned")
+	}
+}
+
+func TestSetCustomExtension_notLocal(t *testing.T) {
+	s := new(ConversionSource)
+	setMockURI(t, s)
+	defer os.Remove(s.URI)
+
+	original := s.URI
+
+	err := setCustomExtension(s, "mhtml")
+	if err != nil {
+		t.Fatalf("setcustomextension returned an unexpected error: %+v", err)
+	}
+
+	if got, want := s.URI, original; got != want {
+		t.Errorf("expected conversion source URI to be %s, got %s", want, got)
+	}
+}
+
+func TestSetCustomExtension_noExt(t *testing.T) {
+	s := new(ConversionSource)
+	setMockURI(t, s)
+	defer os.Remove(s.URI)
+
+	s.IsLocal = true
+	original := s.URI
+
+	err := setCustomExtension(s, "")
+	if err != nil {
+		t.Fatalf("setcustomextension returned an unexpected error: %+v", err)
+	}
+
+	if got, want := s.URI, original; got != want {
+		t.Errorf("expected conversion source URI to be %s, got %s", want, got)
+	}
+}
+
 func TestNewConversionSource(t *testing.T) {
 	mockURI := "http://this-should-not-be-used"
 	mockData := "<!DOCTYPE HTML>"
 	mockReader := strings.NewReader(mockData)
-	s, err := NewConversionSource(mockURI, mockReader)
+	s, err := NewConversionSource(mockURI, mockReader, "")
 	if err != nil {
 		t.Fatalf("newconversionsource returned an unexpected error: %+v", err)
 	}
@@ -190,7 +268,7 @@ func TestNewConversionSource(t *testing.T) {
 func TestNewConversionSource_remote(t *testing.T) {
 	ts := testutil.MockHTTPServer("", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", false)
 	defer ts.Close()
-	s, err := NewConversionSource(ts.URL, nil)
+	s, err := NewConversionSource(ts.URL, nil, "")
 	if err != nil {
 		t.Fatalf("newconversionsource returned an unexpected error: %+v", err)
 	}
@@ -198,7 +276,7 @@ func TestNewConversionSource_remote(t *testing.T) {
 }
 
 func TestNewConversionSource_invalidURL(t *testing.T) {
-	s, err := NewConversionSource("http://invalid-url", nil)
+	s, err := NewConversionSource("http://invalid-url", nil, "")
 	if err == nil {
 		t.Fatalf("expected error to be returned")
 	}
