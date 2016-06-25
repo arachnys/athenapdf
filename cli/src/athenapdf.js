@@ -23,7 +23,7 @@ if (!process.defaultApp) {
 }
 
 athena
-    .version("2.5.0")
+    .version("2.6.0")
     .description("convert HTML to PDF via stdin or a local / remote URI")
     .option("--debug", "show GUI", false)
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
