@@ -35,12 +35,12 @@ RUN apt-get -yq update && \
     && rm -rf /var/lib/apt/lists/* \
     && truncate -s 0 /var/log/*log
 
-ADD build/athenapdf-linux-x64/ /athenapdf/
+COPY build/athenapdf-linux-x64/ /athenapdf/
 WORKDIR /athenapdf/
 
 ENV PATH /athenapdf/:$PATH
 
-ADD entrypoint.sh /athenapdf/entrypoint.sh
+COPY entrypoint.sh /athenapdf/entrypoint.sh
 
 RUN mkdir -p /converted/
 WORKDIR /converted/
