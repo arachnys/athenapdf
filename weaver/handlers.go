@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"github.com/arachnys/athenapdf/weaver/converter"
 	"github.com/arachnys/athenapdf/weaver/converter/athenapdf"
@@ -173,6 +174,37 @@ func convertByFileHandler(c *gin.Context) {
 		s.Increment("conversion_error")
 		if ravenOk {
 			r.(*raven.Client).CaptureError(err, map[string]string{"url": header.Filename})
+		}
+		c.Error(err)
+		return
+	}
+
+	conversionHandler(c, *source)
+}
+
+// convertByStringHandler converts an html string from the post body.
+// The body should be given as an encoded form, e.g.:
+// `content=%3Cdiv%3Esom+content%3C%2Fdiv%3E`, or in go use the net/url package to encode the body.
+// The `Content-Type` header should be set to `application/x-www-form-urlencoded`.
+func convertByStringHandler(c *gin.Context) {
+	s := c.MustGet("statsd").(*statsd.Client)
+	r, ravenOk := c.Get("sentry")
+
+	content, ok := c.GetPostForm("content")
+	log.Printf("[Converting with content] %s", content)
+	if !ok {
+		c.AbortWithError(http.StatusBadRequest, ErrFileInvalid).SetType(gin.ErrorTypePublic)
+		s.Increment("invalid_file")
+		return
+	}
+
+	ext := c.Query("ext")
+
+	source, err := converter.NewConversionSource("", bytes.NewBufferString(content), ext)
+	if err != nil {
+		s.Increment("conversion_error")
+		if ravenOk {
+			r.(*raven.Client).CaptureError(err, map[string]string{"content": content})
 		}
 		c.Error(err)
 		return

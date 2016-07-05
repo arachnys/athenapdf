@@ -62,6 +62,7 @@ func InitSecureRoutes(router *gin.Engine, conf Config) {
 	authorized.Use(AuthorizationMiddleware(conf.AuthKey))
 	authorized.GET("/convert", convertByURLHandler)
 	authorized.POST("/convert", convertByFileHandler)
+	authorized.POST("/convert-str", convertByStringHandler)
 }
 
 // InitSimpleRoutes creates non-essential routes for monitoring and/or
