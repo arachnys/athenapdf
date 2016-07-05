@@ -191,10 +191,9 @@ func convertByStringHandler(c *gin.Context) {
 	r, ravenOk := c.Get("sentry")
 
 	content, ok := c.GetPostForm("content")
-	log.Printf("[Converting with content] %s", content)
 	if !ok {
 		c.AbortWithError(http.StatusBadRequest, ErrFileInvalid).SetType(gin.ErrorTypePublic)
-		s.Increment("invalid_file")
+		s.Increment("invalid_content")
 		return
 	}
 
