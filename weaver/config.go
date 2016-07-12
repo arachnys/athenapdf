@@ -30,6 +30,18 @@ type Config struct {
 	CloudConvert
 	// Defaults to none.
 	Statsd
+	// The address:port for the HTTP server to listen on.
+	// Defaults to ':8080'
+	HTTPAddr string
+	// The address:port for the HTTPS server to listen on.
+	// Defaults to none
+	HTTPSAddr string
+	// The TLS certificate to use if the HTTPS listener is enabled.
+	// Defaults to none
+	TLSCertFile string
+	// The TLS key to use if the HTTPS listener is enabled.
+	// Defaults to none
+	TLSKeyFile string
 	// Authentication key to be used with AuthorizationMiddleware.
 	// It will be used to protect all conversion routes.
 	// Defaults to 'arachnys-weaver'.
@@ -63,12 +75,29 @@ func NewEnvConfig() Config {
 	cloudconvert := CloudConvert{APIUrl: "https://api.cloudconvert.com"}
 	conf := Config{
 		CloudConvert:       cloudconvert,
+		HTTPAddr:           ":8080",
 		AuthKey:            "arachnys-weaver",
 		AthenaCMD:          "athenapdf -S",
 		MaxWorkers:         10,
 		MaxConversionQueue: 50,
 		WorkerTimeout:      90,
 		ConversionFallback: false,
+	}
+
+	if httpAddr := os.Getenv("WEAVER_HTTP_ADDR"); httpAddr != "" {
+		conf.HTTPAddr = httpAddr
+	}
+
+	if httpsAddr := os.Getenv("WEAVER_HTTPS_ADDR"); httpsAddr != "" {
+		conf.HTTPSAddr = httpsAddr
+	}
+
+	if tlsCertFile := os.Getenv("WEAVER_TLS_CERT_FILE"); tlsCertFile != "" {
+		conf.TLSCertFile = tlsCertFile
+	}
+
+	if tlsKeyFile := os.Getenv("WEAVER_TLS_KEY_FILE"); tlsKeyFile != "" {
+		conf.TLSKeyFile = tlsKeyFile
 	}
 
 	if authKey := os.Getenv("WEAVER_AUTH_KEY"); authKey != "" {
