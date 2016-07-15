@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/contrib/sentry"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/alexcesaro/statsd.v2"
+	"log"
 	"time"
 )
 
@@ -83,5 +84,19 @@ func main() {
 	InitSecureRoutes(router, conf)
 	InitSimpleRoutes(router, conf)
 
-	router.Run(":8080")
+	if conf.HTTPSAddr != "" {
+		if conf.TLSCertFile == "" {
+			log.Fatal("No TLS cert file provided (WEAVER_TLS_CERT_FILE)")
+		}
+
+		if conf.TLSKeyFile == "" {
+			log.Fatal("No TLS key file provided (WEAVER_TLS_KEY_FILE)")
+		}
+
+		go func() {
+			log.Fatal(router.RunTLS(conf.HTTPSAddr, conf.TLSCertFile, conf.TLSKeyFile))
+		}()
+	}
+
+	log.Fatal(router.Run(conf.HTTPAddr))
 }
