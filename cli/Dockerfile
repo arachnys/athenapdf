@@ -15,6 +15,7 @@ RUN apt-get -yq update && \
         libXtst6 \
         culmus \
         fonts-beng \
+        fonts-dejavu \
         fonts-hosny-amiri \
         fonts-lklug-sinhala \
         fonts-lohit-guru \
