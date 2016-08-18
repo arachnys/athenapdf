@@ -194,7 +194,7 @@ app.on("ready", () => {
     bw.webContents.on("did-get-response-details", (e, status, newURL, originalURL, httpResponseCode, requestMethod, referrer, headers, resourceType) => {
         if (httpResponseCode >= 400) {
             console.error(`Failed to load ${newURL} - got HTTP code ${httpResponseCode}`);
-            if (resourceType === 'mainFrame') {
+            if (resourceType === "mainFrame") {
                 app.exit(1);
             }
         }
