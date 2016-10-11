@@ -36,6 +36,8 @@ RUN apt-get -yq update && \
     && rm -rf /var/lib/apt/lists/* \
     && truncate -s 0 /var/log/*log
 
+COPY fonts.conf /etc/fonts/conf.d/100-athena.conf
+
 COPY build/athenapdf-linux-x64/ /athenapdf/
 WORKDIR /athenapdf/
 
