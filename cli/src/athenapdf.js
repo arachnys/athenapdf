@@ -22,6 +22,11 @@ if (!process.defaultApp) {
     process.argv.unshift("--");
 }
 
+function addHeader(val, headers) {
+	headers.push(val);
+	return headers;
+}
+
 athena
     .version("2.8.0")
     .description("convert HTML to PDF via stdin or a local / remote URI")
@@ -34,6 +39,7 @@ athena
     .option("-S, --stdout", "write conversion to stdout")
     .option("-A, --aggressive", "aggressive mode / runs dom-distiller")
     .option("-B, --bypass", "bypasses paywalls on digital publications (experimental feature)")
+    .option("-H, --http-header [name:value]", "add custom HTTP header to requests (can be repeated)", addHeader, [])
     .option("--proxy <url>", "use proxy to load remote HTML")
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
@@ -107,8 +113,9 @@ if (process.platform === "linux") {
     };
 }
 
+var pragmaHeader = athena.cache ? "" : "pragma: no-cache\n";
 const loadOpts = {
-    "extraHeaders": athena.cache ? "" : "pragma: no-cache\n"
+    "extraHeaders": pragmaHeader + athena.httpHeader.join("\n")
 };
 
 // Enum for Electron's marginType codes
