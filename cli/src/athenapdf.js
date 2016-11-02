@@ -84,7 +84,9 @@ if (!athena.debug) {
 }
 
 if (athena.proxy) {
-    console.info("Using proxy: ", athena.proxy);
+    if (!athena.stdout) {
+        console.info("Using proxy: ", athena.proxy);
+    }
     app.commandLine.appendSwitch("proxy-server", athena.proxy);
 }
 
@@ -127,7 +129,9 @@ const pdfOpts = {
 
 // Utils
 const _complete = () => {
-    console.timeEnd("PDF Conversion");
+    if (!athena.stdout) {
+        console.timeEnd("PDF Conversion");
+    }
     athena.debug || app.quit();
 };
 
@@ -145,8 +149,9 @@ const _output = (data) => {
 };
 
 app.on("ready", () => {
-    console.time("PDF Conversion");
-
+    if (!athena.stdout) {
+        console.time("PDF Conversion");
+    }
     bw = new BrowserWindow(bwOpts);
 
     bw.on("closed", () => {
