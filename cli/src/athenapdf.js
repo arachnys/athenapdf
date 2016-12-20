@@ -38,6 +38,7 @@ athena
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
     .option("--no-cache", "disables caching")
+    .option("--ignore-certificate-errors", "ignores certificate errors")
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -88,6 +89,10 @@ if (athena.proxy) {
         console.info("Using proxy: ", athena.proxy);
     }
     app.commandLine.appendSwitch("proxy-server", athena.proxy);
+}
+
+if (athena.ignoreCertificateErrors) {
+  app.commandLine.appendSwitch("ignore-certificate-errors");
 }
 
 // Preferences
