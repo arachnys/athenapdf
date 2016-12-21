@@ -92,7 +92,7 @@ if (athena.proxy) {
 }
 
 if (athena.ignoreCertificateErrors) {
-  app.commandLine.appendSwitch("ignore-certificate-errors");
+    app.commandLine.appendSwitch("ignore-certificate-errors");
 }
 
 // Preferences
