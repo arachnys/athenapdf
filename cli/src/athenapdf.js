@@ -38,6 +38,7 @@ athena
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
     .option("--no-cache", "disables caching")
+    .option("--no-javasript", "disable JavaScript support")
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -96,7 +97,8 @@ var bwOpts = {
     webPreferences: {
         nodeIntegration: false,
         webSecurity: false,
-        zoomFactor: (athena.zoom || 1)
+        zoomFactor: (athena.zoom || 1),
+        javascript: athena.javascript
     }
 };
 
