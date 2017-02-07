@@ -22,6 +22,8 @@ if (!process.defaultApp) {
     process.argv.unshift("--");
 }
 
+app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true');
+
 athena
     .version("2.8.0")
     .description("convert HTML to PDF via stdin or a local / remote URI")
@@ -60,7 +62,7 @@ if (uriArg === "-") {
     let base64Html = new Buffer(rw.readFileSync("/dev/stdin", "utf8"), "utf8").toString("base64");
     uriArg = "data:text/html;base64," + base64Html;
 // Handle local paths
-} else if (uriArg.toLowerCase().indexOf("http") !== 0) {
+} else if (uriArg.toLowerCase().startsWith("http") || uriArg.toLowerCase().startsWith("chrome://")) {
     uriArg = url.format({
         protocol: "file",
         pathname: path.resolve(uriArg),
