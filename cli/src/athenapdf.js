@@ -39,6 +39,7 @@ athena
     .option("--no-background", "omit CSS backgrounds")
     .option("--no-cache", "disables caching")
     .option("--ignore-certificate-errors", "ignores certificate errors")
+    .option("--ignore-gpu-blacklist", "Enables GPU in Docker environment")
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -61,7 +62,7 @@ if (uriArg === "-") {
     let base64Html = new Buffer(rw.readFileSync("/dev/stdin", "utf8"), "utf8").toString("base64");
     uriArg = "data:text/html;base64," + base64Html;
 // Handle local paths
-} else if (uriArg.toLowerCase().indexOf("http") !== 0) {
+} else if (!uriArg.toLowerCase().startsWith("http") && !uriArg.toLowerCase().startsWith("chrome://")) {
     uriArg = url.format({
         protocol: "file",
         pathname: path.resolve(uriArg),
@@ -94,6 +95,9 @@ if (athena.proxy) {
 if (athena.ignoreCertificateErrors) {
     app.commandLine.appendSwitch("ignore-certificate-errors");
 }
+
+app.commandLine.appendSwitch('ignore-gpu-blacklist', athena.ignoreGpuBlacklist || "false");
+
 
 // Preferences
 var bwOpts = {
