@@ -22,8 +22,6 @@ if (!process.defaultApp) {
     process.argv.unshift("--");
 }
 
-app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true');
-
 athena
     .version("2.8.0")
     .description("convert HTML to PDF via stdin or a local / remote URI")
@@ -40,6 +38,7 @@ athena
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
     .option("--no-cache", "disables caching")
+    .option("--ignore-gpu-blacklist", "Enables GPU in Docker environment")
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -91,6 +90,8 @@ if (athena.proxy) {
     }
     app.commandLine.appendSwitch("proxy-server", athena.proxy);
 }
+
+app.commandLine.appendSwitch('ignore-gpu-blacklist', athena.ignoreGpuBlacklist || "false");
 
 // Preferences
 var bwOpts = {
