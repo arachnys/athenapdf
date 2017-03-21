@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/arachnys/athenapdf.svg?branch=master)](https://travis-ci.org/arachnys/athenapdf)
 [![License](http://img.shields.io/badge/license-MIT-orange.svg?style=flat)](http://opensource.org/licenses/MIT)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/208/badge)](https://bestpractices.coreinfrastructure.org/projects/208)
+[![Gitter chat](https://badges.gitter.im/arachnys/athenapdf.png)](https://gitter.im/arachnys/athenapdf)
 
 [**Live Demo / Screenshots**][athenapdf]
 
