@@ -22,10 +22,9 @@ if (!process.defaultApp) {
     process.argv.unshift("--");
 }
 
-const headersDict = (keyVal, dict) => {
-    const [key, ...values] = keyVal.split(":");
-    dict[key] = values.join(":");
-    return dict;
+const headersDict = (header, arr) => {
+    arr.push(header);
+    return arr;
 }
 
 athena
@@ -40,7 +39,7 @@ athena
     .option("-S, --stdout", "write conversion to stdout")
     .option("-A, --aggressive", "aggressive mode / runs dom-distiller")
     .option("-B, --bypass", "bypasses paywalls on digital publications (experimental feature)")
-    .option("-H, --http-header <key:value>", "add custom headers to request", headersDict, {})
+    .option("-H, --http-header <key:value>", "add custom headers to request", headersDict, [])
     .option("--proxy <url>", "use proxy to load remote HTML")
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
@@ -124,8 +123,9 @@ if (process.platform === "linux") {
     };
 }
 
+// Toggle cache headers and add custom headers is specified
 const loadOpts = {
-    "extraHeaders": athena.cache ? "" : "pragma: no-cache\n"
+    "extraHeaders": (athena.cache ? "" : "pragma: no-cache\n") + athena.httpHeader.join("\n")
 };
 
 // Enum for Electron's marginType codes
@@ -177,14 +177,6 @@ app.on("ready", () => {
     bw.loadURL(uriArg, loadOpts);
 
     ses = bw.webContents.session;
-
-    // When the --http-header is set, add request headers
-    if (Object.keys(athena.httpHeader).length) {
-        ses.webRequest.onBeforeSendHeaders((details, callback) => {
-            callback({cancel: false, requestHeaders: athena.httpHeader});
-        });
-    }
-
     if (athena.bypass) {
         const _cookieWhitelist = ["nytimes", "ft.com"];
         const _inCookieWhitelist = (url) => {
