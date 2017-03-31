@@ -22,9 +22,10 @@ if (!process.defaultApp) {
     process.argv.unshift("--");
 }
 
-function collect(val, memo){
-    memo.push(val);
-    return memo;
+const headersDict = (keyVal, dict) => {
+    const [key, ...values] = keyVal.split(":");
+    dict[key] = values.join(":");
+    return dict;
 }
 
 athena
@@ -39,7 +40,7 @@ athena
     .option("-S, --stdout", "write conversion to stdout")
     .option("-A, --aggressive", "aggressive mode / runs dom-distiller")
     .option("-B, --bypass", "bypasses paywalls on digital publications (experimental feature)")
-    .option("-R, --request-header <key-value pair>", "Request header to send in the format 'key=value'. Both 'key' and 'value' are expected to be urlencoded", collect, [])
+    .option("-H, --http-header <key:value>", "add custom headers to request", headersDict, {})
     .option("--proxy <url>", "use proxy to load remote HTML")
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
@@ -177,20 +178,10 @@ app.on("ready", () => {
 
     ses = bw.webContents.session;
 
-    // When the --request-header is set, add request headers
-    if (athena.requestHeader && athena.requestHeader !== []) {
-        var headers = athena.requestHeader.reduce((arr, val) => {
-            var hold = val.split("=");
-
-            if (hold.length === 2) {
-                arr[hold[0]] = hold[1];
-            }
-
-            return arr;
-
-        }, {});
+    // When the --http-header is set, add request headers
+    if (Object.keys(athena.httpHeader).length) {
         ses.webRequest.onBeforeSendHeaders((details, callback) => {
-            callback({cancel: false, requestHeaders: headers});
+            callback({cancel: false, requestHeaders: athena.httpHeader});
         });
     }
 
