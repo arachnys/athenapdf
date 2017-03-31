@@ -22,6 +22,11 @@ if (!process.defaultApp) {
     process.argv.unshift("--");
 }
 
+function collect(val, memo){
+    memo.push(val);
+    return memo;
+}
+
 athena
     .version("2.9.0")
     .description("convert HTML to PDF via stdin or a local / remote URI")
@@ -34,6 +39,7 @@ athena
     .option("-S, --stdout", "write conversion to stdout")
     .option("-A, --aggressive", "aggressive mode / runs dom-distiller")
     .option("-B, --bypass", "bypasses paywalls on digital publications (experimental feature)")
+    .option("-R, --request-header <key-value pair>", "Request header to send in the format 'key=value'. Both 'key' and 'value' are expected to be urlencoded", collect, [])
     .option("--proxy <url>", "use proxy to load remote HTML")
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
@@ -97,7 +103,6 @@ if (athena.ignoreCertificateErrors) {
 }
 
 app.commandLine.appendSwitch('ignore-gpu-blacklist', athena.ignoreGpuBlacklist || "false");
-
 
 // Preferences
 var bwOpts = {
@@ -171,6 +176,24 @@ app.on("ready", () => {
     bw.loadURL(uriArg, loadOpts);
 
     ses = bw.webContents.session;
+
+    // When the --request-header is set, add request headers
+    if (athena.requestHeader && athena.requestHeader !== []) {
+        var headers = athena.requestHeader.reduce((arr, val) => {
+            var hold = val.split("=");
+
+            if (hold.length === 2) {
+                arr[hold[0]] = hold[1];
+            }
+
+            return arr;
+
+        }, {});
+        ses.webRequest.onBeforeSendHeaders((details, callback) => {
+            callback({cancel: false, requestHeaders: headers});
+        });
+    }
+
     if (athena.bypass) {
         const _cookieWhitelist = ["nytimes", "ft.com"];
         const _inCookieWhitelist = (url) => {
