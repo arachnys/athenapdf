@@ -17,6 +17,7 @@ type AWSS3 struct {
 	AccessSecret string
 	S3Bucket     string
 	S3Key        string
+	S3Acl        string
 }
 
 type UploadConversion struct {
@@ -28,27 +29,37 @@ func uploadToS3(awsConf AWSS3, b []byte) error {
 	log.Printf("[Converter] uploading conversion to S3 bucket '%s' with key '%s'\n", awsConf.S3Bucket, awsConf.S3Key)
 	st := time.Now()
 
-	creds := credentials.NewStaticCredentials(awsConf.AccessKey, awsConf.AccessSecret, "")
-
-	// Credential 'Value'
-	_, err := creds.Get()
-	if err != nil {
-		return err
-	}
-
 	region := "us-east-1"
 	if awsConf.Region != "" {
 		region = awsConf.Region
 	}
 
-	conf := aws.NewConfig().WithCredentials(creds).WithRegion(region).WithMaxRetries(3)
+	acl := "public-read"
+	if awsConf.S3Acl != "" {
+		acl = awsConf.S3Acl
+	}
+
+	conf := aws.NewConfig().WithRegion(region).WithMaxRetries(3)
+
+	if awsConf.AccessKey != "" && awsConf.AccessSecret != "" {
+		creds := credentials.NewStaticCredentials(awsConf.AccessKey, awsConf.AccessSecret, "")
+
+		// Credential 'Value'
+		_, err := creds.Get()
+		if err != nil {
+			return err
+		}
+
+		conf = conf.WithCredentials(creds)
+	}
+
 	sess := session.New(conf)
 	svc := s3.New(sess)
 
 	p := &s3.PutObjectInput{
 		Bucket:      aws.String(awsConf.S3Bucket),
 		Key:         aws.String(awsConf.S3Key),
-		ACL:         aws.String("public-read"),
+		ACL:         aws.String(acl),
 		ContentType: aws.String("application/pdf"),
 		Body:        bytes.NewReader(b),
 	}
