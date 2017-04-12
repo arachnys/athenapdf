@@ -22,7 +22,7 @@ if (!process.defaultApp) {
     process.argv.unshift("--");
 }
 
-const headersDict = (header, arr) => {
+const addHeader = (header, arr) => {
     arr.push(header);
     return arr;
 }
@@ -39,7 +39,7 @@ athena
     .option("-S, --stdout", "write conversion to stdout")
     .option("-A, --aggressive", "aggressive mode / runs dom-distiller")
     .option("-B, --bypass", "bypasses paywalls on digital publications (experimental feature)")
-    .option("-H, --http-header <key:value>", "add custom headers to request", headersDict, [])
+    .option("-H, --http-header <key:value>", "add custom headers to request", addHeader, [])
     .option("--proxy <url>", "use proxy to load remote HTML")
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
@@ -123,9 +123,15 @@ if (process.platform === "linux") {
     };
 }
 
-// Toggle cache headers and add custom headers is specified
+// Add custom headers if specified
+var extraHeaders = athena.httpHeader;
+
+// Toggle cache headers
+if (athena.cache) {
+    extraHeaders.push("pragma: no-cache");
+}
 const loadOpts = {
-    "extraHeaders": (athena.cache ? "" : "pragma: no-cache\n") + athena.httpHeader.join("\n")
+    "extraHeaders": extraHeaders.join("\n");
 };
 
 // Enum for Electron's marginType codes
