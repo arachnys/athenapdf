@@ -131,7 +131,7 @@ if (athena.cache) {
     extraHeaders.push("pragma: no-cache");
 }
 const loadOpts = {
-    "extraHeaders": extraHeaders.join("\n");
+    "extraHeaders": extraHeaders.join("\n")
 };
 
 // Enum for Electron's marginType codes
