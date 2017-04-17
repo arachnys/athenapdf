@@ -38,6 +38,7 @@ athena
     .option("--no-portrait", "render in landscape")
     .option("--no-background", "omit CSS backgrounds")
     .option("--no-cache", "disables caching")
+    .option("--no-javascript", "disable JavaScript support")
     .option("--ignore-certificate-errors", "ignores certificate errors")
     .option("--ignore-gpu-blacklist", "Enables GPU in Docker environment")
     .arguments("<URI> [output]")
@@ -105,7 +106,8 @@ var bwOpts = {
     webPreferences: {
         nodeIntegration: false,
         webSecurity: false,
-        zoomFactor: (athena.zoom || 1)
+        zoomFactor: (athena.zoom || 1),
+        javascript: athena.javascript
     }
 };
 
