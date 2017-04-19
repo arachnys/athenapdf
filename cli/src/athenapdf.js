@@ -127,7 +127,7 @@ if (process.platform === "linux") {
 var extraHeaders = athena.httpHeader;
 
 // Toggle cache headers
-if (athena.cache) {
+if (!athena.cache) {
     extraHeaders.push("pragma: no-cache");
 }
 const loadOpts = {
