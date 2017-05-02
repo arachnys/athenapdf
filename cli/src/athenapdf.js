@@ -33,6 +33,7 @@ athena
     .option("--debug", "show GUI", false)
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
     .option("-D, --delay <milliseconds>", "milliseconds delay before saving (default: 200)", parseInt)
+    .option("-E, --executejs [jsPluginPath]", "execute JS plugin before saving (default: \"./plugin_js_loader.js\")")
     .option("-P, --pagesize <size>", "page size of the generated PDF (default: A4)", /^(A3|A4|A5|Legal|Letter|Tabloid)$/i, "A4")
     .option("-M, --margins <marginsType>", "margins to use when generating the PDF (default: standard)", /^(standard|none|minimal)$/i, "standard")
     .option("-Z --zoom <factor>", "zoom factor for higher scale rendering (default: 1 - represents 100%)", parseInt)
@@ -169,6 +170,15 @@ const _output = (data) => {
     }
 };
 
+const _renderPDF = () => {
+    setTimeout(() => {
+        bw.webContents.printToPDF(pdfOpts, (err, data) => {
+            if (err) console.error(err);
+            _output(data);
+        });
+    }, (athena.delay || 200));
+};
+
 app.on("ready", () => {
     if (!athena.stdout) {
         console.time("PDF Conversion");
@@ -240,12 +250,21 @@ app.on("ready", () => {
     bw.webContents.executeJavaScript(plugins);
 
     bw.webContents.on("did-finish-load", () => {
-        setTimeout(() => {
-            bw.webContents.printToPDF(pdfOpts, (err, data) => {
-                if (err) console.error(err);
-                _output(data);
+        if (athena.executejs) {
+            // JS loader specific option/plugin
+            const jsPluginPath = typeof athena.executejs === "string" ? athena.executejs : path.join(__dirname, "./plugin_js_loader.js")
+            console.info(`Executing JavaScript plugin ${jsPluginPath}`)
+            const jsLoaderPlugin = fs.readFileSync(jsPluginPath, "utf8")
+            bw.webContents.executeJavaScript(jsLoaderPlugin, true).then(success => {
+                _renderPDF();
+            }).catch(error => {
+                console.error(`Error in executing JavaScript plugin.`);
+                console.error(error);
+                app.exit(1);
             });
-        }, (athena.delay || 200));
+        } else {
+            _renderPDF();
+        }
     });
 });
 
