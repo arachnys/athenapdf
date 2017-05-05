@@ -1,0 +1,19 @@
+machine:
+  services:
+    - docker
+test:
+  override:
+    - make testservice
+    - make build
+    - make testcli  
+deployment:
+  dockerhub:
+    branch: master 
+    commands:
+      - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD -e $DOCKERHUB_EMAIL
+      - ./bin/docker-push-remote.sh
+  adhoc:
+    tag: /deploy-.*/
+    commands:
+      - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD -e $DOCKERHUB_EMAIL
+      - ./bin/docker-push-remote.sh
