@@ -70,6 +70,18 @@ The `[output_path]` can be omitted.
 
 Example: `docker run --rm -v $(pwd):/converted/ arachnysdocker/athenapdf athenapdf http://blog.arachnys.com/`
 
+**For Windows users**, an additional forward slash must precede the volume when using Git Bash / MinGW:
+
+```bash
+docker run --rm -v /$(pwd):/converted/ arachnysdocker/athenapdf athenapdf http://blog.arachnys.com/
+```
+
+Alternatively, if using the Windows command prompt:
+
+```cmd
+docker run --rm -v %cd%:/converted/ arachnysdocker/athenapdf athenapdf http://blog.arachnys.com/
+```
+
 #### Microservice
 
 [![asciicast](https://asciinema.org/a/41247.png)](https://asciinema.org/a/41247)

@@ -30,6 +30,20 @@ The `<input_path>` can either be a local HTML file or a URL to a web page.
 
 Due to a recent change in [Docker v1.10.0][1.10.0], you will have to add `--security-opt seccomp:unconfined` after `docker run` to suppress the `libudev: udev_has_devtmpfs: name_to_handle_at on /dev: Operation not permitted` error which may prevent you from successfully generating a PDF.
 
+#### Windows Usage
+
+For Windows users, binding a volume with the preceding command may cause an error when using Git Bash / MinGW. In that case, adding an additional forward slash before the volume will remove the error:
+
+```bash
+docker run --rm -v /$(pwd):/converted/ arachnysdocker/athenapdf athenapdf <input_path> [output_path]
+```
+
+Alternatively, if using the Windows command prompt, `$(pwd)` must be replaced by `%cd%`:
+
+```cmd
+docker run --rm -v %cd%:/converted/ arachnysdocker/athenapdf athenapdf <input_path> [output_path]
+```
+
 ### Examples
 
 #### Local file
