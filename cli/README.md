@@ -30,6 +30,9 @@ It can be used anywhere with [Docker][docker] installed, even in a headless envi
 - Automatically falls back to `screen` stylesheets if no `print` stylesheet is defined
 - [Aggressive mode](docs/aggressive.md): declutter web pages, and improves readability
 - Bypass paywalls for most digital publications with a single `-B` flag (experimental feature)
+- Execute JavaScript:
+    - Optionally poll/delay render until global var `window.ATHENA_PDF_READY` is present with `--executejs` flag
+    - Alternative provide js plugin `--executejs [absolutePathToJsPlugin]` (see cli/src/plugin_js_loader.js for boilerplate)
 - Dockerized:
     - Easy to set up, distribute, and run
     - Runs in [headless] mode (the [display server][xvfb] is handled for you)
