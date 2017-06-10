@@ -1,7 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
+	"log"
+	"net/http"
+	"os"
+	"runtime"
+
 	"github.com/arachnys/athenapdf/weaver/converter"
 	"github.com/arachnys/athenapdf/weaver/converter/athenapdf"
 	"github.com/arachnys/athenapdf/weaver/converter/cloudconvert"
@@ -9,10 +15,6 @@ import (
 	"github.com/getsentry/raven-go"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/alexcesaro/statsd.v2"
-	"log"
-	"net/http"
-	"os"
-	"runtime"
 )
 
 var (
@@ -20,6 +22,8 @@ var (
 	ErrURLInvalid = errors.New("invalid URL provided")
 	// ErrFileInvalid should be returned when a conversion file is invalid.
 	ErrFileInvalid = errors.New("invalid file provided")
+	// ErrRuntimeOptionsInvalid should be returned when a parsing/validating runtime options fail.
+	ErrRuntimeOptionsInvalid = errors.New("invalid runtime options provided")
 )
 
 // indexHandler returns a JSON string indicating that the microservice is online.
@@ -40,13 +44,11 @@ func statsHandler(c *gin.Context) {
 	})
 }
 
-func conversionHandler(c *gin.Context, source converter.ConversionSource) {
+func conversionHandler(c *gin.Context, source converter.ConversionSource, runtimeOptions *RuntimeOptions) {
 	// GC if converting temporary file
 	if source.IsLocal {
 		defer os.Remove(source.URI)
 	}
-
-	_, aggressive := c.GetQuery("aggressive")
 
 	conf := c.MustGet("config").(Config)
 	wq := c.MustGet("queue").(chan<- converter.Work)
@@ -71,7 +73,11 @@ func conversionHandler(c *gin.Context, source converter.ConversionSource) {
 	uploadConversion := converter.UploadConversion{baseConversion, awsConf}
 
 StartConversion:
-	conversion = athenapdf.AthenaPDF{uploadConversion, conf.AthenaCMD, aggressive}
+	var options []string
+	if runtimeOptions != nil {
+		options = runtimeOptions.BuildCommand()
+	}
+	conversion = athenapdf.AthenaPDF{uploadConversion, conf.AthenaCMD, options}
 	if attempts != 0 {
 		cc := cloudconvert.Client{conf.CloudConvert.APIUrl, conf.CloudConvert.APIKey}
 		conversion = cloudconvert.CloudConvert{uploadConversion, cc}
@@ -152,12 +158,35 @@ func convertByURLHandler(c *gin.Context) {
 		return
 	}
 
-	conversionHandler(c, *source)
+	// TODO: add support here as well
+	var runtimeOptions *RuntimeOptions
+
+	conversionHandler(c, *source, runtimeOptions)
 }
 
 func convertByFileHandler(c *gin.Context) {
 	s := c.MustGet("statsd").(*statsd.Client)
 	r, ravenOk := c.Get("sentry")
+
+	var runtimeOptions *RuntimeOptions
+	configValue := c.Request.FormValue("config")
+	if len(configValue) > 0 {
+		runtimeOptions = &RuntimeOptions{}
+		err := json.Unmarshal([]byte(configValue), runtimeOptions)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, ErrRuntimeOptionsInvalid).SetType(gin.ErrorTypePublic)
+			s.Increment("invalid_runtime_options")
+			return
+		}
+		err = runtimeOptions.Validate()
+		if err != nil {
+			if err != nil {
+				c.AbortWithError(http.StatusBadRequest, err).SetType(gin.ErrorTypePublic)
+				s.Increment("invalid_runtime_options")
+				return
+			}
+		}
+	}
 
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
@@ -178,5 +207,5 @@ func convertByFileHandler(c *gin.Context) {
 		return
 	}
 
-	conversionHandler(c, *source)
+	conversionHandler(c, *source, runtimeOptions)
 }

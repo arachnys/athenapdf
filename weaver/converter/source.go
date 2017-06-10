@@ -50,7 +50,7 @@ func readerContentType(r io.Reader) (string, error) {
 // It returns the full temporary file path, and its mime type if successful.
 func readerTmpFile(r io.Reader) (string, string, error) {
 	// Create a temporary file
-	f, err := ioutil.TempFile("/tmp", "tmp")
+	f, err := ioutil.TempFile(os.TempDir(), "tmp")
 	if err != nil {
 		return "", "", err
 	}
