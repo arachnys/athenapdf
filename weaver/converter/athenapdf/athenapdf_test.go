@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"testing"
+	"os"
 )
 
 func TestConstructCMD(t *testing.T) {
@@ -47,7 +48,7 @@ func TestConvert(t *testing.T) {
 }
 
 func TestConvert_local(t *testing.T) {
-	f, err := ioutil.TempFile("/tmp", "tmp")
+	f, err := ioutil.TempFile(os.TempDir(), "tmp")
 	if err != nil {
 		t.Fatalf("unable to create temporary file for testing: %+v", err)
 	}

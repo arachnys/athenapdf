@@ -1,10 +1,11 @@
 package athenapdf
 
 import (
-	"github.com/arachnys/athenapdf/weaver/converter"
-	"github.com/arachnys/athenapdf/weaver/gcmd"
 	"log"
 	"strings"
+
+	"github.com/arachnys/athenapdf/weaver/converter"
+	"github.com/arachnys/athenapdf/weaver/gcmd"
 )
 
 // AthenaPDF represents a conversion job for athenapdf CLI.
@@ -18,10 +19,8 @@ type AthenaPDF struct {
 	// CMD is the base athenapdf CLI command that will be executed.
 	// e.g. 'athenapdf -S -T 120'
 	CMD string
-	// Aggressive will alter the athenapdf CLI conversion behaviour by passing
-	// an '-A' command-line flag to indicate aggressive content extraction
-	// (ideal for a clutter-free reading experience).
-	Aggressive bool
+	// Optional runtime paramters as defined here: https://github.com/arachnys/athenapdf/blob/master/cli/src/athenapdf.js
+	Options []string
 }
 
 // constructCMD returns a string array containing the AthenaPDF command to be
@@ -29,12 +28,12 @@ type AthenaPDF struct {
 // string.
 // It will set an additional '-A' flag if aggressive is set to true.
 // See athenapdf CLI for more information regarding the aggressive mode.
-func constructCMD(base string, path string, aggressive bool) []string {
+func constructCMD(base string, path string, options []string) []string {
 	args := strings.Fields(base)
-	args = append(args, path)
-	if aggressive {
-		args = append(args, "-A")
+	if len(options) > 0 {
+		args = append(args, options...)
 	}
+	args = append(args, path)
 	return args
 }
 
@@ -45,7 +44,7 @@ func (c AthenaPDF) Convert(s converter.ConversionSource, done <-chan struct{}) (
 	log.Printf("[AthenaPDF] converting to PDF: %s\n", s.GetActualURI())
 
 	// Construct the command to execute
-	cmd := constructCMD(c.CMD, s.URI, c.Aggressive)
+	cmd := constructCMD(c.CMD, s.URI, c.Options)
 	out, err := gcmd.Execute(cmd, done)
 	if err != nil {
 		return nil, err

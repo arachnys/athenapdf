@@ -61,7 +61,7 @@ func expectRemoteConversion(t *testing.T, s *ConversionSource, uri string, mime 
 }
 
 func setMockURI(t *testing.T, s *ConversionSource) {
-	mockFile, err := ioutil.TempFile("/tmp", "tmp")
+	mockFile, err := ioutil.TempFile(os.TempDir(), "tmp")
 	if err != nil {
 		t.Fatalf("unable to create temporary mock file: %+v", err)
 	}
@@ -210,7 +210,7 @@ func TestSetCustomExtension(t *testing.T) {
 
 func TestSetCustomExtension_error(t *testing.T) {
 	s := new(ConversionSource)
-	s.URI = "/tmp/doesnotexist"
+	s.URI = os.TempDir() + "/doesnotexist"
 	s.IsLocal = true
 
 	err := setCustomExtension(s, "mhtml")
