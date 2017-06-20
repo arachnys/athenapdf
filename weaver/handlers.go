@@ -61,6 +61,7 @@ func conversionHandler(c *gin.Context, source converter.ConversionSource) {
 		c.Query("aws_secret"),
 		c.Query("s3_bucket"),
 		c.Query("s3_key"),
+		c.Query("s3_acl"),
 	}
 
 	var conversion converter.Converter
