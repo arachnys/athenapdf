@@ -7,6 +7,7 @@ RUN apt-get -yq update && \
     apt-get -yq install \
         wget \
         xvfb \
+        libasound2 \
         libgconf-2-4 \
         libgtk2.0-0 \
         libnotify4 \
