@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"github.com/arachnys/athenapdf/weaver/converter"
+	"github.com/arachnys/athenapdf/cmd/server/converter"
 	"github.com/getsentry/raven-go"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/alexcesaro/statsd.v2"

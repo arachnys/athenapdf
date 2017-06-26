@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/arachnys/athenapdf/weaver/converter"
+	"github.com/arachnys/athenapdf/cmd/server/converter"
 	"github.com/satori/go.uuid"
 	"io"
 	"io/ioutil"

@@ -1,8 +1,8 @@
 package athenapdf
 
 import (
-	"github.com/arachnys/athenapdf/weaver/converter"
-	"github.com/arachnys/athenapdf/weaver/testutil"
+	"github.com/arachnys/athenapdf/cmd/server/converter"
+	"github.com/arachnys/athenapdf/cmd/server/testutil"
 	"io/ioutil"
 	"path/filepath"
 	"reflect"
