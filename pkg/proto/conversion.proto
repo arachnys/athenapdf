@@ -1,0 +1,33 @@
+syntax = "proto3";
+package proto;
+
+import "cookie.proto";
+import "header.proto";
+import "option.proto";
+
+message Conversion {
+    string uri = 1;
+    string mime_type = 2;
+
+    message Dimensions {
+        double margin_bottom = 1;
+        double margin_left = 2;
+        double margin_right = 3;
+        double margin_top = 4;
+        double page_height = 5;
+        double page_width = 6;
+
+        enum Orientation {
+            PORTRAIT = 0;
+            LANDSCAPE = 1;
+        }
+
+        Orientation orientation = 8;
+    }
+    Dimensions dimensions = 3;
+
+    map<string, Option> options = 4;
+
+    repeated Header headers = 16;
+    repeated Cookie cookies = 17;
+}
