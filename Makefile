@@ -1,56 +1,67 @@
-CLI_DIR ?= cli
-CLI_IMAGE ?= "arachnysdocker/athenapdf"
-CLI_DOCKER_ARTIFACT_DIR ?= "/athenapdf/build/"
+VERSION ?= `git rev-parse --short HEAD`
+CURRENT_DATE ?= `date -u +"%Y-%m-%dT%H:%M:%SZ"`
 
-SERVICE_DIR ?= weaver
-SERVICE_IMAGE ?= "arachnysdocker/athenapdf-service"
-SERVICE_DOCKER_ARTIFACT_FILE ?= "/go/src/github.com/arachnys/athenapdf/weaver"
+DOCKER_GO_PATH ?= "/go/src/github.com/arachnys/athenapdf"
+
+CLI_IMAGE_FILE ?= "./docker/Dockerfile.cli"
+CLI_IMAGE_NAME ?= "arachnysdocker/athenapdf"
+
+SERVICE_IMAGE_FILE ?= "./docker/Dockerfile.service"
+SERVICE_IMAGE_NAME ?= "arachnysdocker/athenapdf-service"
+
+DEV_IMAGE_FILE ?= "./docker/Dockerfile.dev"
+DEV_IMAGE_NAME ?= "arachnysdocker/athenapdf-dev"
 
 P="\\033[34m[+]\\033[0m"
 
 help:
 	@echo
-	@echo "  \033[34mbuildcli\033[0m – builds athenapdf (cli) docker image"
-	@echo "  \033[34mtestcli\033[0m – tests athenapdf (cli) standard streams"
-	@echo "  \033[34mbuildservice\033[0m – builds athenapdf-service docker image"
-	@echo "  \033[34mtestservice\033[0m – tests athenapdf-service Go source"
-	@echo "  \033[34mbuild\033[0m – builds both the cli, and service docker image"
+	@echo "  \033[34mbuild/dev\033[0m – builds dev docker image"
+	@echo "  \033[34mbuild/cli\033[0m – builds athenapdf (cli) docker image"
+	@echo "  \033[34mbuild/service\033[0m – builds weaver (service) docker image"
+	@echo "  \033[34mrun/dev\033[0m – runs dev docker image (with code)"
+	@echo "  \033[34mrun/dev\033[0m – runs athenapdf (cli) docker image"
 	@echo
 
-buildcli:
-	@echo "  $(P) buildcli"
-	@rm -rf $(CLI_DIR)/build/
-	@docker build --rm -t $(CLI_IMAGE)-build -f $(CLI_DIR)/Dockerfile.build $(CLI_DIR)/
-	@docker run -t $(CLI_IMAGE)-build /bin/true
-	@docker cp `docker ps -q -n=1`:$(CLI_DOCKER_ARTIFACT_DIR) $(CLI_DIR)/build/
-	@docker rm -f `docker ps -q -n=1`
-	@docker build --rm -t $(CLI_IMAGE) -f $(CLI_DIR)/Dockerfile $(CLI_DIR)/
-	@rm -rf $(CLI_DIR)/build/
+build/dev:
+	@echo "  $(P) build/dev"
+	@make file=${DEV_IMAGE_FILE} image=${DEV_IMAGE_NAME} tag=latest _build
 
-testcli:
-	@echo "  $(P) testcli"
-	@docker run --rm arachnysdocker/athenapdf athenapdf -S https://www.traviscistatus.com/ | grep -a "PDF-1.4"
-	@echo "<h1>stdin test</h1>" | docker run --rm -i arachnysdocker/athenapdf athenapdf -S - | grep -a "PDF-1.4"
+build/cli:
+	@echo "  $(P) build/cli"
+	@make build/dev
+	@make file=${CLI_IMAGE_FILE} image=${CLI_IMAGE_NAME} tag=latest _build
 
-buildservice:
-	@echo "  $(P) buildservice"
-	@rm -rf $(SERVICE_DIR)/build/
-	@docker build --rm -t $(SERVICE_IMAGE)-build -f $(SERVICE_DIR)/Dockerfile.build $(SERVICE_DIR)/
-	@docker run -t $(SERVICE_IMAGE)-build /bin/true
-	@docker cp `docker ps -q -n=1`:$(SERVICE_DOCKER_ARTIFACT_FILE) $(SERVICE_DIR)/build/
-	@docker rm -f `docker ps -q -n=1`
-	@chmod +x $(SERVICE_DIR)/build/weaver
-	@docker build --rm -t $(SERVICE_IMAGE) -f $(SERVICE_DIR)/Dockerfile $(SERVICE_DIR)/
-	@rm -rf $(SERVICE_DIR)/build/
+build/service:
+	@echo "  $(P) build/service"
+	@make build/cli
+	@make file=${SERVICE_IMAGE_FILE} image=${SERVICE_IMAGE_NAME} tag=latest _build
 
-testservice:
-	@echo "  $(P) testservice"
-	@docker build --rm -t $(SERVICE_IMAGE)-test -f $(SERVICE_DIR)/Dockerfile.build $(SERVICE_DIR)/
-	@docker run --rm -t $(SERVICE_IMAGE)-test go test ./...
+run/dev:
+	@echo "  $(P) run/dev"
+	docker run --rm -it \
+				-v `pwd`:${DOCKER_GO_PATH} \
+				${DEV_IMAGE_NAME}:latest \
+				${args}
 
-build:
-	@echo "  $(P) build"
-	@make buildcli
-	@make buildservice
+run/cli:
+	@echo "  $(P) run/cli"
+	docker run --rm \
+				--security-opt seccomp=unconfined \
+				-v `pwd`:/conversions/ \
+				${CLI_IMAGE_NAME}:latest \
+				${args}
 
-.PHONY: help buildcli testcli buildservice testservice build
+version:
+	@echo "${VERSION}"
+
+_build:
+	@echo "building: ${image}:${tag}"
+	@docker build --rm \
+				--build-arg BUILD_DATE=${CURRENT_DATE} \
+				--build-arg VCS_REF=${VERSION} \
+				-f ${file} \
+				-t ${image}:${tag} \
+				.
+
+.PHONY: help build/dev build/cli build/service run/dev run/cli version _build
