@@ -1,0 +1,7 @@
+FROM golang:1.8-alpine
+
+LABEL org.label-schema.vcs-url="https://www.github.com/arachnys/athenapdf" \
+      maintainer="Arachnys <techteam@arachnys.com>"
+
+RUN apk add --update bash git nano \
+    && go get github.com/tools/godep
