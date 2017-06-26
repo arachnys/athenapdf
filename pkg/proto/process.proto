@@ -1,0 +1,17 @@
+syntax = "proto3";
+package proto;
+
+import "conversion.proto";
+import "option.proto";
+
+message Process {
+    string converter = 1;
+    map<string, Option> converter_options = 2;
+    Conversion conversion = 3;
+
+    string uploader = 6;
+    map<string, Option> uploader_options = 7;
+
+    string fetcher = 11;
+    map<string, Option> fetcher_options = 12;
+}

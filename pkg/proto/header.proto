@@ -1,0 +1,7 @@
+syntax = "proto3";
+package proto;
+
+message Header {
+    string name = 1;
+    string value = 2;
+}
