@@ -1,0 +1,31 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Arachnys Blog</title>
+    <link>http://blog.arachnys.com</link>
+    <description />
+    <language>en-us</language>
+    <pubDate>Fri, 09 Jun 2017 12:28:05 GMT</pubDate>
+    <dc:date>2017-06-09T12:28:05Z</dc:date>
+    <dc:language>en-us</dc:language>
+    <item>
+      <title>How we solved load testing &amp; scalability issues with Kong</title>
+      <link>http://blog.arachnys.com/how-we-solved-load-testing-scalability-issues-with-kong</link>
+      <description>&lt;div class="hs-featured-image-wrapper"&gt; 
+ &lt;a href="http://blog.arachnys.com/how-we-solved-load-testing-scalability-issues-with-kong" title="" class="hs-featured-image-link"&gt; &lt;img src="http://blog.arachnys.com/hubfs/Break-hero-stairs-01.jpg?t=1497872970747" alt="How we solved load testing &amp;amp; scalability issues with Kong" class="hs-featured-image" style="width:auto !important; max-width:50%; float:left; margin:0 15px 15px 0;"&gt; &lt;/a&gt; 
+&lt;/div&gt;    
+&lt;p&gt;To ensure that our clients are not able to abuse our services and maintain visibility of usage, we needed a way of authenticating API requests whilst simultaneously incorporating throttling or rate limiting.&lt;/p&gt;</description>
+      <content:encoded>&lt;div class="hs-featured-image-wrapper"&gt; 
+ &lt;a href="http://blog.arachnys.com/how-we-solved-load-testing-scalability-issues-with-kong" title="" class="hs-featured-image-link"&gt; &lt;img src="http://blog.arachnys.com/hubfs/Break-hero-stairs-01.jpg?t=1497872970747" alt="How we solved load testing &amp;amp; scalability issues with Kong" class="hs-featured-image" style="width:auto !important; max-width:50%; float:left; margin:0 15px 15px 0;"&gt; &lt;/a&gt; 
+&lt;/div&gt;    
+&lt;p&gt;To ensure that our clients are not able to abuse our services and maintain visibility of usage, we needed a way of authenticating API requests whilst simultaneously incorporating throttling or rate limiting.&lt;/p&gt;    
+&lt;img src="http://track.hubspot.com/__ptq.gif?a=489197&amp;amp;k=14&amp;amp;r=http%3A%2F%2Fblog.arachnys.com%2Fhow-we-solved-load-testing-scalability-issues-with-kong&amp;amp;bu=http%253A%252F%252Fblog.arachnys.com&amp;amp;bvt=rss" alt="" width="1" height="1" style="min-height:1px!important;width:1px!important;border-width:0!important;margin-top:0!important;margin-bottom:0!important;margin-right:0!important;margin-left:0!important;padding-top:0!important;padding-bottom:0!important;padding-right:0!important;padding-left:0!important; "&gt;</content:encoded>
+      <category>/ Product</category>
+      <pubDate>Thu, 08 Jun 2017 12:11:14 GMT</pubDate>
+      <author>paul@arachnys.com (Paul May)</author>
+      <guid>http://blog.arachnys.com/how-we-solved-load-testing-scalability-issues-with-kong</guid>
+      <dc:date>2017-06-08T12:11:14Z</dc:date>
+    </item>
+  </channel>
+</rss>
