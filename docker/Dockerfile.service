@@ -1,0 +1,37 @@
+FROM arachnysdocker/athenapdf-dev as build
+
+COPY . /go/src/github.com/arachnys/athenapdf/
+RUN cd /go/src/github.com/arachnys/athenapdf/ \
+    && CGO_ENABLED=0 go build -ldflags "-s" -a -installsuffix cgo -o build/athenapdf-service github.com/arachnys/athenapdf/cmd/service \
+    && chmod +x build/athenapdf-service
+
+
+FROM arachnysdocker/athenapdf
+
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://www.github.com/arachnys/athenapdf" \
+      maintainer="Arachnys <techteam@arachnys.com>"
+
+ENV GIN_MODE release
+
+ARG TINI_VERSION=v0.14.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc /tini.asc
+RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 \
+    && gpg --verify /tini.asc \
+    && chmod +x /tini
+
+COPY --from=build /go/src/github.com/arachnys/athenapdf/build/athenapdf-service /athenapdf/
+
+COPY ./cmd/service/conf/ /athenapdf/conf/
+
+EXPOSE 8080
+
+WORKDIR /athenapdf/
+
+CMD ["/tini", "--", "athenapdf-service"]
+
+ENTRYPOINT ["/athenapdf/conf/entrypoint.sh"]
