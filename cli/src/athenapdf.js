@@ -46,6 +46,7 @@ athena
     .option("--no-cache", "disables caching")
     .option("--ignore-certificate-errors", "ignores certificate errors")
     .option("--ignore-gpu-blacklist", "Enables GPU in Docker environment")
+    .option("--disable-js", "Disables JavaScript", false)
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -113,6 +114,9 @@ var bwOpts = {
         zoomFactor: (athena.zoom || 1)
     }
 };
+if (athena.disableJs) {
+    bwOpts.webPreferences["javascript"] = false;
+}
 
 if (process.platform === "linux") {
     bwOpts["webPreferences"]["defaultFontFamily"] = {
