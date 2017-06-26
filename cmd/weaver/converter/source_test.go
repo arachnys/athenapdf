@@ -2,7 +2,7 @@ package converter
 
 import (
 	"bytes"
-	"github.com/arachnys/athenapdf/weaver/testutil"
+	"github.com/arachnys/athenapdf/cmd/server/testutil"
 	"io/ioutil"
 	"net/url"
 	"os"

@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/DeanThompson/ginpprof"
-	"github.com/arachnys/athenapdf/weaver/converter"
+	"github.com/arachnys/athenapdf/cmd/server/converter"
 	"github.com/getsentry/raven-go"
 	"github.com/gin-gonic/contrib/sentry"
 	"github.com/gin-gonic/gin"

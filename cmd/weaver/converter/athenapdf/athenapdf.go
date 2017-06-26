@@ -1,8 +1,8 @@
 package athenapdf
 
 import (
-	"github.com/arachnys/athenapdf/weaver/converter"
-	"github.com/arachnys/athenapdf/weaver/gcmd"
+	"github.com/arachnys/athenapdf/cmd/server/converter"
+	"github.com/arachnys/athenapdf/cmd/server/gcmd"
 	"log"
 	"strings"
 )
@@ -31,10 +31,10 @@ type AthenaPDF struct {
 // See athenapdf CLI for more information regarding the aggressive mode.
 func constructCMD(base string, path string, aggressive bool) []string {
 	args := strings.Fields(base)
-	args = append(args, path)
 	if aggressive {
-		args = append(args, "-A")
+		args = append(args, "--js-plugin=domdistiller")
 	}
+	args = append(args, []string{"--", path, "-"}...)
 	return args
 }
 
@@ -46,6 +46,7 @@ func (c AthenaPDF) Convert(s converter.ConversionSource, done <-chan struct{}) (
 
 	// Construct the command to execute
 	cmd := constructCMD(c.CMD, s.URI, c.Aggressive)
+
 	out, err := gcmd.Execute(cmd, done)
 	if err != nil {
 		return nil, err

@@ -77,7 +77,7 @@ func NewEnvConfig() Config {
 		CloudConvert:       cloudconvert,
 		HTTPAddr:           ":8080",
 		AuthKey:            "arachnys-weaver",
-		AthenaCMD:          "athenapdf -S",
+		AthenaCMD:          "athenapdf --js-plugin=no-css-media",
 		MaxWorkers:         10,
 		MaxConversionQueue: 50,
 		WorkerTimeout:      90,

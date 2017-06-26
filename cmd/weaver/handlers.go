@@ -2,9 +2,9 @@ package main
 
 import (
 	"errors"
-	"github.com/arachnys/athenapdf/weaver/converter"
-	"github.com/arachnys/athenapdf/weaver/converter/athenapdf"
-	"github.com/arachnys/athenapdf/weaver/converter/cloudconvert"
+	"github.com/arachnys/athenapdf/cmd/server/converter"
+	"github.com/arachnys/athenapdf/cmd/server/converter/athenapdf"
+	"github.com/arachnys/athenapdf/cmd/server/converter/cloudconvert"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/getsentry/raven-go"
 	"github.com/gin-gonic/gin"
