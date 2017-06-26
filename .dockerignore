@@ -1,0 +1,11 @@
+**/*.env
+**/*.log
+**/*.md
+**/*.yml
+**/.DS_STORE
+**/.git*
+**/Dockerfile*
+**/Makefile
+
+build/
+logs/
