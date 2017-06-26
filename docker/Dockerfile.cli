@@ -1,0 +1,64 @@
+FROM arachnysdocker/athenapdf-dev as build
+
+COPY . /go/src/github.com/arachnys/athenapdf/
+RUN cd /go/src/github.com/arachnys/athenapdf/ \
+    && CGO_ENABLED=0 go build -ldflags "-s" -a -installsuffix cgo -o build/athenapdf github.com/arachnys/athenapdf/cmd/cli \
+    && chmod +x build/athenapdf
+
+
+FROM debian:stretch-slim
+
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://www.github.com/arachnys/athenapdf" \
+      maintainer="Arachnys <techteam@arachnys.com>"
+
+ARG CHROMIUM_REVISION=480469
+RUN apt-get update \
+    && apt-get install -yq curl nano unzip wget \
+    && apt-get install -yq \
+        gnupg \
+        libasound2 \
+        libgconf-2-4 \
+        libgtk-3-0 \
+        libnss3 \
+        libosmesa6 \
+        libx11-xcb-dev \
+        libxss1 \
+        culmus \
+        fonts-beng \
+        fonts-dejavu \
+        fonts-hosny-amiri \
+        fonts-lklug-sinhala \
+        fonts-lohit-guru \
+        fonts-lohit-knda \
+        fonts-samyak-gujr \
+        fonts-samyak-mlym \
+        fonts-samyak-taml \
+        fonts-sarai \
+        fonts-sil-abyssinica \
+        fonts-sil-padauk \
+        fonts-telu \
+        fonts-thai-tlwg \
+        ttf-liberation \
+        ttf-wqy-zenhei \
+    && apt-get -yq autoremove \
+        && apt-get -yq clean \
+        && rm -rf /var/lib/apt/lists/* \
+        && truncate -s 0 /var/log/*log \
+    && wget -O chromium.zip https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F$CHROMIUM_REVISION%2Fchrome-linux.zip?alt=media \
+        && unzip chromium.zip \
+        && rm chromium.zip \
+        && mv /chrome-linux/ /chromium/ \
+        && cp /usr/lib/x86_64-linux-gnu/libOSMesa.so.6 /chromium/libosmesa.so
+
+COPY fonts.conf /etc/fonts/conf.d/100-athena.conf
+
+COPY --from=build /go/src/github.com/arachnys/athenapdf/build/athenapdf /athenapdf/
+ENV PATH /chromium/:/athenapdf/:$PATH
+
+WORKDIR /conversions/
+
+ENTRYPOINT ["athenapdf"]
