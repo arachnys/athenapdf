@@ -25,10 +25,10 @@ func Register(uploaderName string, u Uploader) error {
 	defer uploadersMu.Unlock()
 
 	if uploaderName == "" {
-		return errors.New("uploader name is nil")
+		return UploaderError{err: errors.New("uploader name is nil")}
 	}
 	if u == nil {
-		return errors.New("uploader is nil")
+		return UploaderError{errors.New("uploader is nil"), uploaderName}
 	}
 
 	uploaders[uploaderName] = u
@@ -43,7 +43,7 @@ func Get(uploaderName string) (Uploader, error) {
 	if u, ok := uploaders[uploaderName]; ok {
 		return u, nil
 	}
-	return nil, errors.Errorf("uploader `%s` does not exist", uploaderName)
+	return nil, UploaderError{err: errors.Errorf("uploader `%s` does not exist", uploaderName)}
 }
 
 func Upload(uploaderName string) UploaderFunc {

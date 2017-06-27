@@ -28,7 +28,7 @@ func (_ *AthenaPDF) Convert(ctx context.Context, req *proto.Conversion, opts map
 		exit()
 	}()
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	resCh := make(chan struct {
@@ -50,7 +50,7 @@ func (_ *AthenaPDF) Convert(ctx context.Context, req *proto.Conversion, opts map
 		return nil, ctx.Err()
 	case res := <-resCh:
 		if res.err != nil {
-			return nil, res.err
+			return nil, errors.WithStack(res.err)
 		}
 		return res.r, nil
 	}
