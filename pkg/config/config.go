@@ -45,9 +45,13 @@ func Set(namespace string) func(string, string) error {
 
 func Get(namespace string, options map[string]*proto.Option) func(string) (string, error) {
 	return func(configKey string) (string, error) {
-		if configKey == "" {
-			return "", errors.Errorf("config key is nil")
+		if namespace == "" {
+			return "", errors.New("namespace is nil")
 		}
+		if configKey == "" {
+			return "", errors.New("config key is nil")
+		}
+
 		// Attempt to get config from options (context)
 		if v, ok := options[toOptionName(namespace, configKey)]; ok && v.GetStringValue() != "" {
 			return v.GetStringValue(), nil
@@ -60,6 +64,7 @@ func Get(namespace string, options map[string]*proto.Option) func(string) (strin
 		if v, ok := os.LookupEnv(toEnvVar(namespace, configKey)); ok && v != "" {
 			return v, nil
 		}
+
 		return "", errors.Errorf("config `%s` for namespace `%s` does not exist", configKey, namespace)
 	}
 }
