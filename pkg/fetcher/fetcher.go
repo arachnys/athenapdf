@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/pkg/errors"
 	"io"
+	"strings"
 	"sync"
 
 	"github.com/arachnys/athenapdf/pkg/proto"
@@ -16,6 +17,7 @@ var (
 
 type Fetcher interface {
 	Fetch(context.Context, string, map[string]*proto.Option) (io.Reader, string, error)
+	SupportedProtocols() []string
 }
 
 func Register(fetcherName string, f Fetcher) error {
@@ -42,4 +44,15 @@ func Get(fetcherName string) (Fetcher, error) {
 		return f, nil
 	}
 	return nil, errors.Errorf("fetcher `%s` does not exist", fetcherName)
+}
+
+func IsURIProtocolSupported(f Fetcher) func(string) bool {
+	return func(uri string) bool {
+		for _, protocol := range f.SupportedProtocols() {
+			if strings.HasPrefix(strings.ToLower(uri), strings.ToLower(protocol)) {
+				return true
+			}
+		}
+		return false
+	}
 }
