@@ -33,7 +33,7 @@ func Process(ctx context.Context, p *proto.Process) (io.Reader, bool, error) {
 
 	if conversion.GetMimeType() == "" {
 		if !converter.IsLocal(conversion) {
-			return nil, false, errors.New("process: mime type must be provided for non-local conversions")
+			return nil, false, ProcessError{errors.New("mime type must be provided for non-local conversions")}
 		}
 
 		mimeType, err := mime.TypeFromFile(conversion.GetUri())
@@ -55,14 +55,14 @@ func Process(ctx context.Context, p *proto.Process) (io.Reader, bool, error) {
 
 		tmpFile, err := ioutil.TempFile("", "athenapdf-process")
 		if err != nil {
-			return nil, false, err
+			return nil, false, errors.WithStack(err)
 		}
 		if tmpFile.Name() != "" {
 			defer os.Remove(tmpFile.Name())
 		}
 
 		if _, err := io.Copy(tmpFile, fr); err != nil {
-			return nil, false, err
+			return nil, false, errors.WithStack(err)
 		}
 
 		// TODO: store the original URI

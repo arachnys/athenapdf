@@ -27,10 +27,10 @@ func Register(converterName string, c Converter) error {
 	defer convertersMu.Unlock()
 
 	if converterName == "" {
-		return errors.New("register: converter name is nil")
+		return ConverterError{err: errors.New("converter name is nil")}
 	}
 	if c == nil {
-		return errors.New("register: converter is nil")
+		return ConverterError{errors.New("converter is nil"), converterName}
 	}
 
 	converters[converterName] = c
@@ -45,7 +45,9 @@ func Get(converterName string) (Converter, error) {
 	if c, ok := converters[converterName]; ok {
 		return c, nil
 	}
-	return nil, errors.Errorf("get: converter `%s` does not exist", converterName)
+	return nil, ConverterError{
+		err: errors.Errorf("converter `%s` does not exist", converterName),
+	}
 }
 
 func GetFromConversion(req *proto.Conversion) (Converter, error) {
@@ -54,7 +56,9 @@ func GetFromConversion(req *proto.Conversion) (Converter, error) {
 			return c, nil
 		}
 	}
-	return nil, errors.Errorf("getfromconversion: no converter with support for mime type `%s`", req.GetMimeType())
+	return nil, ConverterError{
+		err: errors.Errorf("no converter with support for mime type `%s`", req.GetMimeType()),
+	}
 }
 
 func GetFromConversionExcluding(req *proto.Conversion) func([]string) (Converter, error) {
@@ -71,10 +75,12 @@ func GetFromConversionExcluding(req *proto.Conversion) func([]string) (Converter
 			}
 		}
 
-		return nil, errors.Errorf(
-			"getfromconversionexcluding: no converter left with support for mime type `%s`",
-			req.GetMimeType(),
-		)
+		return nil, ConverterError{
+			err: errors.Errorf(
+				"no converter left with support for mime type `%s`",
+				req.GetMimeType(),
+			),
+		}
 	}
 }
 
@@ -86,11 +92,13 @@ func Convert(converterName string) ConverterFunc {
 		}
 
 		if !IsConvertable(c, req.GetMimeType()) {
-			return nil, errors.Errorf(
-				"convert: %s: mime type `%s` is not supported",
+			return nil, ConverterError{
+				errors.Errorf(
+					"mime type `%s` is not supported",
+					req.GetMimeType(),
+				),
 				converterName,
-				req.GetMimeType(),
-			)
+			}
 		}
 
 		return c.Convert(ctx, req, opts)

@@ -2,6 +2,7 @@ package s3
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"io"
 
 	"github.com/arachnys/athenapdf/pkg/config"
@@ -51,7 +52,7 @@ func (_ *S3) Upload(c context.Context, r io.Reader, opts map[string]*proto.Optio
 	if accessKey != "" && accessSecret != "" {
 		creds := credentials.NewStaticCredentials(accessKey, accessSecret, "")
 		if _, err := creds.Get(); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		awsConf = awsConf.WithCredentials(creds)
@@ -67,7 +68,7 @@ func (_ *S3) Upload(c context.Context, r io.Reader, opts map[string]*proto.Optio
 	}
 
 	if _, err := svc.PutObject(input); err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil

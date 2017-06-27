@@ -27,10 +27,10 @@ func Register(fetcherName string, f Fetcher) error {
 	fetchersMu.Lock()
 	defer fetchersMu.Unlock()
 	if fetcherName == "" {
-		return errors.New("register: fetcher name is nil")
+		return FetcherError{err: errors.New("fetcher name is nil")}
 	}
 	if f == nil {
-		return errors.New("register: fetcher is nil")
+		return FetcherError{err: errors.New("fetcher is nil")}
 	}
 	fetchers[fetcherName] = f
 	return nil
@@ -44,7 +44,7 @@ func Get(fetcherName string) (Fetcher, error) {
 	if f, ok := fetchers[fetcherName]; ok {
 		return f, nil
 	}
-	return nil, errors.Errorf("get: fetcher `%s` does not exist", fetcherName)
+	return nil, FetcherError{err: errors.Errorf("fetcher `%s` does not exist", fetcherName)}
 }
 
 func Fetch(fetcherName string) FetcherFunc {
@@ -60,11 +60,13 @@ func Fetch(fetcherName string) FetcherFunc {
 		}
 
 		if !IsFetchable(f, protocol) {
-			return nil, "", errors.Errorf(
-				"fetch: %s: target protocol `%s` is not supported",
+			return nil, "", FetcherError{
+				errors.Errorf(
+					"target protocol `%s` is not supported",
+					protocol,
+				),
 				fetcherName,
-				protocol,
-			)
+			}
 		}
 
 		return f.Fetch(ctx, target, opts)

@@ -29,13 +29,13 @@ func Set(namespace string) func(string, string) error {
 		defer configMu.Unlock()
 
 		if namespace == "" {
-			return errors.New("namespace is nil")
+			return ConfigError{err: errors.New("namespace is nil")}
 		}
 		if configKey == "" {
-			return errors.New("config key is nil")
+			return ConfigError{errors.New("config key is nil"), namespace}
 		}
 		if configValue == "" {
-			return errors.New("config value is nil")
+			return ConfigError{errors.New("config value is nil"), namespace}
 		}
 
 		config[namespace][configKey] = configValue
@@ -46,10 +46,10 @@ func Set(namespace string) func(string, string) error {
 func Get(namespace string, options map[string]*proto.Option) func(string) (string, error) {
 	return func(configKey string) (string, error) {
 		if namespace == "" {
-			return "", errors.New("namespace is nil")
+			return "", ConfigError{err: errors.New("namespace is nil")}
 		}
 		if configKey == "" {
-			return "", errors.New("config key is nil")
+			return "", ConfigError{errors.New("config key is nil"), namespace}
 		}
 
 		// Attempt to get config from options (context)
@@ -65,7 +65,7 @@ func Get(namespace string, options map[string]*proto.Option) func(string) (strin
 			return v, nil
 		}
 
-		return "", errors.Errorf("config `%s` for namespace `%s` does not exist", configKey, namespace)
+		return "", ConfigError{errors.Errorf("config `%s` does not exist", configKey), namespace}
 	}
 }
 

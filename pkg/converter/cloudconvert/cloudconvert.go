@@ -45,7 +45,7 @@ func (_ *CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts 
 	if converter.IsLocal(req) {
 		f, err := os.Open(req.GetUri())
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 		if f != nil {
 			defer f.Close()
@@ -54,12 +54,12 @@ func (_ *CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts 
 		fileName := filepath.Base(req.GetUri())
 		part, err := w.CreateFormFile("file", fileName)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 
 		_, err = io.Copy(part, f)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 
 		params["input"] = "upload"
@@ -70,17 +70,17 @@ func (_ *CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts 
 
 	for k, v := range params {
 		if err := w.WriteField(k, v); err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 	}
 
 	if err := w.Close(); err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	httpReq, err := http.NewRequest("POST", "https://api.cloudconvert.com/convert", &b)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	httpReq.Header.Set("content-type", w.FormDataContentType())
 
@@ -106,7 +106,7 @@ func (_ *CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts 
 		return nil, ctx.Err()
 	case res := <-resCh:
 		if res.err != nil {
-			return nil, res.err
+			return nil, errors.WithStack(res.err)
 		}
 		if res.r.Body != nil {
 			defer res.r.Body.Close()
@@ -123,7 +123,7 @@ func (_ *CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts 
 		// Copy response to a new buffer as the HTTP response body will be closed
 		var o bytes.Buffer
 		if _, err := io.Copy(&o, res.r.Body); err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 
 		return &o, nil

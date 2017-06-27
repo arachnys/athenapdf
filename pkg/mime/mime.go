@@ -2,6 +2,7 @@ package mime
 
 import (
 	"bytes"
+	"github.com/pkg/errors"
 	"io"
 	stdmime "mime"
 	"net/http"
@@ -21,7 +22,7 @@ func ToExtension(mimeType string) string {
 func TypeFromReader(r io.Reader) (string, error) {
 	contentTypeBuf := bytes.NewBuffer(make([]byte, 0, 512))
 	if _, err := io.Copy(contentTypeBuf, r); err != nil {
-		return "", err
+		return "", errors.WithStack(err)
 	}
 	return http.DetectContentType(contentTypeBuf.Bytes()), nil
 }
@@ -33,7 +34,7 @@ func TypeFromFile(filePath string) (string, error) {
 
 	f, err := os.Open(filePath)
 	if err != nil {
-		return "", err
+		return "", errors.WithStack(err)
 	}
 	if f != nil {
 		defer f.Close()
