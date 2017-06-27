@@ -7,18 +7,15 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/arachnys/athenapdf/pkg/mime"
 	"github.com/arachnys/athenapdf/pkg/proto"
-)
-
-const (
-	defaultMimeType = "text/plain; charset=\"UTF-8\""
 )
 
 var (
 	converters   = make(map[string]Converter)
 	convertersMu sync.RWMutex
 )
+
+type ConverterFunc func(ctx context.Context, req *proto.Conversion, opts map[string]*proto.Option) (io.Reader, error)
 
 type Converter interface {
 	Convert(context.Context, *proto.Conversion, map[string]*proto.Option) (io.Reader, error)
@@ -81,49 +78,19 @@ func GetFromConversionExcluding(req *proto.Conversion) func([]string) (Converter
 	}
 }
 
-func Convert(converterName string) func(context.Context, *proto.Conversion, map[string]*proto.Option) (io.Reader, error) {
+func Convert(converterName string) ConverterFunc {
 	return func(ctx context.Context, req *proto.Conversion, opts map[string]*proto.Option) (io.Reader, error) {
-		var c Converter
-		var err error
-
-		if req.GetMimeType() == "" {
-			if !IsLocal(req) {
-				return nil, errors.Errorf(
-					"convert: %s: mime type must be provided for non-local conversions",
-					converterName,
-				)
-			}
-
-			mimeType, err := mime.TypeFromFile(req.GetUri())
-			if err != nil {
-				return nil, err
-			}
-			if mimeType == "" {
-				mimeType = defaultMimeType
-			}
-
-			req.MimeType = mimeType
+		c, err := Get(converterName)
+		if err != nil {
+			return nil, err
 		}
 
-		if converterName != "" {
-			c, err = Get(converterName)
-			if err != nil {
-				return nil, err
-			}
-
-			if !IsConvertable(c, req.GetMimeType()) {
-				return nil, errors.Errorf(
-					"convert: %s: mime type `%s` is not supported",
-					converterName,
-					req.GetMimeType(),
-				)
-			}
-		}
-
-		if c == nil {
-			if c, err = GetFromConversion(req); err != nil {
-				return nil, err
-			}
+		if !IsConvertable(c, req.GetMimeType()) {
+			return nil, errors.Errorf(
+				"convert: %s: mime type `%s` is not supported",
+				converterName,
+				req.GetMimeType(),
+			)
 		}
 
 		return c.Convert(ctx, req, opts)
