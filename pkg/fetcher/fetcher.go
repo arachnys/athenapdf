@@ -16,6 +16,8 @@ var (
 	fetchersMu sync.RWMutex
 )
 
+type FetcherFunc func(context.Context, string, map[string]*proto.Option) (io.Reader, string, error)
+
 type Fetcher interface {
 	Fetch(context.Context, string, map[string]*proto.Option) (io.Reader, string, error)
 	SupportedProtocols() []string
@@ -45,7 +47,7 @@ func Get(fetcherName string) (Fetcher, error) {
 	return nil, errors.Errorf("get: fetcher `%s` does not exist", fetcherName)
 }
 
-func Fetch(fetcherName string) func(context.Context, string, map[string]*proto.Option) (io.Reader, string, error) {
+func Fetch(fetcherName string) FetcherFunc {
 	return func(ctx context.Context, target string, opts map[string]*proto.Option) (io.Reader, string, error) {
 		f, err := Get(fetcherName)
 		if err != nil {

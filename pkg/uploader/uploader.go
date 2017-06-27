@@ -14,6 +14,8 @@ var (
 	uploadersMu sync.RWMutex
 )
 
+type UploaderFunc func(context.Context, io.Reader, map[string]*proto.Option) error
+
 type Uploader interface {
 	Upload(context.Context, io.Reader, map[string]*proto.Option) error
 }
@@ -44,7 +46,7 @@ func Get(uploaderName string) (Uploader, error) {
 	return nil, errors.Errorf("uploader `%s` does not exist", uploaderName)
 }
 
-func Upload(uploaderName string) func(context.Context, io.Reader, map[string]*proto.Option) error {
+func Upload(uploaderName string) UploaderFunc {
 	return func(ctx context.Context, r io.Reader, opts map[string]*proto.Option) error {
 		u, err := Get(uploaderName)
 		if err != nil {
