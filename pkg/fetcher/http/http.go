@@ -27,7 +27,6 @@ func init() {
 	fetcher.Register(fetcherName, &HTTPFetcher{})
 }
 
-// TODO: add support for cancellations
 func (_ *HTTPFetcher) Fetch(ctx context.Context, target string, opts map[string]*proto.Option) (io.Reader, string, error) {
 	conf := config.MustGet(fetcherName, opts)
 
@@ -98,4 +97,8 @@ func (_ *HTTPFetcher) Fetch(ctx context.Context, target string, opts map[string]
 
 		return resBuf, contentType, nil
 	}
+}
+
+func (_ *HTTPFetcher) SupportedProtocols() []string {
+	return []string{"http"}
 }
