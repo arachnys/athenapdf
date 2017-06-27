@@ -16,6 +16,9 @@ func loadFile(fp string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if f != nil {
+		defer f.Close()
+	}
 	return ioutil.ReadAll(f)
 }
 

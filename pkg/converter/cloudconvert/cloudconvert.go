@@ -10,9 +10,11 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/arachnys/athenapdf/pkg/config"
 	"github.com/arachnys/athenapdf/pkg/converter"
+	"github.com/arachnys/athenapdf/pkg/mime"
 	"github.com/arachnys/athenapdf/pkg/proto"
 )
 
@@ -36,16 +38,18 @@ func (_ *CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts 
 		"apikey":       conf("api_key"),
 		"download":     "inline",
 		"filename":     "arachnys-athenapdf-pkg-converter-cloudconvert.html",
-		"inputformat":  converter.ExtensionByMimeType(req.GetMimeType()),
+		"inputformat":  mime.ToExtension(req.GetMimeType()),
 		"outputformat": "pdf",
 	}
 
-	if converter.IsLocalConversion(req.GetUri()) {
+	if converter.IsLocal(req) {
 		f, err := os.Open(req.GetUri())
 		if err != nil {
 			return nil, err
 		}
-		defer f.Close()
+		if f != nil {
+			defer f.Close()
+		}
 
 		fileName := filepath.Base(req.GetUri())
 		part, err := w.CreateFormFile("file", fileName)
@@ -111,9 +115,9 @@ func (_ *CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts 
 		if res.r.StatusCode != 200 {
 			var data map[string]interface{}
 			if err = json.NewDecoder(res.r.Body).Decode(&data); err != nil {
-				return nil, errors.Wrap(err, "cloudconvert conversion failed")
+				return nil, errors.Wrap(err, "convert: cloudconvert conversion failed")
 			}
-			return nil, errors.Errorf("cloudconvert conversion failed:\n%+v", data)
+			return nil, errors.Errorf("convert: cloudconvert conversion failed:\n%+v", data)
 		}
 
 		// Copy response to a new buffer as the HTTP response body will be closed

@@ -14,6 +14,10 @@ func (_ *MockFetcher) Fetch(_ context.Context, _ string, _ map[string]*proto.Opt
 	return nil, "", nil
 }
 
+func (_ *MockFetcher) SupportedProtocols() []string {
+	return []string{}
+}
+
 func TestRegister(t *testing.T) {
 	f := &MockFetcher{}
 
