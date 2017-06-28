@@ -1,7 +1,6 @@
 package mime
 
 import (
-	"bytes"
 	"github.com/pkg/errors"
 	"io"
 	stdmime "mime"
@@ -9,6 +8,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+)
+
+const (
+	defaultMimeType = "text/plain; charset=\"UTF-8\""
 )
 
 func ToExtension(mimeType string) string {
@@ -20,11 +23,16 @@ func ToExtension(mimeType string) string {
 }
 
 func TypeFromReader(r io.Reader) (string, error) {
-	contentTypeBuf := bytes.NewBuffer(make([]byte, 0, 512))
-	if _, err := io.Copy(contentTypeBuf, r); err != nil {
+	mimeTypeBuf := make([]byte, 0, 512)
+	n, err := r.Read(mimeTypeBuf)
+	if err != nil {
 		return "", errors.WithStack(err)
 	}
-	return http.DetectContentType(contentTypeBuf.Bytes()), nil
+	mimeType := defaultMimeType
+	if n >= 512 {
+		mimeType = http.DetectContentType(mimeTypeBuf)
+	}
+	return mimeType, nil
 }
 
 func TypeFromFile(filePath string) (string, error) {
