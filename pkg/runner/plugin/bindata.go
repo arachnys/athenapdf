@@ -2,6 +2,7 @@
 // sources:
 // js/domdistiller.js
 // js/no-css-media.js
+// js/window-status.js
 // DO NOT EDIT!
 
 package plugin
@@ -109,6 +110,26 @@ func jsNoCssMediaJs() (*asset, error) {
 	return a, nil
 }
 
+var _jsWindowStatusJs = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x6c\x91\x41\x4b\xc3\x30\x14\xc7\xef\xf9\x14\x7f\x7b\x18\x2d\x88\xd4\x73\xc9\x41\x10\x61\x17\x15\x3a\xe9\x51\xc2\xf2\x0a\x81\x98\x8c\x97\xb4\x65\x48\xbf\xbb\x64\xdd\xea\xa2\xfb\xdf\x92\xf7\x7b\x79\xbf\x24\xa3\x62\x4c\xca\xc4\x17\xcf\x9d\x71\xda\x4f\x6d\x54\x71\x08\x90\xe8\x07\xb7\x8f\xc6\xbb\x52\x53\x30\x4c\x7a\x29\x54\xf8\x16\x00\xc0\x14\x07\x76\x70\x34\xe1\x9d\xfd\x97\x09\x54\xae\x0d\x4c\xc1\xdb\x91\x2e\x68\x4a\x1a\x73\xf0\xd6\x12\x43\x22\x50\xdc\xba\x48\x3c\x2a\xfb\xdb\x74\x4d\xa7\x98\x1e\xe5\x74\x32\x7a\x08\x8b\xd2\x66\x83\x7c\x43\x4a\xdc\x74\xbb\xce\xde\x92\xe2\x75\xda\xa2\x50\x35\xff\xb0\xb3\xf2\x9f\xbb\xe6\xdc\xbc\xae\xe6\x7b\x3c\xd6\x75\x7d\xae\xcf\x55\x23\x66\x21\x92\x70\x3c\x1e\xc8\xf7\xe8\xb6\xaf\xcf\x6f\xdd\x67\xbb\x7b\xda\x7d\xb4\xb8\x93\x12\xc5\xe0\x34\xf5\xc6\x91\x2e\x2e\x96\xe9\x49\x72\x50\xa2\x60\x52\xfa\x58\x9c\xce\xbb\xf1\x2b\x65\xc6\x57\x8d\xf8\x09\x00\x00\xff\xff\xc7\x12\xcf\x28\xbe\x01\x00\x00")
+
+func jsWindowStatusJsBytes() ([]byte, error) {
+	return bindataRead(
+		_jsWindowStatusJs,
+		"js/window-status.js",
+	)
+}
+
+func jsWindowStatusJs() (*asset, error) {
+	bytes, err := jsWindowStatusJsBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "js/window-status.js", size: 446, mode: os.FileMode(420), modTime: time.Unix(1498673548, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -163,6 +184,7 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"js/domdistiller.js": jsDomdistillerJs,
 	"js/no-css-media.js": jsNoCssMediaJs,
+	"js/window-status.js": jsWindowStatusJs,
 }
 
 // AssetDir returns the file names below a certain
@@ -208,6 +230,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"js": &bintree{nil, map[string]*bintree{
 		"domdistiller.js": &bintree{jsDomdistillerJs, map[string]*bintree{}},
 		"no-css-media.js": &bintree{jsNoCssMediaJs, map[string]*bintree{}},
+		"window-status.js": &bintree{jsWindowStatusJs, map[string]*bintree{}},
 	}},
 }}
 
