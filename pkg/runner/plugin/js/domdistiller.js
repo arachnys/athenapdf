@@ -256,3 +256,5 @@ var normalize = "progress,sub,sup{vertical-align:baseline}html{font-family:sans-
 
 document.head.innerHTML = "<title>" + res[1] + "</title>" + "<style>" + normalize + "</style>";
 document.body.innerHTML = "<h1>" + res[1] + "</h1>" + res[2][1];
+
+Promise.resolve();

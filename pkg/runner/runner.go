@@ -1,15 +1,17 @@
 package runner
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
+	"github.com/pkg/errors"
 	"log"
 	"net/url"
 	"sync"
 	"time"
 
 	"github.com/arachnys/athenapdf/pkg/proto"
+	"github.com/arachnys/athenapdf/pkg/runner/plugin"
 
 	"github.com/wirepair/gcd"
 	"github.com/wirepair/gcd/gcdapi"
@@ -29,7 +31,10 @@ type Runner struct {
 	Server *url.URL
 	Proxy  *url.URL
 
-	JSPlugins []string
+	Plugins struct {
+		Builtin []string
+		Custom  []string
+	}
 
 	Target *gcd.ChromeTarget
 
@@ -139,13 +144,22 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 	})
 
 	// Load scripts concurrently
-	loadedPlugins := make(chan string, 1)
+	loadedScripts := make(chan string, 1)
 	go func() {
-		p, err := GetJsPlugins(r.JSPlugins...)
+		pr, err := plugin.Get(r.Plugins.Builtin, r.Plugins.Custom)
 		if err != nil {
 			log.Fatalln(err)
 		}
-		loadedPlugins <- p
+
+		for _, p := range pr {
+			var buf bytes.Buffer
+			if _, err := buf.ReadFrom(p); err != nil {
+				log.Fatalln(err)
+			}
+			loadedScripts <- buf.String()
+		}
+
+		close(loadedScripts)
 	}()
 
 	requestID, err = r.Target.Page.Navigate(req.GetUri(), "", "")
@@ -166,9 +180,14 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 	}
 
 	// Execute scripts
-	evaluateParams := gcdapi.RuntimeEvaluateParams{Expression: <-loadedPlugins}
-	if _, _, err := r.Target.Runtime.EvaluateWithParams(&evaluateParams); err != nil {
-		return nil, errors.WithStack(err)
+	for script := range loadedScripts {
+		evaluateParams := gcdapi.RuntimeEvaluateParams{
+			Expression:   script,
+			AwaitPromise: true,
+		}
+		if _, _, err := r.Target.Runtime.EvaluateWithParams(&evaluateParams); err != nil {
+			return nil, errors.WithStack(err)
+		}
 	}
 
 	// Generate PDF, and convert output to bytes from base64 string

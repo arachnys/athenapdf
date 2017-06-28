@@ -6,3 +6,5 @@ if (print.length === 0) {
         screen[i].removeAttribute("media");
     }
 }
+
+Promise.resolve();
