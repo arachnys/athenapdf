@@ -1,7 +1,7 @@
 package runner
 
 import (
-	"fmt"
+	"github.com/pkg/errors"
 	"io/ioutil"
 	"net/url"
 
@@ -25,7 +25,7 @@ var defaultFlags = []string{
 	"--no-first-run",
 }
 
-var ErrInvalidTarget = fmt.Errorf("invalid / uninitialised target")
+var ErrInvalidTarget = errors.New("invalid / uninitialised target")
 
 func startCDP(server *url.URL, proxy *url.URL) (*gcd.Gcd, ExitFunc, error) {
 	var exitFunc ExitFunc = func() error { return nil }
@@ -39,7 +39,7 @@ func startCDP(server *url.URL, proxy *url.URL) (*gcd.Gcd, ExitFunc, error) {
 	// Create a random directory for user data
 	randomDir, err := ioutil.TempDir("", tempDir)
 	if err != nil {
-		return nil, exitFunc, err
+		return nil, exitFunc, errors.WithStack(err)
 	}
 
 	client := gcd.NewChromeDebugger()
@@ -65,7 +65,7 @@ func startTarget(client *gcd.Gcd) (*gcd.ChromeTarget, ExitFunc, error) {
 
 	t, err := client.NewTab()
 	if err != nil {
-		return nil, exitFunc, err
+		return nil, exitFunc, errors.WithStack(err)
 	}
 
 	t.CSS.Enable()
@@ -86,19 +86,19 @@ func setOptions(t *gcd.ChromeTarget, options map[string]*proto.Option) error {
 	}
 
 	if _, err := t.Network.SetUserAgentOverride(options["user_agent"].GetStringValue()); err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	if _, err := t.Emulation.SetEmulatedMedia(options["media_type"].GetStringValue()); err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	if _, err := t.Network.SetCacheDisabled(options["no_cache"].GetBoolValue()); err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	if _, err := t.Emulation.SetScriptExecutionDisabled(options["no_javascript"].GetBoolValue()); err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -115,7 +115,7 @@ func setHeaders(t *gcd.ChromeTarget, headers []*proto.Header) error {
 	}
 
 	if _, err := t.Network.SetExtraHTTPHeaders(h); err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -133,7 +133,7 @@ func setCookies(t *gcd.ChromeTarget, cookies []*proto.Cookie) error {
 			Url:   cookie.GetUrl(),
 		}
 		if _, err := t.Network.SetCookieWithParams(&c); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 	}
 
