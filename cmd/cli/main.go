@@ -8,6 +8,7 @@ import (
 
 	"github.com/arachnys/athenapdf/pkg/proto"
 	"github.com/arachnys/athenapdf/pkg/runner"
+	"github.com/arachnys/athenapdf/pkg/runner/plugin"
 )
 
 const (
@@ -32,7 +33,8 @@ var (
 	server = app.Flag("server", "run in client-server mode by connecting to a local running instance of Chromium's Remote Debugging Protocol").URL()
 	proxy  = app.Flag("proxy", "use a proxy server for HTTP(S) requests (only works in non-client-server mode, default)").URL()
 
-	jsPlugins = app.Flag("js-plugin", "JavaScript plugin to execute on page load (repeatable)").Default(runner.GetJsDefaultPlugins()...).Enums(runner.GetAvailableJsPlugins()...)
+	builtinPlugins = app.Flag("plugin", "built-in JavaScript plugin to execute on page load (repeatable)").Default(plugin.Default()...).Enums(plugin.List()...)
+	customScripts  = app.Flag("run-script", "custom JavaScript file to execute on page load (repeatable)").ExistingFiles()
 
 	marginBottom = app.Flag("margin-bottom", "bottom margin of PDF in inches").Short('B').Default(defaultPageMargin).Float64()
 	marginLeft   = app.Flag("margin-left", "left margin of PDF in inches").Short('L').Default(defaultPageMargin).Float64()
@@ -111,12 +113,18 @@ func main() {
 
 func newRunner() *runner.Runner {
 	return &runner.Runner{
-		Debug:     *debug,
-		DryRun:    *dryRun,
-		Timeout:   *timeout,
-		Server:    *server,
-		Proxy:     *proxy,
-		JSPlugins: *jsPlugins,
+		Debug:   *debug,
+		DryRun:  *dryRun,
+		Timeout: *timeout,
+		Server:  *server,
+		Proxy:   *proxy,
+		Plugins: struct {
+			Builtin []string
+			Custom  []string
+		}{
+			*builtinPlugins,
+			*customScripts,
+		},
 	}
 }
 
