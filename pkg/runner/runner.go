@@ -66,7 +66,7 @@ func (r *Runner) AutoTarget() (ExitFunc, error) {
 		}
 
 		if err := exit(); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		r.exited = true
@@ -82,6 +82,11 @@ func (r *Runner) AutoTarget() (ExitFunc, error) {
 }
 
 func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
+	var (
+		requestID string
+		err       error
+	)
+
 	if r.Target == nil {
 		return nil, ErrInvalidTarget
 	}
@@ -102,19 +107,20 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 		return nil, err
 	}
 
-	fid, err := r.Target.Page.Navigate(req.GetUri(), "", "")
-	if err != nil {
-		return nil, err
-	}
+	pageCh := make(chan struct {
+		success bool
+		err     error
+	}, 1)
 
 	// Add page load event listener
-	pageReady := make(chan bool, 1)
 	r.Target.Subscribe("Page.loadEventFired", func(_ *gcd.ChromeTarget, _ []byte) {
-		pageReady <- true
+		pageCh <- struct {
+			success bool
+			err     error
+		}{true, nil}
 	})
 
 	// Detect errors in page load
-	pageFailed := make(chan string, 1)
 	r.Target.Subscribe("Network.loadingFailed", func(_ *gcd.ChromeTarget, b []byte) {
 		var v gcdapi.NetworkLoadingFailedEvent
 		if err := json.Unmarshal(b, &v); err != nil {
@@ -123,8 +129,12 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 			}
 			return
 		}
-		if v.Params.RequestId == fid {
-			pageFailed <- v.Params.ErrorText
+		if (requestID != "" && v.Params.RequestId == requestID) ||
+			(requestID == "" && v.Params.Type == "Document") {
+			pageCh <- struct {
+				success bool
+				err     error
+			}{false, errors.New(v.Params.ErrorText)}
 		}
 	})
 
@@ -138,21 +148,27 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 		loadedPlugins <- p
 	}()
 
+	requestID, err = r.Target.Page.Navigate(req.GetUri(), "", "")
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
 	select {
 	case <-time.After(r.Timeout):
-		return nil, fmt.Errorf("timeout waiting for the page to load")
-	case errorText := <-pageFailed:
-		if errorText == "" {
-			errorText = "unknown error, content-type might not be supported (e.g. `application/octet-stream`)"
+		return nil, errors.New("timed out waiting for the page to load")
+	case page := <-pageCh:
+		if !page.success {
+			if page.err == nil {
+				page.err = errors.New("unknown error, content-type might not be supported (e.g. `application/octet-stream`)")
+			}
+			return nil, errors.WithMessage(page.err, "failed to load the page")
 		}
-		return nil, fmt.Errorf("failed to load the page: %s", errorText)
-	case <-pageReady:
 	}
 
 	// Execute scripts
 	evaluateParams := gcdapi.RuntimeEvaluateParams{Expression: <-loadedPlugins}
 	if _, _, err := r.Target.Runtime.EvaluateWithParams(&evaluateParams); err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	// Generate PDF, and convert output to bytes from base64 string
@@ -171,12 +187,12 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 	}
 	base64String, err := r.Target.Page.PrintToPDFWithParams(&pdfParams)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	b, err := base64.StdEncoding.DecodeString(base64String)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	return b, nil
