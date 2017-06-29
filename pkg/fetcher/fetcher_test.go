@@ -55,3 +55,35 @@ func TestRegister(t *testing.T) {
 		}
 	})
 }
+
+func TestToProtocol(t *testing.T) {
+	testCases := []struct {
+		url  string
+		want string
+	}{
+		{"http://www.arachnys.com", "http"},
+		{"https://www.athenapdf.com/", "https"},
+		{"ftp://fyianlai.com", "ftp"},
+		{"s3://s3.amazonaws.com/", "s3"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.url, func(t *testing.T) {
+			got, err := ToProtocol(tc.url)
+			if err != nil {
+				t.Fatalf("failed to get protocol from url, unexpected error: %+v", err)
+			}
+
+			if got != tc.want {
+				t.Errorf("got %+v; want %+v", got, tc.want)
+			}
+		})
+	}
+
+	t.Run("invalid url", func(t *testing.T) {
+		_, err := ToProtocol("% invalid url")
+		if err == nil {
+			t.Fatalf("expected error with invalid url")
+		}
+	})
+}
