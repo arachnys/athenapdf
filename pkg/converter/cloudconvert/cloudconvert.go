@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/arachnys/athenapdf/pkg/config"
 	"github.com/arachnys/athenapdf/pkg/converter"

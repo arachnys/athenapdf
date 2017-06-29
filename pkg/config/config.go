@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	config   map[string]map[string]string
+	config   = make(map[string]map[string]string)
 	configMu sync.RWMutex
 )
 
@@ -36,6 +36,10 @@ func Set(namespace string) func(string, string) error {
 		}
 		if configValue == "" {
 			return ConfigError{errors.New("config value is nil"), namespace}
+		}
+
+		if _, ok := config[namespace]; !ok {
+			config[namespace] = make(map[string]string)
 		}
 
 		config[namespace][configKey] = configValue
