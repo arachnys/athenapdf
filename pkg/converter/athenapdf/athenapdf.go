@@ -3,8 +3,8 @@ package athenapdf
 import (
 	"bytes"
 	"context"
+	"github.com/pkg/errors"
 	"io"
-	"strings"
 
 	"github.com/arachnys/athenapdf/pkg/converter"
 	"github.com/arachnys/athenapdf/pkg/proto"
