@@ -55,24 +55,3 @@ func TestRegister(t *testing.T) {
 		}
 	})
 }
-
-func TestIsLocal(t *testing.T) {
-	testCases := []struct {
-		conversion *proto.Conversion
-		want       bool
-	}{
-		{&proto.Conversion{Uri: "https://www.athenapdf.com/"}, false},
-		{&proto.Conversion{Uri: "ftp://fyianlai.com"}, false},
-		{&proto.Conversion{Uri: "s3://s3.amazonaws.com/"}, false},
-		{&proto.Conversion{Uri: "file://home/athena/index.html"}, true},
-		{&proto.Conversion{Uri: "file:///home/athena/index.html"}, true},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.conversion.GetUri(), func(t *testing.T) {
-			if got := IsLocal(tc.conversion); got != tc.want {
-				t.Errorf("got %+v; want %+v", got, tc.want)
-			}
-		})
-	}
-}

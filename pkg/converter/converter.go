@@ -113,10 +113,3 @@ func IsConvertable(c Converter, mimeType string) bool {
 	}
 	return false
 }
-
-func IsLocal(req *proto.Conversion) bool {
-	if strings.Index(strings.ToLower(req.GetUri()), "file://") == 0 {
-		return true
-	}
-	return false
-}

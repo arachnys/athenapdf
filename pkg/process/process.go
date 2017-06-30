@@ -13,6 +13,7 @@ import (
 	"github.com/arachnys/athenapdf/pkg/mime"
 	"github.com/arachnys/athenapdf/pkg/proto"
 	"github.com/arachnys/athenapdf/pkg/uploader"
+	"github.com/arachnys/athenapdf/pkg/uri"
 )
 
 const (
@@ -26,13 +27,8 @@ func Process(ctx context.Context, p *proto.Process) (io.Reader, bool, error) {
 	conversion := p.GetConversion()
 	converterName := p.GetConverter()
 
-	if converter.IsLocal(conversion) {
-		// Clean up local conversion
-		defer os.Remove(conversion.GetUri())
-	}
-
 	if conversion.GetMimeType() == "" {
-		if !converter.IsLocal(conversion) {
+		if !uri.IsLocal(conversion.GetUri()) {
 			return nil, false, ProcessError{errors.New("mime type must be provided for non-local conversions")}
 		}
 

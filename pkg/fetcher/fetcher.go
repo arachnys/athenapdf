@@ -4,11 +4,11 @@ import (
 	"context"
 	"github.com/pkg/errors"
 	"io"
-	"net/url"
 	"strings"
 	"sync"
 
 	"github.com/arachnys/athenapdf/pkg/proto"
+	"github.com/arachnys/athenapdf/pkg/uri"
 )
 
 var (
@@ -54,7 +54,7 @@ func Fetch(fetcherName string) FetcherFunc {
 			return nil, "", err
 		}
 
-		protocol, err := ToProtocol(target)
+		protocol, err := uri.Scheme(target)
 		if err != nil {
 			return nil, "", err
 		}
@@ -80,13 +80,4 @@ func IsFetchable(f Fetcher, protocol string) bool {
 		}
 	}
 	return false
-}
-
-func ToProtocol(target string) (string, error) {
-	u, err := url.Parse(target)
-	if err != nil {
-		return "", err
-	}
-
-	return u.Scheme, nil
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/arachnys/athenapdf/pkg/converter"
 	"github.com/arachnys/athenapdf/pkg/mime"
 	"github.com/arachnys/athenapdf/pkg/proto"
+	"github.com/arachnys/athenapdf/pkg/uri"
 )
 
 const (
@@ -41,7 +42,7 @@ func (_ *CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts 
 		"outputformat": "pdf",
 	}
 
-	if converter.IsLocal(req) {
+	if uri.IsLocal(req.GetUri()) {
 		f, err := os.Open(req.GetUri())
 		if err != nil {
 			return nil, errors.WithStack(err)
