@@ -57,7 +57,11 @@ func main() {
 func processEndpoint(ctx context.Context, request interface{}) (interface{}, error) {
 	p := request.(proto.Process)
 
-	return process.Process(ctx, &p)
+	r, _, err := process.Process(ctx, &p)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
 }
 
 func decodeProcessRequest(ctx context.Context, r *http.Request) (interface{}, error) {

@@ -1,5 +1,0 @@
-# Building
-
-```bash
-make buildservice
-```
