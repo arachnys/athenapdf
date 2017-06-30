@@ -20,7 +20,7 @@ help:
 	@echo "  \033[34mbuild/cli\033[0m – builds athenapdf (cli) docker image"
 	@echo "  \033[34mbuild/service\033[0m – builds weaver (service) docker image"
 	@echo "  \033[34mrun/dev\033[0m – runs dev docker image (with code)"
-	@echo "  \033[34mrun/dev\033[0m – runs athenapdf (cli) docker image"
+	@echo "  \033[34mrun/cli\033[0m – runs athenapdf (cli) docker image"
 	@echo
 
 build/dev:
