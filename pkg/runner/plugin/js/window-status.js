@@ -7,7 +7,7 @@ var waitForWindowStatus = function(desiredStatus) {
             }
         }, 1000);
     });
-}
+};
 
 if (typeof WINDOW_STATUS !== "undefined") {
     var WINDOW_STATUS = "ready";
