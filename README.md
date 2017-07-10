@@ -6,6 +6,8 @@
 
 [**Live Demo / Screenshots**][athenapdf]
 
+[**WARNING: VERSION 2 IS NO LONGER MAINTAINED; PIN ALL USES OF IT**](https://github.com/arachnys/athenapdf/issues/111)
+
 Simple, Docker-powered PDF conversions.
 
 Athena is comprised of an [Electron][electron] command line interface (CLI) tool, and a [Go][go] microservice for converting HTML to PDF documents.
