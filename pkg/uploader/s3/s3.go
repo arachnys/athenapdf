@@ -34,6 +34,7 @@ func (_ *S3) Upload(c context.Context, r io.Reader, opts map[string]*proto.Optio
 
 	accessKey := conf("access_key")
 	accessSecret := conf("access_secret")
+	sessionToken := conf("session_token")
 	acl := conf("acl")
 	bucket := conf("bucket")
 	region := conf("region")
@@ -50,7 +51,7 @@ func (_ *S3) Upload(c context.Context, r io.Reader, opts map[string]*proto.Optio
 
 	// Use static credentials if defined
 	if accessKey != "" && accessSecret != "" {
-		creds := credentials.NewStaticCredentials(accessKey, accessSecret, "")
+		creds := credentials.NewStaticCredentials(accessKey, accessSecret, sessionToken)
 		if _, err := creds.Get(); err != nil {
 			return errors.WithStack(err)
 		}
