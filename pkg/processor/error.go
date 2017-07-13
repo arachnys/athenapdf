@@ -1,4 +1,4 @@
-package process
+package processor
 
 type ProcessError struct {
 	err error

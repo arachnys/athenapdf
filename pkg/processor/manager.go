@@ -1,4 +1,4 @@
-package process
+package processor
 
 import (
 	"context"
@@ -19,7 +19,7 @@ var (
 type ReadWorkQueue <-chan Work
 type WriteWorkQueue chan<- Work
 
-type ProcessManager struct {
+type Manager struct {
 	wq         WriteWorkQueue
 	addTimeout time.Duration
 }
@@ -29,15 +29,16 @@ type Worker struct {
 }
 
 type Work struct {
-	ctx     context.Context
-	process *proto.Process
+	ctx       context.Context
+	processor Processor
+	process   *proto.Process
 
 	OutputReader   chan io.Reader
 	OutputUploaded chan bool
 	Err            chan error
 }
 
-func NewProcessManager(maxWorkers, maxQueue int, addTimeout time.Duration) ProcessManager {
+func NewManager(maxWorkers, maxQueue int, addTimeout time.Duration) Manager {
 	if maxWorkers == 0 {
 		maxWorkers = defaultMaxWorkers
 	}
@@ -66,16 +67,17 @@ func NewProcessManager(maxWorkers, maxQueue int, addTimeout time.Duration) Proce
 		}(ReadWorkQueue(wq), Worker{i})
 	}
 
-	return ProcessManager{
+	return Manager{
 		WriteWorkQueue(wq),
 		addTimeout,
 	}
 }
 
-func (pm ProcessManager) Add(ctx context.Context, p *proto.Process) (Work, error) {
+func (pm Manager) Add(ctx context.Context, processor Processor, process *proto.Process) (Work, error) {
 	w := Work{
-		ctx:     ctx,
-		process: p,
+		ctx:       ctx,
+		processor: processor,
+		process:   process,
 
 		OutputReader:   make(chan io.Reader, 1),
 		OutputUploaded: make(chan bool, 1),
@@ -99,7 +101,7 @@ func (w Work) Start() {
 	}, 1)
 
 	go func() {
-		r, uploaded, err := Process(w.ctx, w.process)
+		r, uploaded, err := w.processor.Process(w.ctx, w.process)
 		processCh <- struct {
 			r        io.Reader
 			uploaded bool
