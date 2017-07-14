@@ -37,7 +37,7 @@ func (_ *HTTPFetcher) Fetch(ctx context.Context, target string, opts map[string]
 		return nil, "", err
 	}
 
-	httpReq, err := http.NewRequest("POST", target, nil)
+	httpReq, err := http.NewRequest("GET", target, nil)
 	if err != nil {
 		return nil, "", err
 	}
