@@ -87,7 +87,6 @@ func (*LibreOffice) SupportedMimeTypes() []string {
 	return []string{
 		"application/msword",
 		"application/rtf",
-		"text",
 		"vnd.openxmlformats-officedocument",
 	}
 }
