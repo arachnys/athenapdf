@@ -69,6 +69,7 @@ func (*AthenaPDF) SupportedMimeTypes() []string {
 		"application/x-mimearchive",
 		"multipart/related",
 		"image",
-		"text",
+		"text/css",
+		"text/html",
 	}
 }
