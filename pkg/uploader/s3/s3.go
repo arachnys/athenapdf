@@ -29,7 +29,7 @@ func init() {
 }
 
 // TODO: add support for cancellations
-func (_ *S3) Upload(c context.Context, r io.Reader, opts map[string]*proto.Option) error {
+func (*S3) Upload(c context.Context, r io.Reader, opts map[string]*proto.Option) error {
 	conf := config.MustGet(uploaderName, opts)
 
 	accessKey := conf("access_key")
@@ -38,6 +38,7 @@ func (_ *S3) Upload(c context.Context, r io.Reader, opts map[string]*proto.Optio
 	acl := conf("acl")
 	bucket := conf("bucket")
 	region := conf("region")
+	key := conf("key")
 
 	if acl == "" {
 		acl = defaultS3Acl
@@ -61,11 +62,11 @@ func (_ *S3) Upload(c context.Context, r io.Reader, opts map[string]*proto.Optio
 
 	svc := awss3.New(session.New(awsConf))
 	input := &awss3.PutObjectInput{
-		ACL:         aws.String("public-read"),
+		ACL:         aws.String(acl),
 		Body:        aws.ReadSeekCloser(r),
 		Bucket:      aws.String(bucket),
 		ContentType: aws.String("application/pdf"),
-		Key:         aws.String(acl),
+		Key:         aws.String(key),
 	}
 
 	if _, err := svc.PutObject(input); err != nil {
