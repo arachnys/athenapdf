@@ -29,7 +29,7 @@ func init() {
 }
 
 // TODO: add support for cancellations
-func (*S3) Upload(c context.Context, r io.Reader, opts map[string]*proto.Option) error {
+func (*S3) Upload(ctx context.Context, r io.Reader, opts map[string]*proto.Option) error {
 	conf := config.MustGet(uploaderName, opts)
 
 	accessKey := conf("access_key")
@@ -69,7 +69,7 @@ func (*S3) Upload(c context.Context, r io.Reader, opts map[string]*proto.Option)
 		Key:         aws.String(key),
 	}
 
-	if _, err := svc.PutObject(input); err != nil {
+	if _, err := svc.PutObjectWithContext(ctx, input); err != nil {
 		return errors.WithStack(err)
 	}
 
