@@ -10,7 +10,7 @@ import (
 
 type MockUploader struct{}
 
-func (_ *MockUploader) Upload(_ context.Context, _ io.Reader, _ map[string]*proto.Option) error {
+func (*MockUploader) Upload(_ context.Context, _ io.Reader, _ map[string]*proto.Option) error {
 	return nil
 }
 

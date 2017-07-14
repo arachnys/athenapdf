@@ -10,11 +10,11 @@ import (
 
 type MockFetcher struct{}
 
-func (_ *MockFetcher) Fetch(_ context.Context, _ string, _ map[string]*proto.Option) (io.Reader, string, error) {
+func (*MockFetcher) Fetch(_ context.Context, _ string, _ map[string]*proto.Option) (io.Reader, string, error) {
 	return nil, "", nil
 }
 
-func (_ *MockFetcher) SupportedProtocols() []string {
+func (*MockFetcher) SupportedProtocols() []string {
 	return []string{}
 }
 

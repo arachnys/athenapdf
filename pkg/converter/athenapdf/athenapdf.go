@@ -21,7 +21,11 @@ func init() {
 	converter.Register(converterName, &AthenaPDF{})
 }
 
-func (_ *AthenaPDF) Convert(ctx context.Context, req *proto.Conversion, opts map[string]*proto.Option) (io.Reader, error) {
+func (*AthenaPDF) String() string {
+	return converterName
+}
+
+func (*AthenaPDF) Convert(ctx context.Context, req *proto.Conversion, opts map[string]*proto.Option) (io.Reader, error) {
 	r := &runner.Runner{}
 	exit, err := r.AutoTarget()
 	defer func() {
@@ -56,7 +60,7 @@ func (_ *AthenaPDF) Convert(ctx context.Context, req *proto.Conversion, opts map
 	}
 }
 
-func (_ *AthenaPDF) SupportedMimeTypes() []string {
+func (*AthenaPDF) SupportedMimeTypes() []string {
 	return []string{
 		"application/rdf",
 		"application/rdf+xml",

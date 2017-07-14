@@ -28,7 +28,11 @@ func init() {
 	converter.Register(converterName, &LibreOffice{})
 }
 
-func (_ *LibreOffice) Convert(ctx context.Context, req *proto.Conversion, opts map[string]*proto.Option) (io.Reader, error) {
+func (*LibreOffice) String() string {
+	return converterName
+}
+
+func (*LibreOffice) Convert(ctx context.Context, req *proto.Conversion, opts map[string]*proto.Option) (io.Reader, error) {
 	if !uri.IsLocal(req.GetUri()) {
 		return nil, errors.New("conversion uri is not local")
 	}
@@ -79,7 +83,7 @@ func (_ *LibreOffice) Convert(ctx context.Context, req *proto.Conversion, opts m
 	return &buf, nil
 }
 
-func (_ *LibreOffice) SupportedMimeTypes() []string {
+func (*LibreOffice) SupportedMimeTypes() []string {
 	return []string{
 		"application/msword",
 		"application/rtf",

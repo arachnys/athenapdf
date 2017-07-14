@@ -27,7 +27,7 @@ func init() {
 	fetcher.Register(fetcherName, &HTTPFetcher{})
 }
 
-func (_ *HTTPFetcher) Fetch(ctx context.Context, target string, opts map[string]*proto.Option) (io.Reader, string, error) {
+func (*HTTPFetcher) Fetch(ctx context.Context, target string, opts map[string]*proto.Option) (io.Reader, string, error) {
 	conf := config.MustGet(fetcherName, opts)
 
 	// Fetch URL with support for cookies (to handle session-based redirects)
@@ -99,6 +99,6 @@ func (_ *HTTPFetcher) Fetch(ctx context.Context, target string, opts map[string]
 	}
 }
 
-func (_ *HTTPFetcher) SupportedProtocols() []string {
+func (*HTTPFetcher) SupportedProtocols() []string {
 	return []string{"http"}
 }

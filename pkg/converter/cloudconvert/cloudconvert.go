@@ -28,7 +28,11 @@ func init() {
 	converter.Register(converterName, &CloudConvert{})
 }
 
-func (_ *CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts map[string]*proto.Option) (io.Reader, error) {
+func (*CloudConvert) String() string {
+	return converterName
+}
+
+func (*CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts map[string]*proto.Option) (io.Reader, error) {
 	conf := config.MustGet(converterName, opts)
 
 	var b bytes.Buffer
@@ -130,7 +134,7 @@ func (_ *CloudConvert) Convert(ctx context.Context, req *proto.Conversion, opts 
 	}
 }
 
-func (_ *CloudConvert) SupportedMimeTypes() []string {
+func (*CloudConvert) SupportedMimeTypes() []string {
 	return []string{
 		"application/msword",
 		"application/rdf",

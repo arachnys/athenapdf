@@ -10,11 +10,11 @@ import (
 
 type MockConverter struct{}
 
-func (_ *MockConverter) Convert(_ context.Context, _ *proto.Conversion, _ map[string]*proto.Option) (io.Reader, error) {
+func (*MockConverter) Convert(_ context.Context, _ *proto.Conversion, _ map[string]*proto.Option) (io.Reader, error) {
 	return nil, nil
 }
 
-func (_ *MockConverter) SupportedMimeTypes() []string {
+func (*MockConverter) SupportedMimeTypes() []string {
 	return []string{}
 }
 
