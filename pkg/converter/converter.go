@@ -61,17 +61,20 @@ func GetFromConversion(req *proto.Conversion) (Converter, error) {
 	}
 }
 
+func IsExcluded(converterName string, excludedConverters []string) bool {
+	for _, excludedConverter := range excludedConverters {
+		if converterName == excludedConverter {
+			return true
+		}
+	}
+	return false
+}
+
 func GetFromConversionExcluding(req *proto.Conversion) func([]string) (Converter, error) {
 	return func(excludedConverters []string) (Converter, error) {
 		for converterName, c := range List() {
-			for _, excludedConverter := range excludedConverters {
-				if converterName == excludedConverter {
-					continue
-				}
-
-				if IsConvertable(c, req.GetMimeType()) {
-					return c, nil
-				}
+			if IsConvertable(c, req.GetMimeType()) && !IsExcluded(converterName, excludedConverters) {
+				return c, nil
 			}
 		}
 
