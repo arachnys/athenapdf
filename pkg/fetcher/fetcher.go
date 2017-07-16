@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	"github.com/arachnys/athenapdf/pkg/proto"
-	"github.com/arachnys/athenapdf/pkg/uri"
 )
 
 var (
@@ -45,32 +44,6 @@ func Get(fetcherName string) (Fetcher, error) {
 		return f, nil
 	}
 	return nil, FetcherError{err: errors.Errorf("fetcher `%s` does not exist", fetcherName)}
-}
-
-func Fetch(fetcherName string) FetcherFunc {
-	return func(ctx context.Context, target string, opts map[string]*proto.Option) (io.Reader, string, error) {
-		f, err := Get(fetcherName)
-		if err != nil {
-			return nil, "", err
-		}
-
-		protocol, err := uri.Scheme(target)
-		if err != nil {
-			return nil, "", err
-		}
-
-		if !IsFetchable(f, protocol) {
-			return nil, "", FetcherError{
-				errors.Errorf(
-					"target protocol `%s` is not supported",
-					protocol,
-				),
-				fetcherName,
-			}
-		}
-
-		return f.Fetch(ctx, target, opts)
-	}
 }
 
 func IsFetchable(f Fetcher, protocol string) bool {

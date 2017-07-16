@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"container/heap"
 	"context"
 	"github.com/pkg/errors"
 	"io"
@@ -50,62 +51,33 @@ func Get(converterName string) (Converter, error) {
 	}
 }
 
-func GetFromConversion(req *proto.Conversion) (Converter, error) {
-	for _, c := range List() {
-		if IsConvertable(c, req.GetMimeType()) {
-			return c, nil
-		}
-	}
-	return nil, ConverterError{
-		err: errors.Errorf("no converter with support for mime type `%s`", req.GetMimeType()),
-	}
-}
+func NewConverterQueue(req *proto.Conversion, priorities map[string]int) (ConverterQueue, error) {
+	cq := make(ConverterQueue, 0, len(List()))
+	heap.Init(&cq)
 
-func IsExcluded(converterName string, excludedConverters []string) bool {
-	for _, excludedConverter := range excludedConverters {
-		if converterName == excludedConverter {
-			return true
-		}
-	}
-	return false
-}
-
-func GetFromConversionExcluding(req *proto.Conversion) func([]string) (Converter, error) {
-	return func(excludedConverters []string) (Converter, error) {
-		for converterName, c := range List() {
-			if IsConvertable(c, req.GetMimeType()) && !IsExcluded(converterName, excludedConverters) {
-				return c, nil
-			}
-		}
-
-		return nil, ConverterError{
-			err: errors.Errorf(
-				"no converter left with support for mime type `%s`",
-				req.GetMimeType(),
-			),
-		}
-	}
-}
-
-func Convert(converterName string) ConverterFunc {
-	return func(ctx context.Context, req *proto.Conversion, opts map[string]*proto.Option) (io.Reader, error) {
-		c, err := Get(converterName)
-		if err != nil {
-			return nil, err
-		}
-
+	for name, c := range List() {
 		if !IsConvertable(c, req.GetMimeType()) {
-			return nil, ConverterError{
-				errors.Errorf(
-					"mime type `%s` is not supported",
-					req.GetMimeType(),
-				),
-				converterName,
-			}
+			continue
 		}
 
-		return c.Convert(ctx, req, opts)
+		priority := 1
+		if p, ok := priorities[name]; ok {
+			priority = p
+		}
+
+		heap.Push(&cq, &ConverterQueueItem{
+			converter: c,
+			priority:  priority,
+		})
 	}
+
+	if len(cq) == 0 {
+		return nil, ConverterError{
+			err: errors.Errorf("no converter with support for mime type `%s`", req.GetMimeType()),
+		}
+	}
+
+	return cq, nil
 }
 
 func IsConvertable(c Converter, mimeType string) bool {

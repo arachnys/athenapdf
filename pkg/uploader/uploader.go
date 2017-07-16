@@ -45,14 +45,3 @@ func Get(uploaderName string) (Uploader, error) {
 	}
 	return nil, UploaderError{err: errors.Errorf("uploader `%s` does not exist", uploaderName)}
 }
-
-func Upload(uploaderName string) UploaderFunc {
-	return func(ctx context.Context, r io.Reader, opts map[string]*proto.Option) error {
-		u, err := Get(uploaderName)
-		if err != nil {
-			return err
-		}
-
-		return u.Upload(ctx, r, opts)
-	}
-}
