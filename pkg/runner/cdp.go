@@ -23,6 +23,9 @@ var defaultFlags = []string{
 	"--ignore-certificate-errors",
 	"--no-default-browser-check",
 	"--no-first-run",
+	"--no-sandbox",
+	"--no-startup-window",
+	"--no-zygote",
 }
 
 var ErrInvalidTarget = errors.New("invalid / uninitialised target")

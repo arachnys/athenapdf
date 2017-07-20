@@ -14,6 +14,4 @@ if [ "$(pwd)" != '/' ]; then
     VOLUMES="-v $(pwd):/conversions/"
 fi
 
-DOCKER_RUN_OPTIONS="--security-opt seccomp=unconfined"
-
-exec docker run --rm $DOCKER_RUN_OPTIONS $VOLUMES -w "/conversions/" $IMAGE "$@"
+exec docker run --rm $VOLUMES -w "/conversions/" $IMAGE "$@"
