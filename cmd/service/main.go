@@ -1,30 +1,45 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	"github.com/pkg/errors"
-	"io"
+	"github.com/uber/jaeger-client-go"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	jaegerlog "github.com/uber/jaeger-client-go/log"
+	"gopkg.in/alecthomas/kingpin.v2"
 	stdlog "log"
 	"net/http"
 	"os"
 
-	"github.com/arachnys/athenapdf/pkg/process"
-	"github.com/arachnys/athenapdf/pkg/proto"
+	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/tracing/opentracing"
+	httptransport "github.com/go-kit/kit/transport/http"
+
+	"github.com/arachnys/athenapdf/pkg/processor"
 
 	_ "github.com/arachnys/athenapdf/pkg/converter/athenapdf"
+	_ "github.com/arachnys/athenapdf/pkg/converter/cloudconvert"
+	_ "github.com/arachnys/athenapdf/pkg/converter/libreoffice"
 	_ "github.com/arachnys/athenapdf/pkg/fetcher/http"
-
-	"github.com/go-kit/kit/log"
-	httptransport "github.com/go-kit/kit/transport/http"
+	_ "github.com/arachnys/athenapdf/pkg/uploader/s3"
 )
 
-type Response struct {
-	Error   string `json:"error,omitempty"`
-	Success string `json:"success,omitempty"`
-}
+const (
+	appName        = "weaver"
+	appVersion     = "3.0.0-b"
+	appDescription = "microservice for handling (M)HTML to PDF conversion processes"
+)
+
+var (
+	app         = kingpin.New(appName, appDescription).Version(appVersion)
+	debug       = app.Flag("debug", "enable debug mode / verbose logging").Short('D').Bool()
+	concurrency = app.Flag("concurrency", "maximum number of conversions to process in a given time").Short('C').Int()
+	host        = app.Flag("host", "host:port for the microservice to bind").Short('H').Default(":8080").String()
+	jaegerHost  = app.Flag("jaeger", "host:port of a `jaeger-agent` for the reporter to send opentracing spans").String()
+)
 
 func main() {
+	kingpin.MustParse(app.Parse(os.Args[1:]))
+
+	// Base logger
 	var logger log.Logger
 	{
 		logger = log.NewLogfmtLogger(os.Stdout)
@@ -32,6 +47,37 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 		logger = log.With(logger, "transport", "HTTP")
 	}
+
+	// Instrumentation
+	cfg := jaegercfg.Configuration{
+		Reporter: &jaegercfg.ReporterConfig{
+			LogSpans:           *debug,
+			LocalAgentHostPort: *jaegerHost,
+		},
+	}
+	if *debug {
+		cfg.Sampler = &jaegercfg.SamplerConfig{
+			Type:  jaeger.SamplerTypeConst,
+			Param: 1,
+		}
+	}
+	tracer, closer, err := cfg.New(
+		appName,
+		jaegercfg.Logger(jaegerlog.StdLogger),
+		jaegercfg.Tag("version", appVersion),
+	)
+	if err != nil {
+		stdlog.Fatalln(err)
+	}
+	defer closer.Close()
+
+	// Process manager
+	manager := processor.NewManager(*concurrency, 0, 0)
+
+	var svc PDFService
+	svc = pdfService{tracer}
+	svc = errorMiddleware{tracer, svc}
+	svc = managerMiddleware{manager, svc}
 
 	m := http.NewServeMux()
 
@@ -41,72 +87,12 @@ func main() {
 	}
 
 	m.Handle("/process", httptransport.NewServer(
-		processEndpoint,
+		opentracing.TraceServer(tracer, "process")(processEndpoint(svc)),
 		decodeProcessRequest,
 		encodeProcessResponse,
 		options...,
 	))
 
-	stdlog.Fatalln(http.ListenAndServe(":8080", m))
-}
-
-// TODO:
-// - Built-in retries / fallbacks
-// - Queue'ing / throttle
-// - Instrumentation
-func processEndpoint(ctx context.Context, request interface{}) (interface{}, error) {
-	p := request.(proto.Process)
-
-	r, _, err := process.Process(ctx, &p)
-	if err != nil {
-		return nil, err
-	}
-	return r, nil
-}
-
-func decodeProcessRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var process proto.Process
-
-	switch r.Method {
-	case "GET":
-		query := r.URL.Query()
-		if query.Get("uri") == "" {
-			return nil, errors.Errorf("no uri specified")
-		}
-		process = proto.Process{
-			Converter: query.Get("converter"),
-			Conversion: &proto.Conversion{
-				Uri:      query.Get("uri"),
-				MimeType: query.Get("mime_type"),
-			},
-			Uploader: query.Get("uploader"),
-			Fetcher:  query.Get("fetcher"),
-		}
-	case "POST":
-		// TODO
-	default:
-		return nil, errors.Errorf("http method `%s` is not supported", r.Method)
-	}
-
-	return process, nil
-}
-
-func encodeProcessResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-	if v, ok := response.(Response); ok {
-		return json.NewEncoder(w).Encode(v)
-	}
-
-	if v, ok := response.(io.Reader); ok {
-		w.Header().Set("content-type", "application/pdf")
-		if _, err := io.Copy(w, v); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func errorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
-	w.WriteHeader(http.StatusBadRequest)
-	json.NewEncoder(w).Encode(&Response{Error: err.Error()})
+	logger.Log("version", appVersion, "debug", *debug, "addr", *host)
+	stdlog.Fatalln(http.ListenAndServe(*host, m))
 }
