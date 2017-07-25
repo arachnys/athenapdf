@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/uber/jaeger-client-go"
 	jaegercfg "github.com/uber/jaeger-client-go/config"
 	jaegerlog "github.com/uber/jaeger-client-go/log"
@@ -8,6 +9,7 @@ import (
 	stdlog "log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/tracing/opentracing"
@@ -24,7 +26,7 @@ import (
 
 const (
 	appName        = "weaver"
-	appVersion     = "3.0.0-b"
+	appVersion     = "3.0.0"
 	appDescription = "microservice for handling (M)HTML to PDF conversion processes"
 )
 
@@ -38,6 +40,8 @@ var (
 
 func main() {
 	kingpin.MustParse(app.Parse(os.Args[1:]))
+
+	startedAt := time.Now()
 
 	// Base logger
 	var logger log.Logger
@@ -92,6 +96,10 @@ func main() {
 		encodeProcessResponse,
 		options...,
 	))
+
+	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(fmt.Sprintf("%s/%s (%d)", appName, appVersion, startedAt.Unix())))
+	})
 
 	logger.Log("version", appVersion, "debug", *debug, "addr", *host)
 	stdlog.Fatalln(http.ListenAndServe(*host, m))
