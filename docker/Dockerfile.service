@@ -15,8 +15,6 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-url="https://www.github.com/arachnys/athenapdf" \
       maintainer="Arachnys <techteam@arachnys.com>"
 
-ENV GIN_MODE release
-
 ARG TINI_VERSION=v0.14.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc /tini.asc
@@ -26,12 +24,8 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 595E85A6B1B4779EA4DAA
 
 COPY --from=build /go/src/github.com/arachnys/athenapdf/build/athenapdf-service /athenapdf/
 
-COPY ./cmd/service/conf/ /athenapdf/conf/
-
 EXPOSE 8080
 
 WORKDIR /athenapdf/
 
-CMD ["/tini", "--", "athenapdf-service"]
-
-ENTRYPOINT ["/athenapdf/conf/entrypoint.sh"]
+ENTRYPOINT ["/tini", "--", "athenapdf-service"]
