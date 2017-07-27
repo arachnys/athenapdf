@@ -12,6 +12,15 @@ func IsLocal(uri string) bool {
 	return false
 }
 
+func ToLocal(uri string) (string, error) {
+	u, err := url.Parse(uri)
+	if err != nil {
+		return "", errors.WithStack(err)
+	}
+	u.Scheme = "file"
+	return u.String(), nil
+}
+
 func Scheme(uri string) (string, error) {
 	u, err := url.Parse(uri)
 	if err != nil {

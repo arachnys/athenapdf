@@ -47,7 +47,16 @@ func processEndpoint(svc PDFService) endpoint.Endpoint {
 			}
 			defer os.Remove(tmp.Name())
 
-			process.Conversion.Uri = tmp.Name()
+			if process.GetConversion() == nil {
+				process.Conversion = &proto.Conversion{}
+			}
+
+			localURI, err := uri.ToLocal(tmp.Name())
+			if err != nil {
+				return nil, err
+			}
+
+			process.Conversion.Uri = localURI
 			mt, err := mime.TypeFromFile(tmp.Name())
 			if err != nil {
 				return nil, errors.WithStack(err)
@@ -87,6 +96,7 @@ func decodeProcessRequest(ctx context.Context, r *http.Request) (interface{}, er
 		}
 	case "POST":
 		req := r.FormValue("process")
+
 		if err := json.Unmarshal([]byte(req), &request.Process); err != nil {
 			return nil, errors.WithStack(err)
 		}
