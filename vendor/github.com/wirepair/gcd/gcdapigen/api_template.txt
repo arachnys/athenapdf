@@ -1,0 +1,169 @@
+// AUTO-GENERATED Chrome Remote Debugger Protocol API Client
+// This file contains {{.Domain}} functionality.
+// API Version: {{.Major}}.{{.Minor}}
+{{ $api := . }}
+
+package gcdapi
+
+import (
+	"github.com/wirepair/gcd/gcdmessage"
+{{if len (.Imports) }}{{range $import := .Imports}}"{{$import}}"{{end}}
+{{end}}
+)
+
+{{range $element := $api.SubTypes}}// {{$element.Description}}
+type {{$api.Domain}}{{$element.Name | Title}} struct {
+	{{range $prop := $element.Properties}}
+	{{$prop.Name | Title}} {{if $prop.IsPointer}}*{{end}}{{$prop.GoType}} `json:"{{$prop.Name}}{{if $prop.Optional}},omitempty{{end}}"` // {{$prop.Description}}{{end}}
+}
+{{end}}
+
+{{range $element := $api.Types}}// {{$element.Description}}{{ if $element.EnumVals }} enum = {{ $element.EnumVals }} {{ end }} {{ range $prop := $element.Properties }} {{end}}
+type {{$api.Domain}}{{$element.Name | Title}} struct {
+	{{range $prop := $element.Properties}}
+	{{$prop.Name | Title}} {{if $prop.IsTypeArray}}[]{{end}}{{if $prop.IsPointer}}*{{end}}{{$prop.GoType}} `json:"{{$prop.Name}}{{if $prop.Optional}},omitempty{{end}}"` // {{$prop.Description}}{{end}}
+}
+{{end}}
+
+
+{{range $element := $api.Events}}
+{{if len ($element.Parameters)}}// {{$element.Description}}
+type {{$api.Domain}}{{$element.Name | Title}}Event struct {
+	Method string `json:"method"`
+	Params struct {
+		{{range $prop := $element.Parameters}}
+		{{$prop.Name | Title}} {{if $prop.IsTypeArray}}[]{{end}}{{if $prop.IsPointer}}*{{end}}{{$prop.GoType}} `json:"{{$prop.Name}}{{if $prop.Optional}},omitempty{{end}}"` // {{$prop.Description}}{{end}}
+	} `json:"Params,omitempty"`
+	
+}
+{{end}}
+{{end}}
+
+type {{.Domain}} struct {
+	target gcdmessage.ChromeTargeter
+}
+
+func New{{.Domain}}(target gcdmessage.ChromeTargeter) *{{.Domain}} {
+	c := &{{.Domain}}{target: target}
+	return c
+}
+
+{{range $element := $api.Commands}}{{if $element.NoParamReturnCalls}}// {{$element.Description}}
+func (c *{{$api.Domain}}) {{.Name | Title}}() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "{{$api.Domain}}.{{.Name}}"})
+}
+{{end}}
+
+{{if $element.ParamCalls}}
+type {{$api.Domain | Title}}{{.Name | Title}}Params struct {
+	{{- range $param := $element.Parameters}}
+	// {{$param.Description}}
+	{{$param.Name | Reserved | Title}} {{if $param.IsTypeArray}}[]{{end}}{{if $param.IsPointer}}*{{end}}{{$param.GoType}} `json:"{{$param.Name}}{{if $param.Optional}},omitempty{{end}}"`
+	{{- end}}
+}
+
+// {{.Name | Title}}WithParams - {{$element.Description}}
+func (c *{{$api.Domain}}) {{.Name | Title}}WithParams(v *{{$api.Domain | Title}}{{.Name | Title}}Params) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "{{$api.Domain}}.{{.Name}}", Params: v})
+}
+
+// {{.Name | Title}} - {{$element.Description}}{{range $param := $element.Parameters}}
+// {{$param.Name}} - {{$param.Description}}{{ end }}
+func (c *{{$api.Domain}}) {{.Name | Title}}({{range $param := $element.Parameters}}{{$param.Name | Reserved}} {{if $param.IsTypeArray}}[]{{end}}{{if $param.IsPointer}}*{{end}}{{$param.GoType}}, {{end}}) (*gcdmessage.ChromeResponse, error) {
+	var v {{$api.Domain | Title}}{{.Name | Title}}Params
+	{{- range $param := $element.Parameters}}
+	v.{{$param.Name | Reserved | Title}} = {{$param.Name | Reserved}}
+	{{- end}}
+	return c.{{.Name | Title}}WithParams(&v)
+}
+{{end}}
+
+
+
+{{if $element.ReturnCalls}}// {{.Name | Title}} - {{$element.Description}}
+// Returns - {{range $return := .Returns}} {{$return.Name}} - {{$return.Description}}{{ end }}
+func (c *{{$api.Domain}}) {{.Name | Title}}() ({{range $rets := .Returns}}{{if $rets.IsTypeArray}}[]{{end}}{{if $rets.IsPointer}}*{{end}}{{$rets.GoType}}, {{end}}error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "{{$api.Domain}}.{{.Name}}"})
+	if err != nil {
+		return {{range $rets := .Returns}}{{if $rets.IsTypeArray}}nil{{else}}{{$rets.GoType | NullType}}{{end}}, {{end}}err
+	}
+
+	var chromeData struct {
+		Result struct { {{range $rets := .Returns}}
+			{{$rets.Name | Title | Reserved }}  {{if $rets.IsTypeArray}}[]{{end}}{{if $rets.IsPointer}}*{{end}}{{$rets.GoType}} {{end}}
+		}
+	}
+
+	if resp == nil {
+		return {{range $rets := .Returns}}{{if $rets.IsTypeArray}}nil{{else}}{{$rets.GoType | NullType}}{{end}}, {{end}}&gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return {{range $rets := .Returns}}{{if $rets.IsTypeArray}}nil{{else}}{{$rets.GoType | NullType}}{{end}}, {{end}}&gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return {{range $rets := .Returns}}{{if $rets.IsTypeArray}}nil{{else}}{{$rets.GoType | NullType}}{{end}}, {{end}}err
+	}
+
+	return {{range $rets := .Returns}}chromeData.Result.{{$rets.Name | Title | Reserved}}, {{end}}nil
+}
+
+{{ end }}
+
+{{if $element.ParamReturnCalls}}
+type {{$api.Domain | Title}}{{.Name | Title}}Params struct {
+	{{- range $param := $element.Parameters}}
+	// {{$param.Description}}
+	{{$param.Name | Reserved | Title}} {{if $param.IsTypeArray}}[]{{end}}{{if $param.IsPointer}}*{{end}}{{$param.GoType}} `json:"{{$param.Name}}{{if $param.Optional}},omitempty{{end}}"`
+	{{- end}}
+}
+
+// {{.Name | Title}}WithParams - {{$element.Description}}
+// Returns - {{range $return := .Returns}} {{$return.Name}} - {{$return.Description}}{{ end }}
+func (c *{{$api.Domain}}) {{.Name | Title}}WithParams(v *{{$api.Domain | Title}}{{.Name | Title}}Params) ({{range $rets := .Returns}}{{if $rets.IsTypeArray}}[]{{end}}{{if $rets.IsPointer}}*{{end}}{{$rets.GoType}}, {{end}}error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "{{$api.Domain}}.{{.Name}}", Params: v})
+	if err != nil {
+		return {{range $rets := .Returns}}{{if $rets.IsTypeArray}}nil{{else}}{{$rets.GoType | NullType}}{{end}}, {{end}}err
+	}
+
+	var chromeData struct {
+		Result struct { {{range $rets := .Returns}}
+			{{$rets.Name | Title | Reserved }}  {{if $rets.IsTypeArray}}[]{{end}}{{if $rets.IsPointer}}*{{end}}{{$rets.GoType}} {{end}}
+		}
+	}
+
+	if resp == nil {
+		return {{range $rets := .Returns}}{{if $rets.IsTypeArray}}nil{{else}}{{$rets.GoType | NullType}}{{end}}, {{end}}&gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return {{range $rets := .Returns}}{{if $rets.IsTypeArray}}nil{{else}}{{$rets.GoType | NullType}}{{end}}, {{end}}&gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return {{range $rets := .Returns}}{{if $rets.IsTypeArray}}nil{{else}}{{$rets.GoType | NullType}}{{end}}, {{end}}err
+	}
+
+	return {{range $rets := .Returns}}chromeData.Result.{{$rets.Name | Title | Reserved}}, {{end}}nil
+}
+
+// {{.Name | Title}} - {{$element.Description}}{{range $param := $element.Parameters}}
+// {{$param.Name}} - {{$param.Description}}{{ end }}
+// Returns - {{range $return := .Returns}} {{$return.Name}} - {{$return.Description}}{{ end }}
+func (c *{{$api.Domain}}) {{.Name | Title}}({{range $param := $element.Parameters}}{{$param.Name | Reserved}} {{if $param.IsTypeArray}}[]{{end}}{{if $param.IsPointer}}*{{end}}{{$param.GoType}}, {{end}}) ({{range $rets := .Returns}}{{if $rets.IsTypeArray}}[]{{end}}{{if $rets.IsPointer}}*{{end}}{{$rets.GoType}}, {{end}}error) {
+	var v {{$api.Domain | Title}}{{.Name | Title}}Params
+	{{- range $param := $element.Parameters}}
+	v.{{$param.Name | Reserved | Title}} = {{$param.Name | Reserved}}
+	{{- end}}
+	return c.{{.Name | Title}}WithParams(&v)
+}
+
+{{ end }}
+{{end}}

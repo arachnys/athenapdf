@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<head>
+<title>target of redirect</title>
+<script>
+function addAnother(i) {
+		i +=1;
+		setTimeout(function() {
+		var child = document.getElementById('child');
+		var newDiv = document.createElement('div');
+		newDiv.innerHTML = "hello " + i;
+		child.appendChild(newDiv);
+		addAnother(i);
+	}, 500);
+}
+
+window.addEventListener('load', function() {
+	setTimeout(function() {
+		var child = document.getElementById('child');
+		var newDiv = document.createElement('div');
+		newDiv.innerHTML = "hello";
+		child.appendChild(newDiv);
+		addAnother(1);
+	}, 500);
+	
+});
+</script>
+</head>
+<body>
+	<div id="parent">
+		<div id="child">i'm a target page</div>
+		<div>i'm a target page</div>
+		<div>i'm a target page</div>
+		<div>i'm a target page</div>
+		<div>i'm a target page</div>
+		<div>i'm a target page</div>
+		<div>i'm a target page</div>
+		<div>i'm a target page</div>
+		<div>i'm a target page</div>
+		<div>i'm a target page</div>
+		<div>i'm a target page</div>
+	</div>
+</iframe>
+</body>
+</html>

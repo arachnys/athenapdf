@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<head>
+<title>frame top</title>
+<script>
+setTimeout(function() {
+		//document.location = 'redirect_target.html';
+		var child = document.getElementById('frametopdiv');
+		var newDiv = document.createElement('div');
+		newDiv.innerHTML = "hello frame top";
+		child.appendChild(newDiv);
+	}, 1000);
+
+</script>
+</head>
+<body>
+	<iframe id="iframe" src="iframe.html"></iframe>
+	<div id="frametopdiv"></div>
+</iframe>
+</body>
+</html>

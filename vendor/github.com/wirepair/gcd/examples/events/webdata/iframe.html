@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<head>
+<title>document modification</title>
+<script>
+window.addEventListener('load', function() {
+	
+	setTimeout(function() {
+		//document.location = 'redirect_target.html';
+		var child = document.getElementById('child');
+		var newDiv = document.createElement('div');
+		newDiv.innerHTML = "hello iframe";
+		child.appendChild(newDiv);
+	}, 5000);
+	//setTimeout(function() {
+	//	document.location = 'target.html';
+	//}, 3000)
+
+});
+</script>
+</head>
+<body>
+	<div id="parent">
+		<div id="child">see ya!</div>
+	</div>
+</iframe>
+</body>
+</html>
