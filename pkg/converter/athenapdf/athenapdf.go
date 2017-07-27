@@ -71,5 +71,6 @@ func (*AthenaPDF) SupportedMimeTypes() []string {
 		"image",
 		"text/css",
 		"text/html",
+		"text/plain",
 	}
 }
