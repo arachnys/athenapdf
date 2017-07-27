@@ -1,6 +1,6 @@
 // +build linux freebsd netbsd openbsd
 
-package runner
+package libreoffice
 
 import "os/exec"
 
