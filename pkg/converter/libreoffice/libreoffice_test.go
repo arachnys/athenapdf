@@ -1,3 +1,5 @@
+// +build !non_integration
+
 package libreoffice
 
 import (
