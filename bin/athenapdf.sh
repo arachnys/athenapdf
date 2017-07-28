@@ -7,7 +7,7 @@
 
 set -e
 
-VERSION="3"
+VERSION="${VERSION:-3}"
 IMAGE="arachnysdocker/athenapdf:$VERSION"
 
 if [ "$(pwd)" != '/' ]; then
