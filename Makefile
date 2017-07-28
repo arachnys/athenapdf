@@ -17,10 +17,10 @@ P="\\033[34m[+]\\033[0m"
 help:
 	@echo
 	@echo "  \033[34mbuild/dev\033[0m – builds dev docker image"
-	@echo "  \033[34mbuild/cli\033[0m – builds athenapdf (cli) docker image"
-	@echo "  \033[34mbuild/service\033[0m – builds weaver (service) docker image"
+	@echo "  \033[34mbuild/cli\033[0m – builds athenapdf cli assembly docker image"
+	@echo "  \033[34mbuild/service\033[0m – builds athenapdf service assembly docker image"
 	@echo "  \033[34mrun/dev\033[0m – runs dev docker image (with code)"
-	@echo "  \033[34mrun/cli\033[0m – runs athenapdf (cli) docker image"
+	@echo "  \033[34mrun/cli\033[0m – runs athenapdf cli assembly docker image"
 	@echo
 
 build/dev:
@@ -41,16 +41,13 @@ run/dev:
 	@echo "  $(P) run/dev"
 	docker run --rm -it \
 				-v `pwd`:${DOCKER_GO_PATH} \
+				-w ${DOCKER_GO_PATH} \
 				${DEV_IMAGE_NAME}:latest \
 				${args}
 
 run/cli:
 	@echo "  $(P) run/cli"
-	docker run --rm \
-				--security-opt seccomp=unconfined \
-				-v `pwd`:/conversions/ \
-				${CLI_IMAGE_NAME}:latest \
-				${args}
+	VERSION=latest ./bin/athenapdf.sh ${args}
 
 version:
 	@echo "${VERSION}"

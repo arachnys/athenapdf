@@ -5,12 +5,11 @@ sudo: required
 services:
   - docker
 
-before_script:
-  - make testservice
-
 script:
-  - make build
-  - make testcli
+  - make build/dev
+  - make args="./bin/test.sh" run/dev
+  - make build/service
+  - make args="https://httpbin.org/html" run/cli
 
 after_success:
   - if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "master" -o -n "$TRAVIS_TAG" ]; then exit 0; fi
