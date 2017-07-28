@@ -14,7 +14,7 @@ script:
   - make build/dev
   - make args="./bin/test.sh" run/dev
   - make build/service
-  - make args="https://httpbin.org/html" run/cli
+  - make args="-- https://httpbin.org/html -" run/cli | grep -a "PDF-1.4"
 
 after_success:
   - if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "master" -o -n "$TRAVIS_TAG" ]; then exit 0; fi
