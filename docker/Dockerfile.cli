@@ -31,7 +31,7 @@ RUN apt-get update \
         libosmesa6 \
         libx11-xcb-dev \
         libxss1 \
-        mailcap \
+        mime-support \
         culmus \
         fonts-beng \
         fonts-dejavu \
