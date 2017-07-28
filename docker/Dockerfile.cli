@@ -16,7 +16,7 @@ ARG VCS_REF
 LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.vcs-url="https://www.github.com/arachnys/athenapdf" \
-      org.label-schema.docker.cmd="docker run --rm -v $(pwd):/conversions/ -w \"/conversions/\" arachnysdocker/athenapdf"
+      org.label-schema.docker.cmd="docker run --rm -v $(pwd):/conversions/ -w \"/conversions/\" arachnysdocker/athenapdf" \
       maintainer="Arachnys <techteam@arachnys.com>"
 
 ARG CHROMIUM_REVISION=480469
