@@ -27,6 +27,7 @@ RUN apt-get update \
         libosmesa6 \
         libx11-xcb-dev \
         libxss1 \
+        mailcap \
         culmus \
         fonts-beng \
         fonts-dejavu \
