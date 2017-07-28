@@ -1,9 +1,12 @@
 FROM arachnysdocker/athenapdf-dev as build
 
-COPY . /go/src/github.com/arachnys/athenapdf/
-RUN cd /go/src/github.com/arachnys/athenapdf/ \
-    && CGO_ENABLED=0 go build -ldflags "-s" -a -installsuffix cgo -o build/athenapdf github.com/arachnys/athenapdf/cmd/cli \
-    && chmod +x build/athenapdf
+WORKDIR /go/src/github.com/arachnys/athenapdf/
+COPY . .
+RUN mkdir /build/ \
+    && bin/build.sh \
+        "/build/athenapdf" \
+        "github.com/arachnys/athenapdf/cmd/cli" \
+    && chmod +x /build/athenapdf
 
 
 FROM debian:stretch-slim
@@ -13,6 +16,7 @@ ARG VCS_REF
 LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.vcs-url="https://www.github.com/arachnys/athenapdf" \
+      org.label-schema.docker.cmd="docker run --rm -v $(pwd):/conversions/ -w \"/conversions/\" arachnysdocker/athenapdf"
       maintainer="Arachnys <techteam@arachnys.com>"
 
 ARG CHROMIUM_REVISION=480469
@@ -57,7 +61,7 @@ RUN apt-get update \
 
 COPY fonts.conf /etc/fonts/conf.d/100-athena.conf
 
-COPY --from=build /go/src/github.com/arachnys/athenapdf/build/athenapdf /athenapdf/
+COPY --from=build /build/athenapdf /athenapdf/
 ENV PATH /chromium/:/athenapdf/:$PATH
 
 WORKDIR /conversions/
