@@ -3,5 +3,6 @@ FROM golang:1.9-alpine
 LABEL org.label-schema.vcs-url="https://www.github.com/arachnys/athenapdf" \
       maintainer="Arachnys <techteam@arachnys.com>"
 
-RUN apk add --update bash git mailcap nano \
-    && go get -u github.com/golang/dep/cmd/dep
+RUN apk add --update alpine-sdk bash git mailcap nano \
+    && go get -u github.com/golang/dep/cmd/dep \
+    && go get -u honnef.co/go/tools/cmd/megacheck

@@ -5,7 +5,7 @@
 # https://github.com/arachnys/athenapdf/
 #
 
-set -ex
+set -exo pipefail
 
 if [ -z "$1" ] || [ -z "$2" ]; then
     echo "Build output or package not specified"
