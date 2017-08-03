@@ -24,7 +24,15 @@ func loadFile(fp string) ([]byte, error) {
 
 func TestFetch(t *testing.T) {
 	testComplexHtmlData, err := loadFile("testdata/complex_html.html")
+	if err != nil {
+		t.Fatalf("unexpected error: %+v", err)
+	}
+
 	testSimpleXmlData, err := loadFile("testdata/simple_xml.xml")
+	if err != nil {
+		t.Fatalf("unexpected error: %+v", err)
+	}
+
 	testComplexXmlData, err := loadFile("testdata/complex_xml.xml")
 	if err != nil {
 		t.Fatalf("unexpected error: %+v", err)

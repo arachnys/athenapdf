@@ -18,10 +18,6 @@ import (
 	"github.com/arachnys/athenapdf/pkg/uri"
 )
 
-const (
-	defaultMimeType = "text/plain; charset=\"UTF-8\""
-)
-
 type PDFService interface {
 	Process(context.Context, *proto.Process) (io.Reader, bool, error)
 }

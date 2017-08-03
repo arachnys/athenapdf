@@ -78,8 +78,7 @@ func main() {
 	// Process manager
 	manager := processor.NewManager(*concurrency, 0, 0)
 
-	var svc PDFService
-	svc = pdfService{tracer}
+	var svc PDFService = pdfService{tracer}
 	svc = errorMiddleware{tracer, svc}
 	svc = managerMiddleware{manager, svc}
 
