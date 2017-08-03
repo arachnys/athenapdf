@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	awss3 "github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
 const (
@@ -60,16 +60,22 @@ func (*S3) Upload(ctx context.Context, r io.Reader, opts map[string]*proto.Optio
 		awsConf = awsConf.WithCredentials(creds)
 	}
 
-	svc := awss3.New(session.New(awsConf))
-	input := &awss3.PutObjectInput{
-		ACL:         aws.String(acl),
-		Body:        aws.ReadSeekCloser(r),
-		Bucket:      aws.String(bucket),
-		ContentType: aws.String("application/pdf"),
-		Key:         aws.String(key),
+	sess, err := session.NewSession(awsConf)
+	if err != nil {
+		return errors.WithStack(err)
 	}
 
-	if _, err := svc.PutObjectWithContext(ctx, input); err != nil {
+	uploader := s3manager.NewUploader(sess)
+	ct := "application/pdf"
+	input := &s3manager.UploadInput{
+		ACL:         &acl,
+		Body:        r,
+		Bucket:      &bucket,
+		ContentType: &ct,
+		Key:         &key,
+	}
+
+	if _, err := uploader.UploadWithContext(ctx, input, nil); err != nil {
 		return errors.WithStack(err)
 	}
 
