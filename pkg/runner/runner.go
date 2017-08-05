@@ -100,7 +100,9 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 		r.Timeout = defaultTimeout
 	}
 
-	if err := setOptions(r.Target, req.GetOptions()); err != nil {
+	options := req.GetOptions()
+
+	if err := setOptions(r.Target, options); err != nil {
 		return nil, err
 	}
 
@@ -109,6 +111,10 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 	}
 
 	if err := setCookies(r.Target, req.GetCookies()); err != nil {
+		return nil, err
+	}
+
+	if err := setInsecure(r.Target, options["insecure"].GetBoolValue(), r.Debug); err != nil {
 		return nil, err
 	}
 
@@ -192,7 +198,6 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 
 	// Generate PDF, and convert output to bytes from base64 string
 	dimensions := req.GetDimensions()
-	options := req.GetOptions()
 	pdfParams := gcdapi.PagePrintToPDFParams{
 		MarginBottom:    dimensions.GetMarginBottom(),
 		MarginLeft:      dimensions.GetMarginLeft(),

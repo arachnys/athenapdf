@@ -1,8 +1,10 @@
 package runner
 
 import (
+	"encoding/json"
 	"github.com/pkg/errors"
 	"io/ioutil"
+	"log"
 	"net/url"
 
 	"github.com/arachnys/athenapdf/pkg/proto"
@@ -73,10 +75,11 @@ func startTarget(client *gcd.Gcd) (*gcd.ChromeTarget, ExitFunc, error) {
 
 	t.CSS.Enable()
 	t.DOM.Enable()
+	t.Log.Enable()
 	t.Network.Enable(-1, -1)
 	t.Page.Enable()
 	t.Runtime.Enable()
-	t.Log.Enable()
+	t.Security.Enable()
 
 	exitFunc = func() error { return client.CloseTab(t) }
 
@@ -139,6 +142,29 @@ func setCookies(t *gcd.ChromeTarget, cookies []*proto.Cookie) error {
 			return errors.WithStack(err)
 		}
 	}
+
+	return nil
+}
+
+func setInsecure(t *gcd.ChromeTarget, insecure bool, debug bool) error {
+	if !insecure {
+		return nil
+	}
+
+	if _, err := t.Security.SetOverrideCertificateErrors(true); err != nil {
+		return errors.WithStack(err)
+	}
+
+	t.Subscribe("Security.certificateError", func(_ *gcd.ChromeTarget, b []byte) {
+		var v gcdapi.SecurityCertificateErrorEvent
+		if err := json.Unmarshal(b, &v); err != nil {
+			if debug {
+				log.Println(err)
+			}
+			return
+		}
+		t.Security.HandleCertificateError(v.Params.EventId, "continue")
+	})
 
 	return nil
 }

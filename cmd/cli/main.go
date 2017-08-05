@@ -26,9 +26,10 @@ var (
 
 	app = kingpin.New(appName, appDescription).Version(appVersion)
 
-	debug   = app.Flag("debug", "enable debug mode / verbose logging").Short('D').Bool()
-	dryRun  = app.Flag("dry-run", "do not render the PDF output, useful for testing").Bool()
-	timeout = app.Flag("timeout", "duration to wait for the page to load before exiting").Default("60s").Duration()
+	debug    = app.Flag("debug", "enable debug mode / verbose logging").Short('D').Bool()
+	dryRun   = app.Flag("dry-run", "do not render the PDF output, useful for testing").Bool()
+	timeout  = app.Flag("timeout", "duration to wait for the page to load before exiting").Default("60s").Duration()
+	insecure = app.Flag("insecure", "allow running insecure content / bypass certificate errors").Bool()
 
 	server = app.Flag("server", "run in client-server mode by connecting to a local running instance of Chromium's Remote Debugging Protocol").URL()
 	proxy  = app.Flag("proxy", "use a proxy server for HTTP(S) requests (only works in non-client-server mode, default)").URL()
@@ -160,6 +161,11 @@ func getOptions() map[string]*proto.Option {
 	options["media_type"] = &proto.Option{
 		&proto.Option_StringValue{
 			*mediaType,
+		},
+	}
+	options["insecure"] = &proto.Option{
+		&proto.Option_BoolValue{
+			*insecure,
 		},
 	}
 	options["no_cache"] = &proto.Option{
