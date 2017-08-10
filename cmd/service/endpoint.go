@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
@@ -80,12 +81,13 @@ func processEndpoint(svc PDFService) endpoint.Endpoint {
 }
 
 func decodeProcessRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	request := Request{}
+	var request Request
+	var process proto.Process
 
 	switch r.Method {
 	case "GET":
 		query := r.URL.Query()
-		request.Process = &proto.Process{
+		process = proto.Process{
 			Converter: query.Get("converter"),
 			Conversion: &proto.Conversion{
 				Uri:      query.Get("uri"),
@@ -97,7 +99,7 @@ func decodeProcessRequest(ctx context.Context, r *http.Request) (interface{}, er
 	case "POST":
 		req := r.FormValue("process")
 
-		if err := json.Unmarshal([]byte(req), &request.Process); err != nil {
+		if err := jsonpb.UnmarshalString(req, &process); err != nil {
 			return nil, errors.WithStack(err)
 		}
 
@@ -119,6 +121,8 @@ func decodeProcessRequest(ctx context.Context, r *http.Request) (interface{}, er
 	default:
 		return nil, errors.Errorf("http method `%s` is not supported", r.Method)
 	}
+
+	request.Process = &process
 
 	return request, nil
 }
