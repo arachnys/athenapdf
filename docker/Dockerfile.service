@@ -19,6 +19,15 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.docker.cmd="docker run --rm -p 8080:8080 arachnysdocker/athenapdf-service" \
       maintainer="Arachnys <techteam@arachnys.com>"
 
+# Install LibreOffice
+RUN apt-get update \
+    && apt-get install -yq --no-install-recommends libreoffice \
+    && apt-get -yq autoremove \
+        && apt-get -yq clean \
+        && rm -rf /var/lib/apt/lists/* \
+        && truncate -s 0 /var/log/*log
+
+# `init` for reaping zombies, and signal forwarding
 ARG TINI_VERSION=v0.14.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc /tini.asc
