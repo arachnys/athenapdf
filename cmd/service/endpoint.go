@@ -58,11 +58,14 @@ func processEndpoint(svc PDFService) endpoint.Endpoint {
 			}
 
 			process.Conversion.Uri = localURI
-			mt, err := mime.TypeFromFile(tmp.Name())
-			if err != nil {
-				return nil, errors.WithStack(err)
+
+			if process.Conversion.GetMimeType() == "" {
+				mt, err := mime.TypeFromFile(tmp.Name())
+				if err != nil {
+					return nil, errors.WithStack(err)
+				}
+				process.Conversion.MimeType = mt
 			}
-			process.Conversion.MimeType = mt
 		} else if uri.IsLocal(process.GetConversion().GetUri()) {
 			return nil, errors.New("local conversions are not allowed")
 		}
