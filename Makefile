@@ -40,6 +40,7 @@ build/service:
 run/dev:
 	@echo "  $(P) run/dev"
 	docker run --rm -it \
+				-e COVERALLS_TOKEN \
 				-v `pwd`:${DOCKER_GO_PATH} \
 				-w ${DOCKER_GO_PATH} \
 				${DEV_IMAGE_NAME}:latest \

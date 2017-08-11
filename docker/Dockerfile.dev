@@ -5,4 +5,5 @@ LABEL org.label-schema.vcs-url="https://www.github.com/arachnys/athenapdf" \
 
 RUN apk add --update alpine-sdk bash git mailcap nano \
     && go get -u github.com/golang/dep/cmd/dep \
+    && go get -u github.com/mattn/goveralls \
     && go get -u honnef.co/go/tools/cmd/megacheck
