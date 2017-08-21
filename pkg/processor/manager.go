@@ -33,9 +33,8 @@ type Work struct {
 	processor Processor
 	process   *proto.Process
 
-	OutputReader   chan io.Reader
-	OutputUploaded chan bool
-	Err            chan error
+	OutputReader chan io.Reader
+	Err          chan error
 }
 
 func NewManager(maxWorkers, maxQueue int, addTimeout time.Duration) Manager {
@@ -79,9 +78,8 @@ func (pm Manager) Add(ctx context.Context, processor Processor, process *proto.P
 		processor: processor,
 		process:   process,
 
-		OutputReader:   make(chan io.Reader, 1),
-		OutputUploaded: make(chan bool, 1),
-		Err:            make(chan error, 1),
+		OutputReader: make(chan io.Reader, 1),
+		Err:          make(chan error, 1),
 	}
 
 	select {
@@ -95,18 +93,16 @@ func (pm Manager) Add(ctx context.Context, processor Processor, process *proto.P
 
 func (w Work) Start() {
 	processCh := make(chan struct {
-		r        io.Reader
-		uploaded bool
-		err      error
+		r   io.Reader
+		err error
 	}, 1)
 
 	go func() {
-		r, uploaded, err := w.processor.Process(w.ctx, w.process)
+		r, err := w.processor.Process(w.ctx, w.process)
 		processCh <- struct {
-			r        io.Reader
-			uploaded bool
-			err      error
-		}{r, uploaded, err}
+			r   io.Reader
+			err error
+		}{r, err}
 	}()
 
 	select {
@@ -117,11 +113,6 @@ func (w Work) Start() {
 	case res := <-processCh:
 		if res.err != nil {
 			w.Err <- res.err
-			return
-		}
-
-		if res.uploaded {
-			w.OutputUploaded <- true
 			return
 		}
 

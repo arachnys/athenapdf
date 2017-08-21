@@ -8,5 +8,5 @@ import (
 )
 
 type Processor interface {
-	Process(context.Context, *proto.Process) (io.Reader, bool, error)
+	Process(context.Context, *proto.Process) (io.Reader, error)
 }

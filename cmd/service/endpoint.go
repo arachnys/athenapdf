@@ -32,51 +32,64 @@ type Request struct {
 func processEndpoint(svc PDFService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		var res interface{}
-
 		req := request.(Request)
-		process := req.Process
 
-		if req.Process.GetConversion().GetUri() == "" && req.File == nil {
-			return nil, errors.New("no uri or file provided")
-		} else if req.File != nil {
-			tmp, err := ioutil.TempFile("", "athenapdf-request")
+		var input io.Reader = req.File
+		var mimeType string
+		var err error
+
+		if req.Process.GetFetcher() != "" {
+			input, mimeType, err = svc.Fetch(ctx, req.Process)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		if input != nil {
+			tmp, err := ioutil.TempFile("", "athenapdf-process-endpoint")
 			if err != nil {
 				return nil, errors.WithStack(err)
 			}
-			if _, err := io.Copy(tmp, req.File); err != nil {
+			if _, err := io.Copy(tmp, input); err != nil {
 				return nil, errors.WithStack(err)
 			}
 			defer os.Remove(tmp.Name())
-
-			if process.GetConversion() == nil {
-				process.Conversion = &proto.Conversion{}
-			}
 
 			localURI, err := uri.ToLocal(tmp.Name())
 			if err != nil {
 				return nil, err
 			}
 
-			process.Conversion.Uri = localURI
-
-			if process.Conversion.GetMimeType() == "" {
-				mt, err := mime.TypeFromFile(tmp.Name())
-				if err != nil {
-					return nil, errors.WithStack(err)
-				}
-				process.Conversion.MimeType = mt
+			if req.Process.GetConversion() == nil {
+				req.Process.Conversion = &proto.Conversion{}
 			}
-		} else if uri.IsLocal(process.GetConversion().GetUri()) {
+
+			req.Process.Conversion.Uri = localURI
+			if req.Process.GetConversion().GetMimeType() == "" {
+				if mimeType == "" {
+					mimeType, err = mime.TypeFromFile(tmp.Name())
+					if err != nil {
+						return nil, errors.WithStack(err)
+					}
+				}
+				req.Process.Conversion.MimeType = mimeType
+			}
+		} else if uri.IsLocal(req.Process.GetConversion().GetUri()) {
 			return nil, errors.New("local conversions are not allowed")
 		}
 
-		res, uploaded, err := svc.Process(ctx, process)
+		r, err := svc.Convert(ctx, req.Process)
 		if err != nil {
 			return nil, err
 		}
 
-		if uploaded {
-			res = Response{Success: fmt.Sprintf("uploaded to %s", process.GetFetcher())}
+		if req.Process.GetUploader() != "" {
+			if err := svc.Upload(ctx, req.Process, r); err != nil {
+				return nil, err
+			}
+			return Response{
+				Success: fmt.Sprintf("uploaded to %s", req.Process.GetFetcher()),
+			}, nil
 		}
 
 		return res, nil

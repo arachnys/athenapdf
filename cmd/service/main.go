@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/uber/jaeger-client-go"
-	jaegercfg "github.com/uber/jaeger-client-go/config"
-	jaegerlog "github.com/uber/jaeger-client-go/log"
 	"gopkg.in/alecthomas/kingpin.v2"
 	stdlog "log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/uber/jaeger-client-go"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	jaegerlog "github.com/uber/jaeger-client-go/log"
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/tracing/opentracing"
@@ -78,8 +79,8 @@ func main() {
 	// Process manager
 	manager := processor.NewManager(*concurrency, 0, 0)
 
-	var svc PDFService = pdfService{tracer}
-	svc = errorMiddleware{tracer, svc}
+	var svc PDFService = pdfService{}
+	svc = instrumentingMiddleware{tracer, svc}
 	svc = managerMiddleware{manager, svc}
 
 	m := http.NewServeMux()
