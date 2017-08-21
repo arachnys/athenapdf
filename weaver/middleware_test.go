@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -111,8 +112,8 @@ func TestErrorMiddleware(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to read response body: %+v", err)
 	}
-	want := "{\"error\":\"PDF conversion failed due to an internal server error\"}\n"
-	if !reflect.DeepEqual(string(got), want) {
+	want := "{\"error\":\"PDF conversion failed due to an internal server error\"}"
+	if !reflect.DeepEqual(strings.TrimSpace(string(got)), want) {
 		t.Errorf("expected response body to be %s, got %s", want, got)
 	}
 }
