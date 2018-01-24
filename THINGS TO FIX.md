@@ -1,0 +1,2 @@
+- Fix response w/ PDF conversion
+- Fix instrumentation (convert trace is wrong due to bad initialisation)
