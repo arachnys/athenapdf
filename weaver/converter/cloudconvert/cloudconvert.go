@@ -209,9 +209,15 @@ func (c CloudConvert) Convert(s converter.ConversionSource, done <-chan struct{}
 		OutputFormat: "pdf",
 		Wait:         true,
 	}
+
+	u, err := uuid.NewV4()
+	if err != nil {
+		return nil, err
+	}
+
 	if c.AWSS3.S3Bucket == "" || c.AWSS3.S3Key == "" {
 		conv.Download = "inline"
-		conv.Filename = uuid.NewV4().String() + ".html"
+		conv.Filename = u.String() + ".html"
 	} else {
 		conv.Output = &Output{
 			S3{
