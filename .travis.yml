@@ -14,6 +14,6 @@ script:
 
 after_success:
   - if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "master" -o -n "$TRAVIS_TAG" ]; then exit 0; fi
-  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push arachnysdocker/athenapdf
   - docker push arachnysdocker/athenapdf-service
