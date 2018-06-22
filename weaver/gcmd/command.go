@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"syscall"
 )
 
 var (
@@ -19,6 +20,9 @@ var (
 // Goroutine.
 func Execute(c []string, terminate <-chan struct{}) ([]byte, error) {
 	cmd := exec.Command(c[0], c[1:]...)
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true,
+	}
 	cout := make(chan []byte, 1)
 	cerr := make(chan error, 1)
 
