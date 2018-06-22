@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"github.com/DeanThompson/ginpprof"
 	"github.com/arachnys/athenapdf/weaver/converter"
 	"github.com/getsentry/raven-go"
@@ -8,6 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"gopkg.in/alexcesaro/statsd.v2"
 	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -98,5 +104,19 @@ func main() {
 		}()
 	}
 
-	log.Fatal(router.Run(conf.HTTPAddr))
+	server := &http.Server{
+		Addr:    conf.HTTPAddr,
+		Handler: router,
+	}
+
+	go func() {
+		log.Fatal(server.ListenAndServe())
+	}()
+
+	sigChan := make(chan os.Signal)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+
+	<-sigChan
+	fmt.Println("Received sigterm, gracefully shutting down")
+	server.Shutdown(context.Background())
 }
