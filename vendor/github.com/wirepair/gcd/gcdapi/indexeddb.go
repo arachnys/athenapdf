@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains IndexedDB functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -72,9 +72,82 @@ func NewIndexedDB(target gcdmessage.ChromeTargeter) *IndexedDB {
 	return c
 }
 
-// Enables events from backend.
-func (c *IndexedDB) Enable() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.enable"})
+type IndexedDBClearObjectStoreParams struct {
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+	// Database name.
+	DatabaseName string `json:"databaseName"`
+	// Object store name.
+	ObjectStoreName string `json:"objectStoreName"`
+}
+
+// ClearObjectStoreWithParams - Clears all entries from an object store.
+func (c *IndexedDB) ClearObjectStoreWithParams(v *IndexedDBClearObjectStoreParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.clearObjectStore", Params: v})
+}
+
+// ClearObjectStore - Clears all entries from an object store.
+// securityOrigin - Security origin.
+// databaseName - Database name.
+// objectStoreName - Object store name.
+func (c *IndexedDB) ClearObjectStore(securityOrigin string, databaseName string, objectStoreName string) (*gcdmessage.ChromeResponse, error) {
+	var v IndexedDBClearObjectStoreParams
+	v.SecurityOrigin = securityOrigin
+	v.DatabaseName = databaseName
+	v.ObjectStoreName = objectStoreName
+	return c.ClearObjectStoreWithParams(&v)
+}
+
+type IndexedDBDeleteDatabaseParams struct {
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+	// Database name.
+	DatabaseName string `json:"databaseName"`
+}
+
+// DeleteDatabaseWithParams - Deletes a database.
+func (c *IndexedDB) DeleteDatabaseWithParams(v *IndexedDBDeleteDatabaseParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.deleteDatabase", Params: v})
+}
+
+// DeleteDatabase - Deletes a database.
+// securityOrigin - Security origin.
+// databaseName - Database name.
+func (c *IndexedDB) DeleteDatabase(securityOrigin string, databaseName string) (*gcdmessage.ChromeResponse, error) {
+	var v IndexedDBDeleteDatabaseParams
+	v.SecurityOrigin = securityOrigin
+	v.DatabaseName = databaseName
+	return c.DeleteDatabaseWithParams(&v)
+}
+
+type IndexedDBDeleteObjectStoreEntriesParams struct {
+	//
+	SecurityOrigin string `json:"securityOrigin"`
+	//
+	DatabaseName string `json:"databaseName"`
+	//
+	ObjectStoreName string `json:"objectStoreName"`
+	// Range of entry keys to delete
+	KeyRange *IndexedDBKeyRange `json:"keyRange"`
+}
+
+// DeleteObjectStoreEntriesWithParams - Delete a range of entries from an object store
+func (c *IndexedDB) DeleteObjectStoreEntriesWithParams(v *IndexedDBDeleteObjectStoreEntriesParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.deleteObjectStoreEntries", Params: v})
+}
+
+// DeleteObjectStoreEntries - Delete a range of entries from an object store
+// securityOrigin -
+// databaseName -
+// objectStoreName -
+// keyRange - Range of entry keys to delete
+func (c *IndexedDB) DeleteObjectStoreEntries(securityOrigin string, databaseName string, objectStoreName string, keyRange *IndexedDBKeyRange) (*gcdmessage.ChromeResponse, error) {
+	var v IndexedDBDeleteObjectStoreEntriesParams
+	v.SecurityOrigin = securityOrigin
+	v.DatabaseName = databaseName
+	v.ObjectStoreName = objectStoreName
+	v.KeyRange = keyRange
+	return c.DeleteObjectStoreEntriesWithParams(&v)
 }
 
 // Disables events from backend.
@@ -82,100 +155,9 @@ func (c *IndexedDB) Disable() (*gcdmessage.ChromeResponse, error) {
 	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.disable"})
 }
 
-type IndexedDBRequestDatabaseNamesParams struct {
-	// Security origin.
-	SecurityOrigin string `json:"securityOrigin"`
-}
-
-// RequestDatabaseNamesWithParams - Requests database names for given security origin.
-// Returns -  databaseNames - Database names for origin.
-func (c *IndexedDB) RequestDatabaseNamesWithParams(v *IndexedDBRequestDatabaseNamesParams) ([]string, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.requestDatabaseNames", Params: v})
-	if err != nil {
-		return nil, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			DatabaseNames []string
-		}
-	}
-
-	if resp == nil {
-		return nil, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return nil, err
-	}
-
-	return chromeData.Result.DatabaseNames, nil
-}
-
-// RequestDatabaseNames - Requests database names for given security origin.
-// securityOrigin - Security origin.
-// Returns -  databaseNames - Database names for origin.
-func (c *IndexedDB) RequestDatabaseNames(securityOrigin string) ([]string, error) {
-	var v IndexedDBRequestDatabaseNamesParams
-	v.SecurityOrigin = securityOrigin
-	return c.RequestDatabaseNamesWithParams(&v)
-}
-
-type IndexedDBRequestDatabaseParams struct {
-	// Security origin.
-	SecurityOrigin string `json:"securityOrigin"`
-	// Database name.
-	DatabaseName string `json:"databaseName"`
-}
-
-// RequestDatabaseWithParams - Requests database with given name in given frame.
-// Returns -  databaseWithObjectStores - Database with an array of object stores.
-func (c *IndexedDB) RequestDatabaseWithParams(v *IndexedDBRequestDatabaseParams) (*IndexedDBDatabaseWithObjectStores, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.requestDatabase", Params: v})
-	if err != nil {
-		return nil, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			DatabaseWithObjectStores *IndexedDBDatabaseWithObjectStores
-		}
-	}
-
-	if resp == nil {
-		return nil, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return nil, err
-	}
-
-	return chromeData.Result.DatabaseWithObjectStores, nil
-}
-
-// RequestDatabase - Requests database with given name in given frame.
-// securityOrigin - Security origin.
-// databaseName - Database name.
-// Returns -  databaseWithObjectStores - Database with an array of object stores.
-func (c *IndexedDB) RequestDatabase(securityOrigin string, databaseName string) (*IndexedDBDatabaseWithObjectStores, error) {
-	var v IndexedDBRequestDatabaseParams
-	v.SecurityOrigin = securityOrigin
-	v.DatabaseName = databaseName
-	return c.RequestDatabaseWithParams(&v)
+// Enables events from backend.
+func (c *IndexedDB) Enable() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.enable"})
 }
 
 type IndexedDBRequestDataParams struct {
@@ -249,50 +231,98 @@ func (c *IndexedDB) RequestData(securityOrigin string, databaseName string, obje
 	return c.RequestDataWithParams(&v)
 }
 
-type IndexedDBClearObjectStoreParams struct {
-	// Security origin.
-	SecurityOrigin string `json:"securityOrigin"`
-	// Database name.
-	DatabaseName string `json:"databaseName"`
-	// Object store name.
-	ObjectStoreName string `json:"objectStoreName"`
-}
-
-// ClearObjectStoreWithParams - Clears all entries from an object store.
-func (c *IndexedDB) ClearObjectStoreWithParams(v *IndexedDBClearObjectStoreParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.clearObjectStore", Params: v})
-}
-
-// ClearObjectStore - Clears all entries from an object store.
-// securityOrigin - Security origin.
-// databaseName - Database name.
-// objectStoreName - Object store name.
-func (c *IndexedDB) ClearObjectStore(securityOrigin string, databaseName string, objectStoreName string) (*gcdmessage.ChromeResponse, error) {
-	var v IndexedDBClearObjectStoreParams
-	v.SecurityOrigin = securityOrigin
-	v.DatabaseName = databaseName
-	v.ObjectStoreName = objectStoreName
-	return c.ClearObjectStoreWithParams(&v)
-}
-
-type IndexedDBDeleteDatabaseParams struct {
+type IndexedDBRequestDatabaseParams struct {
 	// Security origin.
 	SecurityOrigin string `json:"securityOrigin"`
 	// Database name.
 	DatabaseName string `json:"databaseName"`
 }
 
-// DeleteDatabaseWithParams - Deletes a database.
-func (c *IndexedDB) DeleteDatabaseWithParams(v *IndexedDBDeleteDatabaseParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.deleteDatabase", Params: v})
+// RequestDatabaseWithParams - Requests database with given name in given frame.
+// Returns -  databaseWithObjectStores - Database with an array of object stores.
+func (c *IndexedDB) RequestDatabaseWithParams(v *IndexedDBRequestDatabaseParams) (*IndexedDBDatabaseWithObjectStores, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.requestDatabase", Params: v})
+	if err != nil {
+		return nil, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			DatabaseWithObjectStores *IndexedDBDatabaseWithObjectStores
+		}
+	}
+
+	if resp == nil {
+		return nil, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return nil, err
+	}
+
+	return chromeData.Result.DatabaseWithObjectStores, nil
 }
 
-// DeleteDatabase - Deletes a database.
+// RequestDatabase - Requests database with given name in given frame.
 // securityOrigin - Security origin.
 // databaseName - Database name.
-func (c *IndexedDB) DeleteDatabase(securityOrigin string, databaseName string) (*gcdmessage.ChromeResponse, error) {
-	var v IndexedDBDeleteDatabaseParams
+// Returns -  databaseWithObjectStores - Database with an array of object stores.
+func (c *IndexedDB) RequestDatabase(securityOrigin string, databaseName string) (*IndexedDBDatabaseWithObjectStores, error) {
+	var v IndexedDBRequestDatabaseParams
 	v.SecurityOrigin = securityOrigin
 	v.DatabaseName = databaseName
-	return c.DeleteDatabaseWithParams(&v)
+	return c.RequestDatabaseWithParams(&v)
+}
+
+type IndexedDBRequestDatabaseNamesParams struct {
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+}
+
+// RequestDatabaseNamesWithParams - Requests database names for given security origin.
+// Returns -  databaseNames - Database names for origin.
+func (c *IndexedDB) RequestDatabaseNamesWithParams(v *IndexedDBRequestDatabaseNamesParams) ([]string, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "IndexedDB.requestDatabaseNames", Params: v})
+	if err != nil {
+		return nil, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			DatabaseNames []string
+		}
+	}
+
+	if resp == nil {
+		return nil, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return nil, err
+	}
+
+	return chromeData.Result.DatabaseNames, nil
+}
+
+// RequestDatabaseNames - Requests database names for given security origin.
+// securityOrigin - Security origin.
+// Returns -  databaseNames - Database names for origin.
+func (c *IndexedDB) RequestDatabaseNames(securityOrigin string) ([]string, error) {
+	var v IndexedDBRequestDatabaseNamesParams
+	v.SecurityOrigin = securityOrigin
+	return c.RequestDatabaseNamesWithParams(&v)
 }

@@ -107,7 +107,7 @@
   branch = "master"
   name = "github.com/wirepair/gcd"
   packages = [".","gcdapi","gcdmessage"]
-  revision = "6177122346fca3c523a97f3943452207e7a39ef2"
+  revision = "3231a1db3b2236110c12850400000c9624168272"
 
 [[projects]]
   branch = "master"

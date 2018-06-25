@@ -4,13 +4,15 @@ import (
 	"encoding/base64"
 	"flag"
 	"fmt"
-	"github.com/wirepair/gcd"
 	"log"
 	"net/url"
 	"os"
 	"runtime"
 	"sync"
 	"time"
+
+	"github.com/wirepair/gcd"
+	"github.com/wirepair/gcd/gcdapi"
 )
 
 const (
@@ -49,6 +51,7 @@ func main() {
 	debugger = gcd.NewChromeDebugger()
 	debugger.StartProcess(path, dir, port)
 	defer debugger.ExitProcess()
+
 	targets := make([]*gcd.ChromeTarget, numTabs)
 
 	for i := 0; i < numTabs; i++ {
@@ -59,50 +62,62 @@ func main() {
 		}
 		page := targets[i].Page
 		page.Enable()
-		targets[i].Subscribe("Page.loadEventFired", PageLoaded)
-		page.Navigate(urls[i], "")
+		targets[i].Subscribe("Page.loadEventFired", pageLoaded)
+		// navigate
+		navigateParams := &gcdapi.PageNavigateParams{Url: urls[i]}
+		_, _, _, err := page.NavigateWithParams(navigateParams)
+		if err != nil {
+			log.Fatalf("error: %s\n", err)
+		}
 	}
 	wg.Wait()
 	for i := 0; i < numTabs; i++ {
-		TakeScreenShot(targets[i])
+		takeScreenShot(targets[i])
 	}
 }
 
-func PageLoaded(target *gcd.ChromeTarget, event []byte) {
+func pageLoaded(target *gcd.ChromeTarget, event []byte) {
+	target.Unsubscribe("Page.loadEventFired")
 	wg.Done()
 }
 
-func TakeScreenShot(target *gcd.ChromeTarget) {
+func takeScreenShot(target *gcd.ChromeTarget) {
 	dom := target.DOM
 	page := target.Page
 	doc, err := dom.GetDocument(-1, true)
 	if err != nil {
-		fmt.Errorf("error getting doc: %s\n", err)
+		fmt.Printf("error getting doc: %s\n", err)
 		return
 	}
+
 	debugger.ActivateTab(target)
 	time.Sleep(1 * time.Second) // give it a sec to paint
 	u, urlErr := url.Parse(doc.DocumentURL)
 	if urlErr != nil {
-		fmt.Errorf("error parsing url: %s\n", urlErr)
+		fmt.Printf("error parsing url: %s\n", urlErr)
 		return
 	}
+
 	fmt.Printf("Taking screen shot of: %s\n", u.Host)
-	img, errCap := page.CaptureScreenshot("png", 0, false)
+	screenShotParams := &gcdapi.PageCaptureScreenshotParams{Format: "png", FromSurface: true}
+	img, errCap := page.CaptureScreenshotWithParams(screenShotParams)
 	if errCap != nil {
-		fmt.Errorf("error getting doc: %s\n", errCap)
+		fmt.Printf("error getting doc: %s\n", errCap)
 		return
 	}
+
 	imgBytes, errDecode := base64.StdEncoding.DecodeString(img)
 	if errDecode != nil {
-		fmt.Errorf("error decoding image: %s\n", errDecode)
+		fmt.Printf("error decoding image: %s\n", errDecode)
 		return
 	}
+
 	f, errFile := os.Create(u.Host + ".png")
 	defer f.Close()
 	if errFile != nil {
-		fmt.Errorf("error creating image file: %s\n", errFile)
+		fmt.Printf("error creating image file: %s\n", errFile)
 		return
 	}
 	f.Write(imgBytes)
+	debugger.CloseTab(target)
 }

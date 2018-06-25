@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains DOM functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -11,31 +11,31 @@ import (
 
 // Backend node with a friendly name.
 type DOMBackendNode struct {
-	NodeType      int    `json:"nodeType"`      // <code>Node</code>'s nodeType.
-	NodeName      string `json:"nodeName"`      // <code>Node</code>'s nodeName.
+	NodeType      int    `json:"nodeType"`      // `Node`'s nodeType.
+	NodeName      string `json:"nodeName"`      // `Node`'s nodeName.
 	BackendNodeId int    `json:"backendNodeId"` //
 }
 
 // DOM interaction is implemented in terms of mirror objects that represent the actual DOM nodes. DOMNode is a base node mirror type.
 type DOMNode struct {
-	NodeId           int               `json:"nodeId"`                     // Node identifier that is passed into the rest of the DOM messages as the <code>nodeId</code>. Backend will only push node with given <code>id</code> once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
+	NodeId           int               `json:"nodeId"`                     // Node identifier that is passed into the rest of the DOM messages as the `nodeId`. Backend will only push node with given `id` once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
 	ParentId         int               `json:"parentId,omitempty"`         // The id of the parent node if any.
 	BackendNodeId    int               `json:"backendNodeId"`              // The BackendNodeId for this node.
-	NodeType         int               `json:"nodeType"`                   // <code>Node</code>'s nodeType.
-	NodeName         string            `json:"nodeName"`                   // <code>Node</code>'s nodeName.
-	LocalName        string            `json:"localName"`                  // <code>Node</code>'s localName.
-	NodeValue        string            `json:"nodeValue"`                  // <code>Node</code>'s nodeValue.
-	ChildNodeCount   int               `json:"childNodeCount,omitempty"`   // Child count for <code>Container</code> nodes.
+	NodeType         int               `json:"nodeType"`                   // `Node`'s nodeType.
+	NodeName         string            `json:"nodeName"`                   // `Node`'s nodeName.
+	LocalName        string            `json:"localName"`                  // `Node`'s localName.
+	NodeValue        string            `json:"nodeValue"`                  // `Node`'s nodeValue.
+	ChildNodeCount   int               `json:"childNodeCount,omitempty"`   // Child count for `Container` nodes.
 	Children         []*DOMNode        `json:"children,omitempty"`         // Child nodes of this node when requested with children.
-	Attributes       []string          `json:"attributes,omitempty"`       // Attributes of the <code>Element</code> node in the form of flat array <code>[name1, value1, name2, value2]</code>.
-	DocumentURL      string            `json:"documentURL,omitempty"`      // Document URL that <code>Document</code> or <code>FrameOwner</code> node points to.
-	BaseURL          string            `json:"baseURL,omitempty"`          // Base URL that <code>Document</code> or <code>FrameOwner</code> node uses for URL completion.
-	PublicId         string            `json:"publicId,omitempty"`         // <code>DocumentType</code>'s publicId.
-	SystemId         string            `json:"systemId,omitempty"`         // <code>DocumentType</code>'s systemId.
-	InternalSubset   string            `json:"internalSubset,omitempty"`   // <code>DocumentType</code>'s internalSubset.
-	XmlVersion       string            `json:"xmlVersion,omitempty"`       // <code>Document</code>'s XML version in case of XML documents.
-	Name             string            `json:"name,omitempty"`             // <code>Attr</code>'s name.
-	Value            string            `json:"value,omitempty"`            // <code>Attr</code>'s value.
+	Attributes       []string          `json:"attributes,omitempty"`       // Attributes of the `Element` node in the form of flat array `[name1, value1, name2, value2]`.
+	DocumentURL      string            `json:"documentURL,omitempty"`      // Document URL that `Document` or `FrameOwner` node points to.
+	BaseURL          string            `json:"baseURL,omitempty"`          // Base URL that `Document` or `FrameOwner` node uses for URL completion.
+	PublicId         string            `json:"publicId,omitempty"`         // `DocumentType`'s publicId.
+	SystemId         string            `json:"systemId,omitempty"`         // `DocumentType`'s systemId.
+	InternalSubset   string            `json:"internalSubset,omitempty"`   // `DocumentType`'s internalSubset.
+	XmlVersion       string            `json:"xmlVersion,omitempty"`       // `Document`'s XML version in case of XML documents.
+	Name             string            `json:"name,omitempty"`             // `Attr`'s name.
+	Value            string            `json:"value,omitempty"`            // `Attr`'s value.
 	PseudoType       string            `json:"pseudoType,omitempty"`       // Pseudo element type for this node. enum values: first-line, first-letter, before, after, backdrop, selection, first-line-inherited, scrollbar, scrollbar-thumb, scrollbar-button, scrollbar-track, scrollbar-track-piece, scrollbar-corner, resizer, input-list-button
 	ShadowRootType   string            `json:"shadowRootType,omitempty"`   // Shadow root type. enum values: user-agent, open, closed
 	FrameId          string            `json:"frameId,omitempty"`          // Frame ID for frame owner elements.
@@ -82,16 +82,7 @@ type DOMRect struct {
 	Height float64 `json:"height"` // Rectangle height
 }
 
-// Fired when backend wants to provide client with the missing DOM structure. This happens upon most of the calls requesting node ids.
-type DOMSetChildNodesEvent struct {
-	Method string `json:"method"`
-	Params struct {
-		ParentId int        `json:"parentId"` // Parent node id to populate with children.
-		Nodes    []*DOMNode `json:"nodes"`    // Child nodes array.
-	} `json:"Params,omitempty"`
-}
-
-// Fired when <code>Element</code>'s attribute is modified.
+// Fired when `Element`'s attribute is modified.
 type DOMAttributeModifiedEvent struct {
 	Method string `json:"method"`
 	Params struct {
@@ -101,7 +92,7 @@ type DOMAttributeModifiedEvent struct {
 	} `json:"Params,omitempty"`
 }
 
-// Fired when <code>Element</code>'s attribute is removed.
+// Fired when `Element`'s attribute is removed.
 type DOMAttributeRemovedEvent struct {
 	Method string `json:"method"`
 	Params struct {
@@ -110,15 +101,7 @@ type DOMAttributeRemovedEvent struct {
 	} `json:"Params,omitempty"`
 }
 
-// Fired when <code>Element</code>'s inline style is modified via a CSS property modification.
-type DOMInlineStyleInvalidatedEvent struct {
-	Method string `json:"method"`
-	Params struct {
-		NodeIds []int `json:"nodeIds"` // Ids of the nodes for which the inline styles have been invalidated.
-	} `json:"Params,omitempty"`
-}
-
-// Mirrors <code>DOMCharacterDataModified</code> event.
+// Mirrors `DOMCharacterDataModified` event.
 type DOMCharacterDataModifiedEvent struct {
 	Method string `json:"method"`
 	Params struct {
@@ -127,7 +110,7 @@ type DOMCharacterDataModifiedEvent struct {
 	} `json:"Params,omitempty"`
 }
 
-// Fired when <code>Container</code>'s child node count has changed.
+// Fired when `Container`'s child node count has changed.
 type DOMChildNodeCountUpdatedEvent struct {
 	Method string `json:"method"`
 	Params struct {
@@ -136,7 +119,7 @@ type DOMChildNodeCountUpdatedEvent struct {
 	} `json:"Params,omitempty"`
 }
 
-// Mirrors <code>DOMNodeInserted</code> event.
+// Mirrors `DOMNodeInserted` event.
 type DOMChildNodeInsertedEvent struct {
 	Method string `json:"method"`
 	Params struct {
@@ -146,7 +129,7 @@ type DOMChildNodeInsertedEvent struct {
 	} `json:"Params,omitempty"`
 }
 
-// Mirrors <code>DOMNodeRemoved</code> event.
+// Mirrors `DOMNodeRemoved` event.
 type DOMChildNodeRemovedEvent struct {
 	Method string `json:"method"`
 	Params struct {
@@ -155,21 +138,20 @@ type DOMChildNodeRemovedEvent struct {
 	} `json:"Params,omitempty"`
 }
 
-// Called when shadow root is pushed into the element.
-type DOMShadowRootPushedEvent struct {
+// Called when distrubution is changed.
+type DOMDistributedNodesUpdatedEvent struct {
 	Method string `json:"method"`
 	Params struct {
-		HostId int      `json:"hostId"` // Host element id.
-		Root   *DOMNode `json:"root"`   // Shadow root.
+		InsertionPointId int               `json:"insertionPointId"` // Insertion point where distrubuted nodes were updated.
+		DistributedNodes []*DOMBackendNode `json:"distributedNodes"` // Distributed nodes for given insertion point.
 	} `json:"Params,omitempty"`
 }
 
-// Called when shadow root is popped from the element.
-type DOMShadowRootPoppedEvent struct {
+// Fired when `Element`'s inline style is modified via a CSS property modification.
+type DOMInlineStyleInvalidatedEvent struct {
 	Method string `json:"method"`
 	Params struct {
-		HostId int `json:"hostId"` // Host element id.
-		RootId int `json:"rootId"` // Shadow root id.
+		NodeIds []int `json:"nodeIds"` // Ids of the nodes for which the inline styles have been invalidated.
 	} `json:"Params,omitempty"`
 }
 
@@ -191,12 +173,30 @@ type DOMPseudoElementRemovedEvent struct {
 	} `json:"Params,omitempty"`
 }
 
-// Called when distrubution is changed.
-type DOMDistributedNodesUpdatedEvent struct {
+// Fired when backend wants to provide client with the missing DOM structure. This happens upon most of the calls requesting node ids.
+type DOMSetChildNodesEvent struct {
 	Method string `json:"method"`
 	Params struct {
-		InsertionPointId int               `json:"insertionPointId"` // Insertion point where distrubuted nodes were updated.
-		DistributedNodes []*DOMBackendNode `json:"distributedNodes"` // Distributed nodes for given insertion point.
+		ParentId int        `json:"parentId"` // Parent node id to populate with children.
+		Nodes    []*DOMNode `json:"nodes"`    // Child nodes array.
+	} `json:"Params,omitempty"`
+}
+
+// Called when shadow root is popped from the element.
+type DOMShadowRootPoppedEvent struct {
+	Method string `json:"method"`
+	Params struct {
+		HostId int `json:"hostId"` // Host element id.
+		RootId int `json:"rootId"` // Shadow root id.
+	} `json:"Params,omitempty"`
+}
+
+// Called when shadow root is pushed into the element.
+type DOMShadowRootPushedEvent struct {
+	Method string `json:"method"`
+	Params struct {
+		HostId int      `json:"hostId"` // Host element id.
+		Root   *DOMNode `json:"root"`   // Shadow root.
 	} `json:"Params,omitempty"`
 }
 
@@ -209,14 +209,320 @@ func NewDOM(target gcdmessage.ChromeTargeter) *DOM {
 	return c
 }
 
-// Enables DOM agent for the given page.
-func (c *DOM) Enable() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.enable"})
+type DOMCollectClassNamesFromSubtreeParams struct {
+	// Id of the node to collect class names.
+	NodeId int `json:"nodeId"`
+}
+
+// CollectClassNamesFromSubtreeWithParams - Collects class names for the node with given id and all of it's child nodes.
+// Returns -  classNames - Class name list.
+func (c *DOM) CollectClassNamesFromSubtreeWithParams(v *DOMCollectClassNamesFromSubtreeParams) ([]string, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.collectClassNamesFromSubtree", Params: v})
+	if err != nil {
+		return nil, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			ClassNames []string
+		}
+	}
+
+	if resp == nil {
+		return nil, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return nil, err
+	}
+
+	return chromeData.Result.ClassNames, nil
+}
+
+// CollectClassNamesFromSubtree - Collects class names for the node with given id and all of it's child nodes.
+// nodeId - Id of the node to collect class names.
+// Returns -  classNames - Class name list.
+func (c *DOM) CollectClassNamesFromSubtree(nodeId int) ([]string, error) {
+	var v DOMCollectClassNamesFromSubtreeParams
+	v.NodeId = nodeId
+	return c.CollectClassNamesFromSubtreeWithParams(&v)
+}
+
+type DOMCopyToParams struct {
+	// Id of the node to copy.
+	NodeId int `json:"nodeId"`
+	// Id of the element to drop the copy into.
+	TargetNodeId int `json:"targetNodeId"`
+	// Drop the copy before this node (if absent, the copy becomes the last child of `targetNodeId`).
+	InsertBeforeNodeId int `json:"insertBeforeNodeId,omitempty"`
+}
+
+// CopyToWithParams - Creates a deep copy of the specified node and places it into the target container before the given anchor.
+// Returns -  nodeId - Id of the node clone.
+func (c *DOM) CopyToWithParams(v *DOMCopyToParams) (int, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.copyTo", Params: v})
+	if err != nil {
+		return 0, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			NodeId int
+		}
+	}
+
+	if resp == nil {
+		return 0, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return 0, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return 0, err
+	}
+
+	return chromeData.Result.NodeId, nil
+}
+
+// CopyTo - Creates a deep copy of the specified node and places it into the target container before the given anchor.
+// nodeId - Id of the node to copy.
+// targetNodeId - Id of the element to drop the copy into.
+// insertBeforeNodeId - Drop the copy before this node (if absent, the copy becomes the last child of `targetNodeId`).
+// Returns -  nodeId - Id of the node clone.
+func (c *DOM) CopyTo(nodeId int, targetNodeId int, insertBeforeNodeId int) (int, error) {
+	var v DOMCopyToParams
+	v.NodeId = nodeId
+	v.TargetNodeId = targetNodeId
+	v.InsertBeforeNodeId = insertBeforeNodeId
+	return c.CopyToWithParams(&v)
+}
+
+type DOMDescribeNodeParams struct {
+	// Identifier of the node.
+	NodeId int `json:"nodeId,omitempty"`
+	// Identifier of the backend node.
+	BackendNodeId int `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper.
+	ObjectId string `json:"objectId,omitempty"`
+	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
+	Depth int `json:"depth,omitempty"`
+	// Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
+	Pierce bool `json:"pierce,omitempty"`
+}
+
+// DescribeNodeWithParams - Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
+// Returns -  node - Node description.
+func (c *DOM) DescribeNodeWithParams(v *DOMDescribeNodeParams) (*DOMNode, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.describeNode", Params: v})
+	if err != nil {
+		return nil, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			Node *DOMNode
+		}
+	}
+
+	if resp == nil {
+		return nil, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return nil, err
+	}
+
+	return chromeData.Result.Node, nil
+}
+
+// DescribeNode - Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
+// nodeId - Identifier of the node.
+// backendNodeId - Identifier of the backend node.
+// objectId - JavaScript object id of the node wrapper.
+// depth - The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
+// pierce - Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
+// Returns -  node - Node description.
+func (c *DOM) DescribeNode(nodeId int, backendNodeId int, objectId string, depth int, pierce bool) (*DOMNode, error) {
+	var v DOMDescribeNodeParams
+	v.NodeId = nodeId
+	v.BackendNodeId = backendNodeId
+	v.ObjectId = objectId
+	v.Depth = depth
+	v.Pierce = pierce
+	return c.DescribeNodeWithParams(&v)
 }
 
 // Disables DOM agent for the given page.
 func (c *DOM) Disable() (*gcdmessage.ChromeResponse, error) {
 	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.disable"})
+}
+
+type DOMDiscardSearchResultsParams struct {
+	// Unique search session identifier.
+	SearchId string `json:"searchId"`
+}
+
+// DiscardSearchResultsWithParams - Discards search results from the session with the given id. `getSearchResults` should no longer be called for that search.
+func (c *DOM) DiscardSearchResultsWithParams(v *DOMDiscardSearchResultsParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.discardSearchResults", Params: v})
+}
+
+// DiscardSearchResults - Discards search results from the session with the given id. `getSearchResults` should no longer be called for that search.
+// searchId - Unique search session identifier.
+func (c *DOM) DiscardSearchResults(searchId string) (*gcdmessage.ChromeResponse, error) {
+	var v DOMDiscardSearchResultsParams
+	v.SearchId = searchId
+	return c.DiscardSearchResultsWithParams(&v)
+}
+
+// Enables DOM agent for the given page.
+func (c *DOM) Enable() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.enable"})
+}
+
+type DOMFocusParams struct {
+	// Identifier of the node.
+	NodeId int `json:"nodeId,omitempty"`
+	// Identifier of the backend node.
+	BackendNodeId int `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper.
+	ObjectId string `json:"objectId,omitempty"`
+}
+
+// FocusWithParams - Focuses the given element.
+func (c *DOM) FocusWithParams(v *DOMFocusParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.focus", Params: v})
+}
+
+// Focus - Focuses the given element.
+// nodeId - Identifier of the node.
+// backendNodeId - Identifier of the backend node.
+// objectId - JavaScript object id of the node wrapper.
+func (c *DOM) Focus(nodeId int, backendNodeId int, objectId string) (*gcdmessage.ChromeResponse, error) {
+	var v DOMFocusParams
+	v.NodeId = nodeId
+	v.BackendNodeId = backendNodeId
+	v.ObjectId = objectId
+	return c.FocusWithParams(&v)
+}
+
+type DOMGetAttributesParams struct {
+	// Id of the node to retrieve attibutes for.
+	NodeId int `json:"nodeId"`
+}
+
+// GetAttributesWithParams - Returns attributes for the specified node.
+// Returns -  attributes - An interleaved array of node attribute names and values.
+func (c *DOM) GetAttributesWithParams(v *DOMGetAttributesParams) ([]string, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getAttributes", Params: v})
+	if err != nil {
+		return nil, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			Attributes []string
+		}
+	}
+
+	if resp == nil {
+		return nil, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return nil, err
+	}
+
+	return chromeData.Result.Attributes, nil
+}
+
+// GetAttributes - Returns attributes for the specified node.
+// nodeId - Id of the node to retrieve attibutes for.
+// Returns -  attributes - An interleaved array of node attribute names and values.
+func (c *DOM) GetAttributes(nodeId int) ([]string, error) {
+	var v DOMGetAttributesParams
+	v.NodeId = nodeId
+	return c.GetAttributesWithParams(&v)
+}
+
+type DOMGetBoxModelParams struct {
+	// Identifier of the node.
+	NodeId int `json:"nodeId,omitempty"`
+	// Identifier of the backend node.
+	BackendNodeId int `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper.
+	ObjectId string `json:"objectId,omitempty"`
+}
+
+// GetBoxModelWithParams - Returns boxes for the given node.
+// Returns -  model - Box model for the node.
+func (c *DOM) GetBoxModelWithParams(v *DOMGetBoxModelParams) (*DOMBoxModel, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getBoxModel", Params: v})
+	if err != nil {
+		return nil, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			Model *DOMBoxModel
+		}
+	}
+
+	if resp == nil {
+		return nil, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return nil, err
+	}
+
+	return chromeData.Result.Model, nil
+}
+
+// GetBoxModel - Returns boxes for the given node.
+// nodeId - Identifier of the node.
+// backendNodeId - Identifier of the backend node.
+// objectId - JavaScript object id of the node wrapper.
+// Returns -  model - Box model for the node.
+func (c *DOM) GetBoxModel(nodeId int, backendNodeId int, objectId string) (*DOMBoxModel, error) {
+	var v DOMGetBoxModelParams
+	v.NodeId = nodeId
+	v.BackendNodeId = backendNodeId
+	v.ObjectId = objectId
+	return c.GetBoxModelWithParams(&v)
 }
 
 type DOMGetDocumentParams struct {
@@ -319,89 +625,19 @@ func (c *DOM) GetFlattenedDocument(depth int, pierce bool) ([]*DOMNode, error) {
 	return c.GetFlattenedDocumentWithParams(&v)
 }
 
-type DOMCollectClassNamesFromSubtreeParams struct {
-	// Id of the node to collect class names.
-	NodeId int `json:"nodeId"`
+type DOMGetNodeForLocationParams struct {
+	// X coordinate.
+	X int `json:"x"`
+	// Y coordinate.
+	Y int `json:"y"`
+	// False to skip to the nearest non-UA shadow root ancestor (default: false).
+	IncludeUserAgentShadowDOM bool `json:"includeUserAgentShadowDOM,omitempty"`
 }
 
-// CollectClassNamesFromSubtreeWithParams - Collects class names for the node with given id and all of it's child nodes.
-// Returns -  classNames - Class name list.
-func (c *DOM) CollectClassNamesFromSubtreeWithParams(v *DOMCollectClassNamesFromSubtreeParams) ([]string, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.collectClassNamesFromSubtree", Params: v})
-	if err != nil {
-		return nil, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			ClassNames []string
-		}
-	}
-
-	if resp == nil {
-		return nil, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return nil, err
-	}
-
-	return chromeData.Result.ClassNames, nil
-}
-
-// CollectClassNamesFromSubtree - Collects class names for the node with given id and all of it's child nodes.
-// nodeId - Id of the node to collect class names.
-// Returns -  classNames - Class name list.
-func (c *DOM) CollectClassNamesFromSubtree(nodeId int) ([]string, error) {
-	var v DOMCollectClassNamesFromSubtreeParams
-	v.NodeId = nodeId
-	return c.CollectClassNamesFromSubtreeWithParams(&v)
-}
-
-type DOMRequestChildNodesParams struct {
-	// Id of the node to get children for.
-	NodeId int `json:"nodeId"`
-	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-	Depth int `json:"depth,omitempty"`
-	// Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
-	Pierce bool `json:"pierce,omitempty"`
-}
-
-// RequestChildNodesWithParams - Requests that children of the node with given id are returned to the caller in form of <code>setChildNodes</code> events where not only immediate children are retrieved, but all children down to the specified depth.
-func (c *DOM) RequestChildNodesWithParams(v *DOMRequestChildNodesParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.requestChildNodes", Params: v})
-}
-
-// RequestChildNodes - Requests that children of the node with given id are returned to the caller in form of <code>setChildNodes</code> events where not only immediate children are retrieved, but all children down to the specified depth.
-// nodeId - Id of the node to get children for.
-// depth - The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-// pierce - Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
-func (c *DOM) RequestChildNodes(nodeId int, depth int, pierce bool) (*gcdmessage.ChromeResponse, error) {
-	var v DOMRequestChildNodesParams
-	v.NodeId = nodeId
-	v.Depth = depth
-	v.Pierce = pierce
-	return c.RequestChildNodesWithParams(&v)
-}
-
-type DOMQuerySelectorParams struct {
-	// Id of the node to query upon.
-	NodeId int `json:"nodeId"`
-	// Selector string.
-	Selector string `json:"selector"`
-}
-
-// QuerySelectorWithParams - Executes <code>querySelector</code> on a given node.
-// Returns -  nodeId - Query selector result.
-func (c *DOM) QuerySelectorWithParams(v *DOMQuerySelectorParams) (int, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.querySelector", Params: v})
+// GetNodeForLocationWithParams - Returns node id at given location.
+// Returns -  nodeId - Id of the node at given coordinates.
+func (c *DOM) GetNodeForLocationWithParams(v *DOMGetNodeForLocationParams) (int, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getNodeForLocation", Params: v})
 	if err != nil {
 		return 0, err
 	}
@@ -430,234 +666,26 @@ func (c *DOM) QuerySelectorWithParams(v *DOMQuerySelectorParams) (int, error) {
 	return chromeData.Result.NodeId, nil
 }
 
-// QuerySelector - Executes <code>querySelector</code> on a given node.
-// nodeId - Id of the node to query upon.
-// selector - Selector string.
-// Returns -  nodeId - Query selector result.
-func (c *DOM) QuerySelector(nodeId int, selector string) (int, error) {
-	var v DOMQuerySelectorParams
-	v.NodeId = nodeId
-	v.Selector = selector
-	return c.QuerySelectorWithParams(&v)
-}
-
-type DOMQuerySelectorAllParams struct {
-	// Id of the node to query upon.
-	NodeId int `json:"nodeId"`
-	// Selector string.
-	Selector string `json:"selector"`
-}
-
-// QuerySelectorAllWithParams - Executes <code>querySelectorAll</code> on a given node.
-// Returns -  nodeIds - Query selector result.
-func (c *DOM) QuerySelectorAllWithParams(v *DOMQuerySelectorAllParams) ([]int, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.querySelectorAll", Params: v})
-	if err != nil {
-		return nil, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			NodeIds []int
-		}
-	}
-
-	if resp == nil {
-		return nil, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return nil, err
-	}
-
-	return chromeData.Result.NodeIds, nil
-}
-
-// QuerySelectorAll - Executes <code>querySelectorAll</code> on a given node.
-// nodeId - Id of the node to query upon.
-// selector - Selector string.
-// Returns -  nodeIds - Query selector result.
-func (c *DOM) QuerySelectorAll(nodeId int, selector string) ([]int, error) {
-	var v DOMQuerySelectorAllParams
-	v.NodeId = nodeId
-	v.Selector = selector
-	return c.QuerySelectorAllWithParams(&v)
-}
-
-type DOMSetNodeNameParams struct {
-	// Id of the node to set name for.
-	NodeId int `json:"nodeId"`
-	// New node's name.
-	Name string `json:"name"`
-}
-
-// SetNodeNameWithParams - Sets node name for a node with given id.
-// Returns -  nodeId - New node's id.
-func (c *DOM) SetNodeNameWithParams(v *DOMSetNodeNameParams) (int, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setNodeName", Params: v})
-	if err != nil {
-		return 0, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			NodeId int
-		}
-	}
-
-	if resp == nil {
-		return 0, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return 0, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return 0, err
-	}
-
-	return chromeData.Result.NodeId, nil
-}
-
-// SetNodeName - Sets node name for a node with given id.
-// nodeId - Id of the node to set name for.
-// name - New node's name.
-// Returns -  nodeId - New node's id.
-func (c *DOM) SetNodeName(nodeId int, name string) (int, error) {
-	var v DOMSetNodeNameParams
-	v.NodeId = nodeId
-	v.Name = name
-	return c.SetNodeNameWithParams(&v)
-}
-
-type DOMSetNodeValueParams struct {
-	// Id of the node to set value for.
-	NodeId int `json:"nodeId"`
-	// New node's value.
-	Value string `json:"value"`
-}
-
-// SetNodeValueWithParams - Sets node value for a node with given id.
-func (c *DOM) SetNodeValueWithParams(v *DOMSetNodeValueParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setNodeValue", Params: v})
-}
-
-// SetNodeValue - Sets node value for a node with given id.
-// nodeId - Id of the node to set value for.
-// value - New node's value.
-func (c *DOM) SetNodeValue(nodeId int, value string) (*gcdmessage.ChromeResponse, error) {
-	var v DOMSetNodeValueParams
-	v.NodeId = nodeId
-	v.Value = value
-	return c.SetNodeValueWithParams(&v)
-}
-
-type DOMRemoveNodeParams struct {
-	// Id of the node to remove.
-	NodeId int `json:"nodeId"`
-}
-
-// RemoveNodeWithParams - Removes node with given id.
-func (c *DOM) RemoveNodeWithParams(v *DOMRemoveNodeParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.removeNode", Params: v})
-}
-
-// RemoveNode - Removes node with given id.
-// nodeId - Id of the node to remove.
-func (c *DOM) RemoveNode(nodeId int) (*gcdmessage.ChromeResponse, error) {
-	var v DOMRemoveNodeParams
-	v.NodeId = nodeId
-	return c.RemoveNodeWithParams(&v)
-}
-
-type DOMSetAttributeValueParams struct {
-	// Id of the element to set attribute for.
-	NodeId int `json:"nodeId"`
-	// Attribute name.
-	Name string `json:"name"`
-	// Attribute value.
-	Value string `json:"value"`
-}
-
-// SetAttributeValueWithParams - Sets attribute for an element with given id.
-func (c *DOM) SetAttributeValueWithParams(v *DOMSetAttributeValueParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setAttributeValue", Params: v})
-}
-
-// SetAttributeValue - Sets attribute for an element with given id.
-// nodeId - Id of the element to set attribute for.
-// name - Attribute name.
-// value - Attribute value.
-func (c *DOM) SetAttributeValue(nodeId int, name string, value string) (*gcdmessage.ChromeResponse, error) {
-	var v DOMSetAttributeValueParams
-	v.NodeId = nodeId
-	v.Name = name
-	v.Value = value
-	return c.SetAttributeValueWithParams(&v)
-}
-
-type DOMSetAttributesAsTextParams struct {
-	// Id of the element to set attributes for.
-	NodeId int `json:"nodeId"`
-	// Text with a number of attributes. Will parse this text using HTML parser.
-	Text string `json:"text"`
-	// Attribute name to replace with new attributes derived from text in case text parsed successfully.
-	Name string `json:"name,omitempty"`
-}
-
-// SetAttributesAsTextWithParams - Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
-func (c *DOM) SetAttributesAsTextWithParams(v *DOMSetAttributesAsTextParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setAttributesAsText", Params: v})
-}
-
-// SetAttributesAsText - Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
-// nodeId - Id of the element to set attributes for.
-// text - Text with a number of attributes. Will parse this text using HTML parser.
-// name - Attribute name to replace with new attributes derived from text in case text parsed successfully.
-func (c *DOM) SetAttributesAsText(nodeId int, text string, name string) (*gcdmessage.ChromeResponse, error) {
-	var v DOMSetAttributesAsTextParams
-	v.NodeId = nodeId
-	v.Text = text
-	v.Name = name
-	return c.SetAttributesAsTextWithParams(&v)
-}
-
-type DOMRemoveAttributeParams struct {
-	// Id of the element to remove attribute from.
-	NodeId int `json:"nodeId"`
-	// Name of the attribute to remove.
-	Name string `json:"name"`
-}
-
-// RemoveAttributeWithParams - Removes attribute with given name from an element with given id.
-func (c *DOM) RemoveAttributeWithParams(v *DOMRemoveAttributeParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.removeAttribute", Params: v})
-}
-
-// RemoveAttribute - Removes attribute with given name from an element with given id.
-// nodeId - Id of the element to remove attribute from.
-// name - Name of the attribute to remove.
-func (c *DOM) RemoveAttribute(nodeId int, name string) (*gcdmessage.ChromeResponse, error) {
-	var v DOMRemoveAttributeParams
-	v.NodeId = nodeId
-	v.Name = name
-	return c.RemoveAttributeWithParams(&v)
+// GetNodeForLocation - Returns node id at given location.
+// x - X coordinate.
+// y - Y coordinate.
+// includeUserAgentShadowDOM - False to skip to the nearest non-UA shadow root ancestor (default: false).
+// Returns -  nodeId - Id of the node at given coordinates.
+func (c *DOM) GetNodeForLocation(x int, y int, includeUserAgentShadowDOM bool) (int, error) {
+	var v DOMGetNodeForLocationParams
+	v.X = x
+	v.Y = y
+	v.IncludeUserAgentShadowDOM = includeUserAgentShadowDOM
+	return c.GetNodeForLocationWithParams(&v)
 }
 
 type DOMGetOuterHTMLParams struct {
-	// Id of the node to get markup for.
-	NodeId int `json:"nodeId"`
+	// Identifier of the node.
+	NodeId int `json:"nodeId,omitempty"`
+	// Identifier of the backend node.
+	BackendNodeId int `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper.
+	ObjectId string `json:"objectId,omitempty"`
 }
 
 // GetOuterHTMLWithParams - Returns node's HTML markup.
@@ -693,34 +721,190 @@ func (c *DOM) GetOuterHTMLWithParams(v *DOMGetOuterHTMLParams) (string, error) {
 }
 
 // GetOuterHTML - Returns node's HTML markup.
-// nodeId - Id of the node to get markup for.
+// nodeId - Identifier of the node.
+// backendNodeId - Identifier of the backend node.
+// objectId - JavaScript object id of the node wrapper.
 // Returns -  outerHTML - Outer HTML markup.
-func (c *DOM) GetOuterHTML(nodeId int) (string, error) {
+func (c *DOM) GetOuterHTML(nodeId int, backendNodeId int, objectId string) (string, error) {
 	var v DOMGetOuterHTMLParams
 	v.NodeId = nodeId
+	v.BackendNodeId = backendNodeId
+	v.ObjectId = objectId
 	return c.GetOuterHTMLWithParams(&v)
 }
 
-type DOMSetOuterHTMLParams struct {
-	// Id of the node to set markup for.
+type DOMGetRelayoutBoundaryParams struct {
+	// Id of the node.
 	NodeId int `json:"nodeId"`
-	// Outer HTML markup to set.
-	OuterHTML string `json:"outerHTML"`
 }
 
-// SetOuterHTMLWithParams - Sets node HTML markup, returns new node id.
-func (c *DOM) SetOuterHTMLWithParams(v *DOMSetOuterHTMLParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setOuterHTML", Params: v})
+// GetRelayoutBoundaryWithParams - Returns the id of the nearest ancestor that is a relayout boundary.
+// Returns -  nodeId - Relayout boundary node id for the given node.
+func (c *DOM) GetRelayoutBoundaryWithParams(v *DOMGetRelayoutBoundaryParams) (int, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getRelayoutBoundary", Params: v})
+	if err != nil {
+		return 0, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			NodeId int
+		}
+	}
+
+	if resp == nil {
+		return 0, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return 0, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return 0, err
+	}
+
+	return chromeData.Result.NodeId, nil
 }
 
-// SetOuterHTML - Sets node HTML markup, returns new node id.
-// nodeId - Id of the node to set markup for.
-// outerHTML - Outer HTML markup to set.
-func (c *DOM) SetOuterHTML(nodeId int, outerHTML string) (*gcdmessage.ChromeResponse, error) {
-	var v DOMSetOuterHTMLParams
+// GetRelayoutBoundary - Returns the id of the nearest ancestor that is a relayout boundary.
+// nodeId - Id of the node.
+// Returns -  nodeId - Relayout boundary node id for the given node.
+func (c *DOM) GetRelayoutBoundary(nodeId int) (int, error) {
+	var v DOMGetRelayoutBoundaryParams
 	v.NodeId = nodeId
-	v.OuterHTML = outerHTML
-	return c.SetOuterHTMLWithParams(&v)
+	return c.GetRelayoutBoundaryWithParams(&v)
+}
+
+type DOMGetSearchResultsParams struct {
+	// Unique search session identifier.
+	SearchId string `json:"searchId"`
+	// Start index of the search result to be returned.
+	FromIndex int `json:"fromIndex"`
+	// End index of the search result to be returned.
+	ToIndex int `json:"toIndex"`
+}
+
+// GetSearchResultsWithParams - Returns search results from given `fromIndex` to given `toIndex` from the search with the given identifier.
+// Returns -  nodeIds - Ids of the search result nodes.
+func (c *DOM) GetSearchResultsWithParams(v *DOMGetSearchResultsParams) ([]int, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getSearchResults", Params: v})
+	if err != nil {
+		return nil, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			NodeIds []int
+		}
+	}
+
+	if resp == nil {
+		return nil, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return nil, err
+	}
+
+	return chromeData.Result.NodeIds, nil
+}
+
+// GetSearchResults - Returns search results from given `fromIndex` to given `toIndex` from the search with the given identifier.
+// searchId - Unique search session identifier.
+// fromIndex - Start index of the search result to be returned.
+// toIndex - End index of the search result to be returned.
+// Returns -  nodeIds - Ids of the search result nodes.
+func (c *DOM) GetSearchResults(searchId string, fromIndex int, toIndex int) ([]int, error) {
+	var v DOMGetSearchResultsParams
+	v.SearchId = searchId
+	v.FromIndex = fromIndex
+	v.ToIndex = toIndex
+	return c.GetSearchResultsWithParams(&v)
+}
+
+// Hides any highlight.
+func (c *DOM) HideHighlight() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.hideHighlight"})
+}
+
+// Highlights DOM node.
+func (c *DOM) HighlightNode() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.highlightNode"})
+}
+
+// Highlights given rectangle.
+func (c *DOM) HighlightRect() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.highlightRect"})
+}
+
+// Marks last undoable state.
+func (c *DOM) MarkUndoableState() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.markUndoableState"})
+}
+
+type DOMMoveToParams struct {
+	// Id of the node to move.
+	NodeId int `json:"nodeId"`
+	// Id of the element to drop the moved node into.
+	TargetNodeId int `json:"targetNodeId"`
+	// Drop node before this one (if absent, the moved node becomes the last child of `targetNodeId`).
+	InsertBeforeNodeId int `json:"insertBeforeNodeId,omitempty"`
+}
+
+// MoveToWithParams - Moves node into the new container, places it before the given anchor.
+// Returns -  nodeId - New id of the moved node.
+func (c *DOM) MoveToWithParams(v *DOMMoveToParams) (int, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.moveTo", Params: v})
+	if err != nil {
+		return 0, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			NodeId int
+		}
+	}
+
+	if resp == nil {
+		return 0, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return 0, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return 0, err
+	}
+
+	return chromeData.Result.NodeId, nil
+}
+
+// MoveTo - Moves node into the new container, places it before the given anchor.
+// nodeId - Id of the node to move.
+// targetNodeId - Id of the element to drop the moved node into.
+// insertBeforeNodeId - Drop node before this one (if absent, the moved node becomes the last child of `targetNodeId`).
+// Returns -  nodeId - New id of the moved node.
+func (c *DOM) MoveTo(nodeId int, targetNodeId int, insertBeforeNodeId int) (int, error) {
+	var v DOMMoveToParams
+	v.NodeId = nodeId
+	v.TargetNodeId = targetNodeId
+	v.InsertBeforeNodeId = insertBeforeNodeId
+	return c.MoveToWithParams(&v)
 }
 
 type DOMPerformSearchParams struct {
@@ -730,7 +914,7 @@ type DOMPerformSearchParams struct {
 	IncludeUserAgentShadowDOM bool `json:"includeUserAgentShadowDOM,omitempty"`
 }
 
-// PerformSearchWithParams - Searches for a given string in the DOM tree. Use <code>getSearchResults</code> to access search results or <code>cancelSearch</code> to end this search session.
+// PerformSearchWithParams - Searches for a given string in the DOM tree. Use `getSearchResults` to access search results or `cancelSearch` to end this search session.
 // Returns -  searchId - Unique search session identifier. resultCount - Number of search results.
 func (c *DOM) PerformSearchWithParams(v *DOMPerformSearchParams) (string, int, error) {
 	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.performSearch", Params: v})
@@ -763,7 +947,7 @@ func (c *DOM) PerformSearchWithParams(v *DOMPerformSearchParams) (string, int, e
 	return chromeData.Result.SearchId, chromeData.Result.ResultCount, nil
 }
 
-// PerformSearch - Searches for a given string in the DOM tree. Use <code>getSearchResults</code> to access search results or <code>cancelSearch</code> to end this search session.
+// PerformSearch - Searches for a given string in the DOM tree. Use `getSearchResults` to access search results or `cancelSearch` to end this search session.
 // query - Plain text or query selector or XPath search query.
 // includeUserAgentShadowDOM - True to search in user agent shadow DOM.
 // Returns -  searchId - Unique search session identifier. resultCount - Number of search results.
@@ -772,139 +956,6 @@ func (c *DOM) PerformSearch(query string, includeUserAgentShadowDOM bool) (strin
 	v.Query = query
 	v.IncludeUserAgentShadowDOM = includeUserAgentShadowDOM
 	return c.PerformSearchWithParams(&v)
-}
-
-type DOMGetSearchResultsParams struct {
-	// Unique search session identifier.
-	SearchId string `json:"searchId"`
-	// Start index of the search result to be returned.
-	FromIndex int `json:"fromIndex"`
-	// End index of the search result to be returned.
-	ToIndex int `json:"toIndex"`
-}
-
-// GetSearchResultsWithParams - Returns search results from given <code>fromIndex</code> to given <code>toIndex</code> from the sarch with the given identifier.
-// Returns -  nodeIds - Ids of the search result nodes.
-func (c *DOM) GetSearchResultsWithParams(v *DOMGetSearchResultsParams) ([]int, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getSearchResults", Params: v})
-	if err != nil {
-		return nil, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			NodeIds []int
-		}
-	}
-
-	if resp == nil {
-		return nil, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return nil, err
-	}
-
-	return chromeData.Result.NodeIds, nil
-}
-
-// GetSearchResults - Returns search results from given <code>fromIndex</code> to given <code>toIndex</code> from the sarch with the given identifier.
-// searchId - Unique search session identifier.
-// fromIndex - Start index of the search result to be returned.
-// toIndex - End index of the search result to be returned.
-// Returns -  nodeIds - Ids of the search result nodes.
-func (c *DOM) GetSearchResults(searchId string, fromIndex int, toIndex int) ([]int, error) {
-	var v DOMGetSearchResultsParams
-	v.SearchId = searchId
-	v.FromIndex = fromIndex
-	v.ToIndex = toIndex
-	return c.GetSearchResultsWithParams(&v)
-}
-
-type DOMDiscardSearchResultsParams struct {
-	// Unique search session identifier.
-	SearchId string `json:"searchId"`
-}
-
-// DiscardSearchResultsWithParams - Discards search results from the session with the given id. <code>getSearchResults</code> should no longer be called for that search.
-func (c *DOM) DiscardSearchResultsWithParams(v *DOMDiscardSearchResultsParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.discardSearchResults", Params: v})
-}
-
-// DiscardSearchResults - Discards search results from the session with the given id. <code>getSearchResults</code> should no longer be called for that search.
-// searchId - Unique search session identifier.
-func (c *DOM) DiscardSearchResults(searchId string) (*gcdmessage.ChromeResponse, error) {
-	var v DOMDiscardSearchResultsParams
-	v.SearchId = searchId
-	return c.DiscardSearchResultsWithParams(&v)
-}
-
-type DOMRequestNodeParams struct {
-	// JavaScript object id to convert into node.
-	ObjectId string `json:"objectId"`
-}
-
-// RequestNodeWithParams - Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of <code>setChildNodes</code> notifications.
-// Returns -  nodeId - Node id for given object.
-func (c *DOM) RequestNodeWithParams(v *DOMRequestNodeParams) (int, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.requestNode", Params: v})
-	if err != nil {
-		return 0, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			NodeId int
-		}
-	}
-
-	if resp == nil {
-		return 0, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return 0, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return 0, err
-	}
-
-	return chromeData.Result.NodeId, nil
-}
-
-// RequestNode - Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of <code>setChildNodes</code> notifications.
-// objectId - JavaScript object id to convert into node.
-// Returns -  nodeId - Node id for given object.
-func (c *DOM) RequestNode(objectId string) (int, error) {
-	var v DOMRequestNodeParams
-	v.ObjectId = objectId
-	return c.RequestNodeWithParams(&v)
-}
-
-// Highlights given rectangle.
-func (c *DOM) HighlightRect() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.highlightRect"})
-}
-
-// Highlights DOM node.
-func (c *DOM) HighlightNode() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.highlightNode"})
-}
-
-// Hides any highlight.
-func (c *DOM) HideHighlight() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.hideHighlight"})
 }
 
 type DOMPushNodeByPathToFrontendParams struct {
@@ -999,32 +1050,233 @@ func (c *DOM) PushNodesByBackendIdsToFrontend(backendNodeIds []int) ([]int, erro
 	return c.PushNodesByBackendIdsToFrontendWithParams(&v)
 }
 
-type DOMSetInspectedNodeParams struct {
-	// DOM node id to be accessible by means of $x command line API.
+type DOMQuerySelectorParams struct {
+	// Id of the node to query upon.
+	NodeId int `json:"nodeId"`
+	// Selector string.
+	Selector string `json:"selector"`
+}
+
+// QuerySelectorWithParams - Executes `querySelector` on a given node.
+// Returns -  nodeId - Query selector result.
+func (c *DOM) QuerySelectorWithParams(v *DOMQuerySelectorParams) (int, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.querySelector", Params: v})
+	if err != nil {
+		return 0, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			NodeId int
+		}
+	}
+
+	if resp == nil {
+		return 0, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return 0, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return 0, err
+	}
+
+	return chromeData.Result.NodeId, nil
+}
+
+// QuerySelector - Executes `querySelector` on a given node.
+// nodeId - Id of the node to query upon.
+// selector - Selector string.
+// Returns -  nodeId - Query selector result.
+func (c *DOM) QuerySelector(nodeId int, selector string) (int, error) {
+	var v DOMQuerySelectorParams
+	v.NodeId = nodeId
+	v.Selector = selector
+	return c.QuerySelectorWithParams(&v)
+}
+
+type DOMQuerySelectorAllParams struct {
+	// Id of the node to query upon.
+	NodeId int `json:"nodeId"`
+	// Selector string.
+	Selector string `json:"selector"`
+}
+
+// QuerySelectorAllWithParams - Executes `querySelectorAll` on a given node.
+// Returns -  nodeIds - Query selector result.
+func (c *DOM) QuerySelectorAllWithParams(v *DOMQuerySelectorAllParams) ([]int, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.querySelectorAll", Params: v})
+	if err != nil {
+		return nil, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			NodeIds []int
+		}
+	}
+
+	if resp == nil {
+		return nil, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return nil, err
+	}
+
+	return chromeData.Result.NodeIds, nil
+}
+
+// QuerySelectorAll - Executes `querySelectorAll` on a given node.
+// nodeId - Id of the node to query upon.
+// selector - Selector string.
+// Returns -  nodeIds - Query selector result.
+func (c *DOM) QuerySelectorAll(nodeId int, selector string) ([]int, error) {
+	var v DOMQuerySelectorAllParams
+	v.NodeId = nodeId
+	v.Selector = selector
+	return c.QuerySelectorAllWithParams(&v)
+}
+
+// Re-does the last undone action.
+func (c *DOM) Redo() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.redo"})
+}
+
+type DOMRemoveAttributeParams struct {
+	// Id of the element to remove attribute from.
+	NodeId int `json:"nodeId"`
+	// Name of the attribute to remove.
+	Name string `json:"name"`
+}
+
+// RemoveAttributeWithParams - Removes attribute with given name from an element with given id.
+func (c *DOM) RemoveAttributeWithParams(v *DOMRemoveAttributeParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.removeAttribute", Params: v})
+}
+
+// RemoveAttribute - Removes attribute with given name from an element with given id.
+// nodeId - Id of the element to remove attribute from.
+// name - Name of the attribute to remove.
+func (c *DOM) RemoveAttribute(nodeId int, name string) (*gcdmessage.ChromeResponse, error) {
+	var v DOMRemoveAttributeParams
+	v.NodeId = nodeId
+	v.Name = name
+	return c.RemoveAttributeWithParams(&v)
+}
+
+type DOMRemoveNodeParams struct {
+	// Id of the node to remove.
 	NodeId int `json:"nodeId"`
 }
 
-// SetInspectedNodeWithParams - Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
-func (c *DOM) SetInspectedNodeWithParams(v *DOMSetInspectedNodeParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setInspectedNode", Params: v})
+// RemoveNodeWithParams - Removes node with given id.
+func (c *DOM) RemoveNodeWithParams(v *DOMRemoveNodeParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.removeNode", Params: v})
 }
 
-// SetInspectedNode - Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
-// nodeId - DOM node id to be accessible by means of $x command line API.
-func (c *DOM) SetInspectedNode(nodeId int) (*gcdmessage.ChromeResponse, error) {
-	var v DOMSetInspectedNodeParams
+// RemoveNode - Removes node with given id.
+// nodeId - Id of the node to remove.
+func (c *DOM) RemoveNode(nodeId int) (*gcdmessage.ChromeResponse, error) {
+	var v DOMRemoveNodeParams
 	v.NodeId = nodeId
-	return c.SetInspectedNodeWithParams(&v)
+	return c.RemoveNodeWithParams(&v)
+}
+
+type DOMRequestChildNodesParams struct {
+	// Id of the node to get children for.
+	NodeId int `json:"nodeId"`
+	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
+	Depth int `json:"depth,omitempty"`
+	// Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
+	Pierce bool `json:"pierce,omitempty"`
+}
+
+// RequestChildNodesWithParams - Requests that children of the node with given id are returned to the caller in form of `setChildNodes` events where not only immediate children are retrieved, but all children down to the specified depth.
+func (c *DOM) RequestChildNodesWithParams(v *DOMRequestChildNodesParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.requestChildNodes", Params: v})
+}
+
+// RequestChildNodes - Requests that children of the node with given id are returned to the caller in form of `setChildNodes` events where not only immediate children are retrieved, but all children down to the specified depth.
+// nodeId - Id of the node to get children for.
+// depth - The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
+// pierce - Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
+func (c *DOM) RequestChildNodes(nodeId int, depth int, pierce bool) (*gcdmessage.ChromeResponse, error) {
+	var v DOMRequestChildNodesParams
+	v.NodeId = nodeId
+	v.Depth = depth
+	v.Pierce = pierce
+	return c.RequestChildNodesWithParams(&v)
+}
+
+type DOMRequestNodeParams struct {
+	// JavaScript object id to convert into node.
+	ObjectId string `json:"objectId"`
+}
+
+// RequestNodeWithParams - Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of `setChildNodes` notifications.
+// Returns -  nodeId - Node id for given object.
+func (c *DOM) RequestNodeWithParams(v *DOMRequestNodeParams) (int, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.requestNode", Params: v})
+	if err != nil {
+		return 0, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			NodeId int
+		}
+	}
+
+	if resp == nil {
+		return 0, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return 0, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return 0, err
+	}
+
+	return chromeData.Result.NodeId, nil
+}
+
+// RequestNode - Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of `setChildNodes` notifications.
+// objectId - JavaScript object id to convert into node.
+// Returns -  nodeId - Node id for given object.
+func (c *DOM) RequestNode(objectId string) (int, error) {
+	var v DOMRequestNodeParams
+	v.ObjectId = objectId
+	return c.RequestNodeWithParams(&v)
 }
 
 type DOMResolveNodeParams struct {
 	// Id of the node to resolve.
-	NodeId int `json:"nodeId"`
+	NodeId int `json:"nodeId,omitempty"`
+	// Backend identifier of the node to resolve.
+	BackendNodeId int `json:"backendNodeId,omitempty"`
 	// Symbolic group name that can be used to release multiple objects.
 	ObjectGroup string `json:"objectGroup,omitempty"`
 }
 
-// ResolveNodeWithParams - Resolves JavaScript node object for given node id.
+// ResolveNodeWithParams - Resolves the JavaScript node object for a given NodeId or BackendNodeId.
 // Returns -  object - JavaScript object wrapper for given node.
 func (c *DOM) ResolveNodeWithParams(v *DOMResolveNodeParams) (*RuntimeRemoteObject, error) {
 	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.resolveNode", Params: v})
@@ -1056,209 +1308,80 @@ func (c *DOM) ResolveNodeWithParams(v *DOMResolveNodeParams) (*RuntimeRemoteObje
 	return chromeData.Result.Object, nil
 }
 
-// ResolveNode - Resolves JavaScript node object for given node id.
+// ResolveNode - Resolves the JavaScript node object for a given NodeId or BackendNodeId.
 // nodeId - Id of the node to resolve.
+// backendNodeId - Backend identifier of the node to resolve.
 // objectGroup - Symbolic group name that can be used to release multiple objects.
 // Returns -  object - JavaScript object wrapper for given node.
-func (c *DOM) ResolveNode(nodeId int, objectGroup string) (*RuntimeRemoteObject, error) {
+func (c *DOM) ResolveNode(nodeId int, backendNodeId int, objectGroup string) (*RuntimeRemoteObject, error) {
 	var v DOMResolveNodeParams
 	v.NodeId = nodeId
+	v.BackendNodeId = backendNodeId
 	v.ObjectGroup = objectGroup
 	return c.ResolveNodeWithParams(&v)
 }
 
-type DOMGetAttributesParams struct {
-	// Id of the node to retrieve attibutes for.
+type DOMSetAttributeValueParams struct {
+	// Id of the element to set attribute for.
 	NodeId int `json:"nodeId"`
+	// Attribute name.
+	Name string `json:"name"`
+	// Attribute value.
+	Value string `json:"value"`
 }
 
-// GetAttributesWithParams - Returns attributes for the specified node.
-// Returns -  attributes - An interleaved array of node attribute names and values.
-func (c *DOM) GetAttributesWithParams(v *DOMGetAttributesParams) ([]string, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getAttributes", Params: v})
-	if err != nil {
-		return nil, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			Attributes []string
-		}
-	}
-
-	if resp == nil {
-		return nil, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return nil, err
-	}
-
-	return chromeData.Result.Attributes, nil
+// SetAttributeValueWithParams - Sets attribute for an element with given id.
+func (c *DOM) SetAttributeValueWithParams(v *DOMSetAttributeValueParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setAttributeValue", Params: v})
 }
 
-// GetAttributes - Returns attributes for the specified node.
-// nodeId - Id of the node to retrieve attibutes for.
-// Returns -  attributes - An interleaved array of node attribute names and values.
-func (c *DOM) GetAttributes(nodeId int) ([]string, error) {
-	var v DOMGetAttributesParams
+// SetAttributeValue - Sets attribute for an element with given id.
+// nodeId - Id of the element to set attribute for.
+// name - Attribute name.
+// value - Attribute value.
+func (c *DOM) SetAttributeValue(nodeId int, name string, value string) (*gcdmessage.ChromeResponse, error) {
+	var v DOMSetAttributeValueParams
 	v.NodeId = nodeId
-	return c.GetAttributesWithParams(&v)
+	v.Name = name
+	v.Value = value
+	return c.SetAttributeValueWithParams(&v)
 }
 
-type DOMCopyToParams struct {
-	// Id of the node to copy.
+type DOMSetAttributesAsTextParams struct {
+	// Id of the element to set attributes for.
 	NodeId int `json:"nodeId"`
-	// Id of the element to drop the copy into.
-	TargetNodeId int `json:"targetNodeId"`
-	// Drop the copy before this node (if absent, the copy becomes the last child of <code>targetNodeId</code>).
-	InsertBeforeNodeId int `json:"insertBeforeNodeId,omitempty"`
+	// Text with a number of attributes. Will parse this text using HTML parser.
+	Text string `json:"text"`
+	// Attribute name to replace with new attributes derived from text in case text parsed successfully.
+	Name string `json:"name,omitempty"`
 }
 
-// CopyToWithParams - Creates a deep copy of the specified node and places it into the target container before the given anchor.
-// Returns -  nodeId - Id of the node clone.
-func (c *DOM) CopyToWithParams(v *DOMCopyToParams) (int, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.copyTo", Params: v})
-	if err != nil {
-		return 0, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			NodeId int
-		}
-	}
-
-	if resp == nil {
-		return 0, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return 0, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return 0, err
-	}
-
-	return chromeData.Result.NodeId, nil
+// SetAttributesAsTextWithParams - Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
+func (c *DOM) SetAttributesAsTextWithParams(v *DOMSetAttributesAsTextParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setAttributesAsText", Params: v})
 }
 
-// CopyTo - Creates a deep copy of the specified node and places it into the target container before the given anchor.
-// nodeId - Id of the node to copy.
-// targetNodeId - Id of the element to drop the copy into.
-// insertBeforeNodeId - Drop the copy before this node (if absent, the copy becomes the last child of <code>targetNodeId</code>).
-// Returns -  nodeId - Id of the node clone.
-func (c *DOM) CopyTo(nodeId int, targetNodeId int, insertBeforeNodeId int) (int, error) {
-	var v DOMCopyToParams
+// SetAttributesAsText - Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
+// nodeId - Id of the element to set attributes for.
+// text - Text with a number of attributes. Will parse this text using HTML parser.
+// name - Attribute name to replace with new attributes derived from text in case text parsed successfully.
+func (c *DOM) SetAttributesAsText(nodeId int, text string, name string) (*gcdmessage.ChromeResponse, error) {
+	var v DOMSetAttributesAsTextParams
 	v.NodeId = nodeId
-	v.TargetNodeId = targetNodeId
-	v.InsertBeforeNodeId = insertBeforeNodeId
-	return c.CopyToWithParams(&v)
-}
-
-type DOMMoveToParams struct {
-	// Id of the node to move.
-	NodeId int `json:"nodeId"`
-	// Id of the element to drop the moved node into.
-	TargetNodeId int `json:"targetNodeId"`
-	// Drop node before this one (if absent, the moved node becomes the last child of <code>targetNodeId</code>).
-	InsertBeforeNodeId int `json:"insertBeforeNodeId,omitempty"`
-}
-
-// MoveToWithParams - Moves node into the new container, places it before the given anchor.
-// Returns -  nodeId - New id of the moved node.
-func (c *DOM) MoveToWithParams(v *DOMMoveToParams) (int, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.moveTo", Params: v})
-	if err != nil {
-		return 0, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			NodeId int
-		}
-	}
-
-	if resp == nil {
-		return 0, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return 0, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return 0, err
-	}
-
-	return chromeData.Result.NodeId, nil
-}
-
-// MoveTo - Moves node into the new container, places it before the given anchor.
-// nodeId - Id of the node to move.
-// targetNodeId - Id of the element to drop the moved node into.
-// insertBeforeNodeId - Drop node before this one (if absent, the moved node becomes the last child of <code>targetNodeId</code>).
-// Returns -  nodeId - New id of the moved node.
-func (c *DOM) MoveTo(nodeId int, targetNodeId int, insertBeforeNodeId int) (int, error) {
-	var v DOMMoveToParams
-	v.NodeId = nodeId
-	v.TargetNodeId = targetNodeId
-	v.InsertBeforeNodeId = insertBeforeNodeId
-	return c.MoveToWithParams(&v)
-}
-
-// Undoes the last performed action.
-func (c *DOM) Undo() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.undo"})
-}
-
-// Re-does the last undone action.
-func (c *DOM) Redo() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.redo"})
-}
-
-// Marks last undoable state.
-func (c *DOM) MarkUndoableState() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.markUndoableState"})
-}
-
-type DOMFocusParams struct {
-	// Id of the node to focus.
-	NodeId int `json:"nodeId"`
-}
-
-// FocusWithParams - Focuses the given element.
-func (c *DOM) FocusWithParams(v *DOMFocusParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.focus", Params: v})
-}
-
-// Focus - Focuses the given element.
-// nodeId - Id of the node to focus.
-func (c *DOM) Focus(nodeId int) (*gcdmessage.ChromeResponse, error) {
-	var v DOMFocusParams
-	v.NodeId = nodeId
-	return c.FocusWithParams(&v)
+	v.Text = text
+	v.Name = name
+	return c.SetAttributesAsTextWithParams(&v)
 }
 
 type DOMSetFileInputFilesParams struct {
-	// Id of the file input node to set files for.
-	NodeId int `json:"nodeId"`
 	// Array of file paths to set.
 	Files []string `json:"files"`
+	// Identifier of the node.
+	NodeId int `json:"nodeId,omitempty"`
+	// Identifier of the backend node.
+	BackendNodeId int `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper.
+	ObjectId string `json:"objectId,omitempty"`
 }
 
 // SetFileInputFilesWithParams - Sets files for the given file input element.
@@ -1267,74 +1390,48 @@ func (c *DOM) SetFileInputFilesWithParams(v *DOMSetFileInputFilesParams) (*gcdme
 }
 
 // SetFileInputFiles - Sets files for the given file input element.
-// nodeId - Id of the file input node to set files for.
 // files - Array of file paths to set.
-func (c *DOM) SetFileInputFiles(nodeId int, files []string) (*gcdmessage.ChromeResponse, error) {
+// nodeId - Identifier of the node.
+// backendNodeId - Identifier of the backend node.
+// objectId - JavaScript object id of the node wrapper.
+func (c *DOM) SetFileInputFiles(files []string, nodeId int, backendNodeId int, objectId string) (*gcdmessage.ChromeResponse, error) {
 	var v DOMSetFileInputFilesParams
-	v.NodeId = nodeId
 	v.Files = files
+	v.NodeId = nodeId
+	v.BackendNodeId = backendNodeId
+	v.ObjectId = objectId
 	return c.SetFileInputFilesWithParams(&v)
 }
 
-type DOMGetBoxModelParams struct {
-	// Id of the node to get box model for.
+type DOMSetInspectedNodeParams struct {
+	// DOM node id to be accessible by means of $x command line API.
 	NodeId int `json:"nodeId"`
 }
 
-// GetBoxModelWithParams - Returns boxes for the currently selected nodes.
-// Returns -  model - Box model for the node.
-func (c *DOM) GetBoxModelWithParams(v *DOMGetBoxModelParams) (*DOMBoxModel, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getBoxModel", Params: v})
-	if err != nil {
-		return nil, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			Model *DOMBoxModel
-		}
-	}
-
-	if resp == nil {
-		return nil, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return nil, err
-	}
-
-	return chromeData.Result.Model, nil
+// SetInspectedNodeWithParams - Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
+func (c *DOM) SetInspectedNodeWithParams(v *DOMSetInspectedNodeParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setInspectedNode", Params: v})
 }
 
-// GetBoxModel - Returns boxes for the currently selected nodes.
-// nodeId - Id of the node to get box model for.
-// Returns -  model - Box model for the node.
-func (c *DOM) GetBoxModel(nodeId int) (*DOMBoxModel, error) {
-	var v DOMGetBoxModelParams
+// SetInspectedNode - Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
+// nodeId - DOM node id to be accessible by means of $x command line API.
+func (c *DOM) SetInspectedNode(nodeId int) (*gcdmessage.ChromeResponse, error) {
+	var v DOMSetInspectedNodeParams
 	v.NodeId = nodeId
-	return c.GetBoxModelWithParams(&v)
+	return c.SetInspectedNodeWithParams(&v)
 }
 
-type DOMGetNodeForLocationParams struct {
-	// X coordinate.
-	X int `json:"x"`
-	// Y coordinate.
-	Y int `json:"y"`
-	// False to skip to the nearest non-UA shadow root ancestor (default: false).
-	IncludeUserAgentShadowDOM bool `json:"includeUserAgentShadowDOM,omitempty"`
+type DOMSetNodeNameParams struct {
+	// Id of the node to set name for.
+	NodeId int `json:"nodeId"`
+	// New node's name.
+	Name string `json:"name"`
 }
 
-// GetNodeForLocationWithParams - Returns node id at given location.
-// Returns -  nodeId - Id of the node at given coordinates.
-func (c *DOM) GetNodeForLocationWithParams(v *DOMGetNodeForLocationParams) (int, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getNodeForLocation", Params: v})
+// SetNodeNameWithParams - Sets node name for a node with given id.
+// Returns -  nodeId - New node's id.
+func (c *DOM) SetNodeNameWithParams(v *DOMSetNodeNameParams) (int, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setNodeName", Params: v})
 	if err != nil {
 		return 0, err
 	}
@@ -1363,28 +1460,75 @@ func (c *DOM) GetNodeForLocationWithParams(v *DOMGetNodeForLocationParams) (int,
 	return chromeData.Result.NodeId, nil
 }
 
-// GetNodeForLocation - Returns node id at given location.
-// x - X coordinate.
-// y - Y coordinate.
-// includeUserAgentShadowDOM - False to skip to the nearest non-UA shadow root ancestor (default: false).
-// Returns -  nodeId - Id of the node at given coordinates.
-func (c *DOM) GetNodeForLocation(x int, y int, includeUserAgentShadowDOM bool) (int, error) {
-	var v DOMGetNodeForLocationParams
-	v.X = x
-	v.Y = y
-	v.IncludeUserAgentShadowDOM = includeUserAgentShadowDOM
-	return c.GetNodeForLocationWithParams(&v)
+// SetNodeName - Sets node name for a node with given id.
+// nodeId - Id of the node to set name for.
+// name - New node's name.
+// Returns -  nodeId - New node's id.
+func (c *DOM) SetNodeName(nodeId int, name string) (int, error) {
+	var v DOMSetNodeNameParams
+	v.NodeId = nodeId
+	v.Name = name
+	return c.SetNodeNameWithParams(&v)
 }
 
-type DOMGetRelayoutBoundaryParams struct {
-	// Id of the node.
+type DOMSetNodeValueParams struct {
+	// Id of the node to set value for.
 	NodeId int `json:"nodeId"`
+	// New node's value.
+	Value string `json:"value"`
 }
 
-// GetRelayoutBoundaryWithParams - Returns the id of the nearest ancestor that is a relayout boundary.
-// Returns -  nodeId - Relayout boundary node id for the given node.
-func (c *DOM) GetRelayoutBoundaryWithParams(v *DOMGetRelayoutBoundaryParams) (int, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getRelayoutBoundary", Params: v})
+// SetNodeValueWithParams - Sets node value for a node with given id.
+func (c *DOM) SetNodeValueWithParams(v *DOMSetNodeValueParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setNodeValue", Params: v})
+}
+
+// SetNodeValue - Sets node value for a node with given id.
+// nodeId - Id of the node to set value for.
+// value - New node's value.
+func (c *DOM) SetNodeValue(nodeId int, value string) (*gcdmessage.ChromeResponse, error) {
+	var v DOMSetNodeValueParams
+	v.NodeId = nodeId
+	v.Value = value
+	return c.SetNodeValueWithParams(&v)
+}
+
+type DOMSetOuterHTMLParams struct {
+	// Id of the node to set markup for.
+	NodeId int `json:"nodeId"`
+	// Outer HTML markup to set.
+	OuterHTML string `json:"outerHTML"`
+}
+
+// SetOuterHTMLWithParams - Sets node HTML markup, returns new node id.
+func (c *DOM) SetOuterHTMLWithParams(v *DOMSetOuterHTMLParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.setOuterHTML", Params: v})
+}
+
+// SetOuterHTML - Sets node HTML markup, returns new node id.
+// nodeId - Id of the node to set markup for.
+// outerHTML - Outer HTML markup to set.
+func (c *DOM) SetOuterHTML(nodeId int, outerHTML string) (*gcdmessage.ChromeResponse, error) {
+	var v DOMSetOuterHTMLParams
+	v.NodeId = nodeId
+	v.OuterHTML = outerHTML
+	return c.SetOuterHTMLWithParams(&v)
+}
+
+// Undoes the last performed action.
+func (c *DOM) Undo() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.undo"})
+}
+
+type DOMGetFrameOwnerParams struct {
+	//
+	FrameId string `json:"frameId"`
+}
+
+// GetFrameOwnerWithParams - Returns iframe node that owns iframe with the given domain.
+// Returns -  nodeId -
+func (c *DOM) GetFrameOwnerWithParams(v *DOMGetFrameOwnerParams) (int, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOM.getFrameOwner", Params: v})
 	if err != nil {
 		return 0, err
 	}
@@ -1413,11 +1557,11 @@ func (c *DOM) GetRelayoutBoundaryWithParams(v *DOMGetRelayoutBoundaryParams) (in
 	return chromeData.Result.NodeId, nil
 }
 
-// GetRelayoutBoundary - Returns the id of the nearest ancestor that is a relayout boundary.
-// nodeId - Id of the node.
-// Returns -  nodeId - Relayout boundary node id for the given node.
-func (c *DOM) GetRelayoutBoundary(nodeId int) (int, error) {
-	var v DOMGetRelayoutBoundaryParams
-	v.NodeId = nodeId
-	return c.GetRelayoutBoundaryWithParams(&v)
+// GetFrameOwner - Returns iframe node that owns iframe with the given domain.
+// frameId -
+// Returns -  nodeId -
+func (c *DOM) GetFrameOwner(frameId string) (int, error) {
+	var v DOMGetFrameOwnerParams
+	v.FrameId = frameId
+	return c.GetFrameOwnerWithParams(&v)
 }

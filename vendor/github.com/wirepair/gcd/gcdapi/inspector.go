@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains Inspector functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -25,12 +25,12 @@ func NewInspector(target gcdmessage.ChromeTargeter) *Inspector {
 	return c
 }
 
-// Enables inspector domain notifications.
-func (c *Inspector) Enable() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Inspector.enable"})
-}
-
 // Disables inspector domain notifications.
 func (c *Inspector) Disable() (*gcdmessage.ChromeResponse, error) {
 	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Inspector.disable"})
+}
+
+// Enables inspector domain notifications.
+func (c *Inspector) Enable() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Inspector.enable"})
 }

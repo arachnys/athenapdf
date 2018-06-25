@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains ApplicationCache functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -59,87 +59,9 @@ func NewApplicationCache(target gcdmessage.ChromeTargeter) *ApplicationCache {
 	return c
 }
 
-// GetFramesWithManifests - Returns array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
-// Returns -  frameIds - Array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
-func (c *ApplicationCache) GetFramesWithManifests() ([]*ApplicationCacheFrameWithManifest, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "ApplicationCache.getFramesWithManifests"})
-	if err != nil {
-		return nil, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			FrameIds []*ApplicationCacheFrameWithManifest
-		}
-	}
-
-	if resp == nil {
-		return nil, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return nil, err
-	}
-
-	return chromeData.Result.FrameIds, nil
-}
-
 // Enables application cache domain notifications.
 func (c *ApplicationCache) Enable() (*gcdmessage.ChromeResponse, error) {
 	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "ApplicationCache.enable"})
-}
-
-type ApplicationCacheGetManifestForFrameParams struct {
-	// Identifier of the frame containing document whose manifest is retrieved.
-	FrameId string `json:"frameId"`
-}
-
-// GetManifestForFrameWithParams - Returns manifest URL for document in the given frame.
-// Returns -  manifestURL - Manifest URL for document in the given frame.
-func (c *ApplicationCache) GetManifestForFrameWithParams(v *ApplicationCacheGetManifestForFrameParams) (string, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "ApplicationCache.getManifestForFrame", Params: v})
-	if err != nil {
-		return "", err
-	}
-
-	var chromeData struct {
-		Result struct {
-			ManifestURL string
-		}
-	}
-
-	if resp == nil {
-		return "", &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return "", &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return "", err
-	}
-
-	return chromeData.Result.ManifestURL, nil
-}
-
-// GetManifestForFrame - Returns manifest URL for document in the given frame.
-// frameId - Identifier of the frame containing document whose manifest is retrieved.
-// Returns -  manifestURL - Manifest URL for document in the given frame.
-func (c *ApplicationCache) GetManifestForFrame(frameId string) (string, error) {
-	var v ApplicationCacheGetManifestForFrameParams
-	v.FrameId = frameId
-	return c.GetManifestForFrameWithParams(&v)
 }
 
 type ApplicationCacheGetApplicationCacheForFrameParams struct {
@@ -186,4 +108,82 @@ func (c *ApplicationCache) GetApplicationCacheForFrame(frameId string) (*Applica
 	var v ApplicationCacheGetApplicationCacheForFrameParams
 	v.FrameId = frameId
 	return c.GetApplicationCacheForFrameWithParams(&v)
+}
+
+// GetFramesWithManifests - Returns array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
+// Returns -  frameIds - Array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
+func (c *ApplicationCache) GetFramesWithManifests() ([]*ApplicationCacheFrameWithManifest, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "ApplicationCache.getFramesWithManifests"})
+	if err != nil {
+		return nil, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			FrameIds []*ApplicationCacheFrameWithManifest
+		}
+	}
+
+	if resp == nil {
+		return nil, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return nil, err
+	}
+
+	return chromeData.Result.FrameIds, nil
+}
+
+type ApplicationCacheGetManifestForFrameParams struct {
+	// Identifier of the frame containing document whose manifest is retrieved.
+	FrameId string `json:"frameId"`
+}
+
+// GetManifestForFrameWithParams - Returns manifest URL for document in the given frame.
+// Returns -  manifestURL - Manifest URL for document in the given frame.
+func (c *ApplicationCache) GetManifestForFrameWithParams(v *ApplicationCacheGetManifestForFrameParams) (string, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "ApplicationCache.getManifestForFrame", Params: v})
+	if err != nil {
+		return "", err
+	}
+
+	var chromeData struct {
+		Result struct {
+			ManifestURL string
+		}
+	}
+
+	if resp == nil {
+		return "", &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return "", &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return "", err
+	}
+
+	return chromeData.Result.ManifestURL, nil
+}
+
+// GetManifestForFrame - Returns manifest URL for document in the given frame.
+// frameId - Identifier of the frame containing document whose manifest is retrieved.
+// Returns -  manifestURL - Manifest URL for document in the given frame.
+func (c *ApplicationCache) GetManifestForFrame(frameId string) (string, error) {
+	var v ApplicationCacheGetManifestForFrameParams
+	v.FrameId = frameId
+	return c.GetManifestForFrameWithParams(&v)
 }

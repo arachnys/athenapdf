@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains Console functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -35,9 +35,9 @@ func NewConsole(target gcdmessage.ChromeTargeter) *Console {
 	return c
 }
 
-// Enables console domain, sends the messages collected so far to the client by means of the <code>messageAdded</code> notification.
-func (c *Console) Enable() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Console.enable"})
+// Does nothing.
+func (c *Console) ClearMessages() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Console.clearMessages"})
 }
 
 // Disables console domain, prevents further console messages from being reported to the client.
@@ -45,7 +45,7 @@ func (c *Console) Disable() (*gcdmessage.ChromeResponse, error) {
 	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Console.disable"})
 }
 
-// Does nothing.
-func (c *Console) ClearMessages() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Console.clearMessages"})
+// Enables console domain, sends the messages collected so far to the client by means of the `messageAdded` notification.
+func (c *Console) Enable() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Console.enable"})
 }

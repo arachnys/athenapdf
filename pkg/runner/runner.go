@@ -168,7 +168,7 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 		close(loadedScripts)
 	}()
 
-	requestID, err = r.Target.Page.Navigate(req.GetUri(), "", "")
+	requestID, _, _, err = r.Target.Page.Navigate(req.GetUri(), "", "", "")
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

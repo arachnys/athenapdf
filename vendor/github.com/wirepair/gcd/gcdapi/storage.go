@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains Storage functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -13,6 +13,41 @@ import (
 type StorageUsageForType struct {
 	StorageType string  `json:"storageType"` // Name of storage type. enum values: appcache, cookies, file_systems, indexeddb, local_storage, shader_cache, websql, service_workers, cache_storage, all, other
 	Usage       float64 `json:"usage"`       // Storage usage (bytes).
+}
+
+// A cache's contents have been modified.
+type StorageCacheStorageContentUpdatedEvent struct {
+	Method string `json:"method"`
+	Params struct {
+		Origin    string `json:"origin"`    // Origin to update.
+		CacheName string `json:"cacheName"` // Name of cache in origin.
+	} `json:"Params,omitempty"`
+}
+
+// A cache has been added/deleted.
+type StorageCacheStorageListUpdatedEvent struct {
+	Method string `json:"method"`
+	Params struct {
+		Origin string `json:"origin"` // Origin to update.
+	} `json:"Params,omitempty"`
+}
+
+// The origin's IndexedDB object store has been modified.
+type StorageIndexedDBContentUpdatedEvent struct {
+	Method string `json:"method"`
+	Params struct {
+		Origin          string `json:"origin"`          // Origin to update.
+		DatabaseName    string `json:"databaseName"`    // Database to update.
+		ObjectStoreName string `json:"objectStoreName"` // ObjectStore to update.
+	} `json:"Params,omitempty"`
+}
+
+// The origin's IndexedDB database list has been modified.
+type StorageIndexedDBListUpdatedEvent struct {
+	Method string `json:"method"`
+	Params struct {
+		Origin string `json:"origin"` // Origin to update.
+	} `json:"Params,omitempty"`
 }
 
 type Storage struct {
@@ -92,4 +127,76 @@ func (c *Storage) GetUsageAndQuota(origin string) (float64, float64, []*StorageU
 	var v StorageGetUsageAndQuotaParams
 	v.Origin = origin
 	return c.GetUsageAndQuotaWithParams(&v)
+}
+
+type StorageTrackCacheStorageForOriginParams struct {
+	// Security origin.
+	Origin string `json:"origin"`
+}
+
+// TrackCacheStorageForOriginWithParams - Registers origin to be notified when an update occurs to its cache storage list.
+func (c *Storage) TrackCacheStorageForOriginWithParams(v *StorageTrackCacheStorageForOriginParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Storage.trackCacheStorageForOrigin", Params: v})
+}
+
+// TrackCacheStorageForOrigin - Registers origin to be notified when an update occurs to its cache storage list.
+// origin - Security origin.
+func (c *Storage) TrackCacheStorageForOrigin(origin string) (*gcdmessage.ChromeResponse, error) {
+	var v StorageTrackCacheStorageForOriginParams
+	v.Origin = origin
+	return c.TrackCacheStorageForOriginWithParams(&v)
+}
+
+type StorageTrackIndexedDBForOriginParams struct {
+	// Security origin.
+	Origin string `json:"origin"`
+}
+
+// TrackIndexedDBForOriginWithParams - Registers origin to be notified when an update occurs to its IndexedDB.
+func (c *Storage) TrackIndexedDBForOriginWithParams(v *StorageTrackIndexedDBForOriginParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Storage.trackIndexedDBForOrigin", Params: v})
+}
+
+// TrackIndexedDBForOrigin - Registers origin to be notified when an update occurs to its IndexedDB.
+// origin - Security origin.
+func (c *Storage) TrackIndexedDBForOrigin(origin string) (*gcdmessage.ChromeResponse, error) {
+	var v StorageTrackIndexedDBForOriginParams
+	v.Origin = origin
+	return c.TrackIndexedDBForOriginWithParams(&v)
+}
+
+type StorageUntrackCacheStorageForOriginParams struct {
+	// Security origin.
+	Origin string `json:"origin"`
+}
+
+// UntrackCacheStorageForOriginWithParams - Unregisters origin from receiving notifications for cache storage.
+func (c *Storage) UntrackCacheStorageForOriginWithParams(v *StorageUntrackCacheStorageForOriginParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Storage.untrackCacheStorageForOrigin", Params: v})
+}
+
+// UntrackCacheStorageForOrigin - Unregisters origin from receiving notifications for cache storage.
+// origin - Security origin.
+func (c *Storage) UntrackCacheStorageForOrigin(origin string) (*gcdmessage.ChromeResponse, error) {
+	var v StorageUntrackCacheStorageForOriginParams
+	v.Origin = origin
+	return c.UntrackCacheStorageForOriginWithParams(&v)
+}
+
+type StorageUntrackIndexedDBForOriginParams struct {
+	// Security origin.
+	Origin string `json:"origin"`
+}
+
+// UntrackIndexedDBForOriginWithParams - Unregisters origin from receiving notifications for IndexedDB.
+func (c *Storage) UntrackIndexedDBForOriginWithParams(v *StorageUntrackIndexedDBForOriginParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Storage.untrackIndexedDBForOrigin", Params: v})
+}
+
+// UntrackIndexedDBForOrigin - Unregisters origin from receiving notifications for IndexedDB.
+// origin - Security origin.
+func (c *Storage) UntrackIndexedDBForOrigin(origin string) (*gcdmessage.ChromeResponse, error) {
+	var v StorageUntrackIndexedDBForOriginParams
+	v.Origin = origin
+	return c.UntrackIndexedDBForOriginWithParams(&v)
 }

@@ -284,7 +284,6 @@ func (d *Domain) WriteDomain() {
 	if err != nil {
 		log.Fatalf("error creating output file: %s\n", err)
 	}
-	//wr := os.Stdout
 
 	err = templates.ExecuteTemplate(wr, templateFile, d)
 	if err != nil {
@@ -301,10 +300,10 @@ func (d *Domain) WriteDomain() {
 	if err != nil {
 		log.Fatalf("error running gofmt! %s\n", err)
 	}
+
 	err = cmd.Wait()
 	if err != nil {
-		fmt.Printf("error in domain: %s", d.Domain)
-		fmt.Errorf(outErr.String())
+		fmt.Printf("error in domain: %s\n%s", d.Domain, outErr.String())
 		log.Fatalf("error waiting for gofmt to complete: %s\n", err)
 	}
 }

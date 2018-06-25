@@ -9,14 +9,15 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/wirepair/gcd"
-	"github.com/wirepair/gcd/gcdapi"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/wirepair/gcd"
+	"github.com/wirepair/gcd/gcdapi"
 )
 
 var (
@@ -30,7 +31,7 @@ var (
 var testStartupFlags = []string{"--disable-new-tab-first-run", "--no-first-run", "--disable-popup-blocking"}
 
 func init() {
-	flag.StringVar(&testPath, "chrome", "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", "path to Xvfb")
+	flag.StringVar(&testPath, "chrome", "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", "path to chrome")
 	flag.StringVar(&testDir, "dir", "C:\\temp\\", "user directory")
 	flag.StringVar(&testPort, "port", "9222", "Debugger port")
 }
@@ -46,8 +47,10 @@ func main() {
 	target.Subscribe("Page.loadEventFired", func(targ *gcd.ChromeTarget, payload []byte) {
 		navigatedCh <- struct{}{}
 	})
+
 	// navigate
-	_, err := target.Page.Navigate(testServerAddr + "top.html")
+	navigateParams := &gcdapi.PageNavigateParams{Url: testServerAddr + "top.html"}
+	_, _, _, err := target.Page.NavigateWithParams(navigateParams)
 	if err != nil {
 		log.Fatalf("error: %s\n", err)
 	}
@@ -55,7 +58,7 @@ func main() {
 	// wait for navigation to finish
 	<-navigatedCh
 	// get the document node
-	doc, err := target.DOM.GetDocument()
+	doc, err := target.DOM.GetDocument(-1, true)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,7 +66,7 @@ func main() {
 	// request child nodes, this will come in as DOM.setChildNode events
 	for i := 0; i < 3; i++ {
 		log.Printf("requesting child nodes...")
-		_, err = target.DOM.RequestChildNodes(doc.NodeId, -1)
+		_, err = target.DOM.RequestChildNodes(doc.NodeId, -1, true)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -107,7 +110,7 @@ func main() {
 func checkContentDocument(targ *gcd.ChromeTarget, v *gcdapi.DOMNode) {
 	if v.ContentDocument != nil {
 		iframeDocId := v.ContentDocument.NodeId
-		targ.DOM.RequestChildNodes(iframeDocId, -1)
+		targ.DOM.RequestChildNodes(iframeDocId, -1, true)
 		//nodes, _ := targ.DOM.QuerySelectorAll(iframeDocId, "div")
 		log.Printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!got iframe nodes.\n")
 	} else {

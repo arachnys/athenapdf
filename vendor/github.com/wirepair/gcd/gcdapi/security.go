@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains Security functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -10,11 +10,12 @@ import (
 
 // An explanation of an factor contributing to the security state.
 type SecuritySecurityStateExplanation struct {
-	SecurityState    string `json:"securityState"`    // Security state representing the severity of the factor being explained. enum values: unknown, neutral, insecure, warning, secure, info
-	Summary          string `json:"summary"`          // Short phrase describing the type of factor.
-	Description      string `json:"description"`      // Full text explanation of the factor.
-	HasCertificate   bool   `json:"hasCertificate"`   // True if the page has a certificate.
-	MixedContentType string `json:"mixedContentType"` // The type of mixed content described by the explanation. enum values: blockable, optionally-blockable, none
+	SecurityState    string   `json:"securityState"`    // Security state representing the severity of the factor being explained. enum values: unknown, neutral, insecure, secure, info
+	Title            string   `json:"title"`            // Title describing the type of factor.
+	Summary          string   `json:"summary"`          // Short phrase describing the type of factor.
+	Description      string   `json:"description"`      // Full text explanation of the factor.
+	MixedContentType string   `json:"mixedContentType"` // The type of mixed content described by the explanation. enum values: blockable, optionally-blockable, none
+	Certificate      []string `json:"certificate"`      // Page certificate.
 }
 
 // Information about insecure content on the page.
@@ -24,29 +25,29 @@ type SecurityInsecureContentStatus struct {
 	ContainedMixedForm             bool   `json:"containedMixedForm"`             // True if the page was loaded over HTTPS and contained a form targeting an insecure url.
 	RanContentWithCertErrors       bool   `json:"ranContentWithCertErrors"`       // True if the page was loaded over HTTPS without certificate errors, and ran content such as scripts that were loaded with certificate errors.
 	DisplayedContentWithCertErrors bool   `json:"displayedContentWithCertErrors"` // True if the page was loaded over HTTPS without certificate errors, and displayed content such as images that were loaded with certificate errors.
-	RanInsecureContentStyle        string `json:"ranInsecureContentStyle"`        // Security state representing a page that ran insecure content. enum values: unknown, neutral, insecure, warning, secure, info
-	DisplayedInsecureContentStyle  string `json:"displayedInsecureContentStyle"`  // Security state representing a page that displayed insecure content. enum values: unknown, neutral, insecure, warning, secure, info
+	RanInsecureContentStyle        string `json:"ranInsecureContentStyle"`        // Security state representing a page that ran insecure content. enum values: unknown, neutral, insecure, secure, info
+	DisplayedInsecureContentStyle  string `json:"displayedInsecureContentStyle"`  // Security state representing a page that displayed insecure content. enum values: unknown, neutral, insecure, secure, info
 }
 
-// The security state of the page changed.
-type SecuritySecurityStateChangedEvent struct {
-	Method string `json:"method"`
-	Params struct {
-		SecurityState         string                              `json:"securityState"`         // Security state. enum values: unknown, neutral, insecure, warning, secure, info
-		SchemeIsCryptographic bool                                `json:"schemeIsCryptographic"` // True if the page was loaded over cryptographic transport such as HTTPS.
-		Explanations          []*SecuritySecurityStateExplanation `json:"explanations"`          // List of explanations for the security state. If the overall security state is `insecure` or `warning`, at least one corresponding explanation should be included.
-		InsecureContentStatus *SecurityInsecureContentStatus      `json:"insecureContentStatus"` // Information about insecure content on the page.
-		Summary               string                              `json:"summary,omitempty"`     // Overrides user-visible description of the state.
-	} `json:"Params,omitempty"`
-}
-
-// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the handleCertificateError command. Note: this event does not fire if the certificate error has been allowed internally.
+// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the `handleCertificateError` command. Note: this event does not fire if the certificate error has been allowed internally. Only one client per target should override certificate errors at the same time.
 type SecurityCertificateErrorEvent struct {
 	Method string `json:"method"`
 	Params struct {
 		EventId    int    `json:"eventId"`    // The ID of the event.
 		ErrorType  string `json:"errorType"`  // The type of the error.
 		RequestURL string `json:"requestURL"` // The url that was requested.
+	} `json:"Params,omitempty"`
+}
+
+// The security state of the page changed.
+type SecuritySecurityStateChangedEvent struct {
+	Method string `json:"method"`
+	Params struct {
+		SecurityState         string                              `json:"securityState"`         // Security state. enum values: unknown, neutral, insecure, secure, info
+		SchemeIsCryptographic bool                                `json:"schemeIsCryptographic"` // True if the page was loaded over cryptographic transport such as HTTPS.
+		Explanations          []*SecuritySecurityStateExplanation `json:"explanations"`          // List of explanations for the security state. If the overall security state is `insecure` or `warning`, at least one corresponding explanation should be included.
+		InsecureContentStatus *SecurityInsecureContentStatus      `json:"insecureContentStatus"` // Information about insecure content on the page.
+		Summary               string                              `json:"summary,omitempty"`     // Overrides user-visible description of the state.
 	} `json:"Params,omitempty"`
 }
 
@@ -59,19 +60,32 @@ func NewSecurity(target gcdmessage.ChromeTargeter) *Security {
 	return c
 }
 
-// Enables tracking security state changes.
-func (c *Security) Enable() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Security.enable"})
-}
-
 // Disables tracking security state changes.
 func (c *Security) Disable() (*gcdmessage.ChromeResponse, error) {
 	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Security.disable"})
 }
 
-// Displays native dialog with the certificate details.
-func (c *Security) ShowCertificateViewer() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Security.showCertificateViewer"})
+// Enables tracking security state changes.
+func (c *Security) Enable() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Security.enable"})
+}
+
+type SecuritySetIgnoreCertificateErrorsParams struct {
+	// If true, all certificate errors will be ignored.
+	Ignore bool `json:"ignore"`
+}
+
+// SetIgnoreCertificateErrorsWithParams - Enable/disable whether all certificate errors should be ignored.
+func (c *Security) SetIgnoreCertificateErrorsWithParams(v *SecuritySetIgnoreCertificateErrorsParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Security.setIgnoreCertificateErrors", Params: v})
+}
+
+// SetIgnoreCertificateErrors - Enable/disable whether all certificate errors should be ignored.
+// ignore - If true, all certificate errors will be ignored.
+func (c *Security) SetIgnoreCertificateErrors(ignore bool) (*gcdmessage.ChromeResponse, error) {
+	var v SecuritySetIgnoreCertificateErrorsParams
+	v.Ignore = ignore
+	return c.SetIgnoreCertificateErrorsWithParams(&v)
 }
 
 type SecurityHandleCertificateErrorParams struct {
@@ -101,12 +115,12 @@ type SecuritySetOverrideCertificateErrorsParams struct {
 	Override bool `json:"override"`
 }
 
-// SetOverrideCertificateErrorsWithParams - Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with handleCertificateError commands.
+// SetOverrideCertificateErrorsWithParams - Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with `handleCertificateError` commands.
 func (c *Security) SetOverrideCertificateErrorsWithParams(v *SecuritySetOverrideCertificateErrorsParams) (*gcdmessage.ChromeResponse, error) {
 	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Security.setOverrideCertificateErrors", Params: v})
 }
 
-// SetOverrideCertificateErrors - Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with handleCertificateError commands.
+// SetOverrideCertificateErrors - Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with `handleCertificateError` commands.
 // override - If true, certificate errors will be overridden.
 func (c *Security) SetOverrideCertificateErrors(override bool) (*gcdmessage.ChromeResponse, error) {
 	var v SecuritySetOverrideCertificateErrorsParams

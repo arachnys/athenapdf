@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains Database functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -40,60 +40,14 @@ func NewDatabase(target gcdmessage.ChromeTargeter) *Database {
 	return c
 }
 
-// Enables database tracking, database events will now be delivered to the client.
-func (c *Database) Enable() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Database.enable"})
-}
-
 // Disables database tracking, prevents database events from being sent to the client.
 func (c *Database) Disable() (*gcdmessage.ChromeResponse, error) {
 	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Database.disable"})
 }
 
-type DatabaseGetDatabaseTableNamesParams struct {
-	//
-	DatabaseId string `json:"databaseId"`
-}
-
-// GetDatabaseTableNamesWithParams -
-// Returns -  tableNames -
-func (c *Database) GetDatabaseTableNamesWithParams(v *DatabaseGetDatabaseTableNamesParams) ([]string, error) {
-	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Database.getDatabaseTableNames", Params: v})
-	if err != nil {
-		return nil, err
-	}
-
-	var chromeData struct {
-		Result struct {
-			TableNames []string
-		}
-	}
-
-	if resp == nil {
-		return nil, &gcdmessage.ChromeEmptyResponseErr{}
-	}
-
-	// test if error first
-	cerr := &gcdmessage.ChromeErrorResponse{}
-	json.Unmarshal(resp.Data, cerr)
-	if cerr != nil && cerr.Error != nil {
-		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
-	}
-
-	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
-		return nil, err
-	}
-
-	return chromeData.Result.TableNames, nil
-}
-
-// GetDatabaseTableNames -
-// databaseId -
-// Returns -  tableNames -
-func (c *Database) GetDatabaseTableNames(databaseId string) ([]string, error) {
-	var v DatabaseGetDatabaseTableNamesParams
-	v.DatabaseId = databaseId
-	return c.GetDatabaseTableNamesWithParams(&v)
+// Enables database tracking, database events will now be delivered to the client.
+func (c *Database) Enable() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Database.enable"})
 }
 
 type DatabaseExecuteSQLParams struct {
@@ -146,4 +100,50 @@ func (c *Database) ExecuteSQL(databaseId string, query string) ([]string, []inte
 	v.DatabaseId = databaseId
 	v.Query = query
 	return c.ExecuteSQLWithParams(&v)
+}
+
+type DatabaseGetDatabaseTableNamesParams struct {
+	//
+	DatabaseId string `json:"databaseId"`
+}
+
+// GetDatabaseTableNamesWithParams -
+// Returns -  tableNames -
+func (c *Database) GetDatabaseTableNamesWithParams(v *DatabaseGetDatabaseTableNamesParams) ([]string, error) {
+	resp, err := gcdmessage.SendCustomReturn(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Database.getDatabaseTableNames", Params: v})
+	if err != nil {
+		return nil, err
+	}
+
+	var chromeData struct {
+		Result struct {
+			TableNames []string
+		}
+	}
+
+	if resp == nil {
+		return nil, &gcdmessage.ChromeEmptyResponseErr{}
+	}
+
+	// test if error first
+	cerr := &gcdmessage.ChromeErrorResponse{}
+	json.Unmarshal(resp.Data, cerr)
+	if cerr != nil && cerr.Error != nil {
+		return nil, &gcdmessage.ChromeRequestErr{Resp: cerr}
+	}
+
+	if err := json.Unmarshal(resp.Data, &chromeData); err != nil {
+		return nil, err
+	}
+
+	return chromeData.Result.TableNames, nil
+}
+
+// GetDatabaseTableNames -
+// databaseId -
+// Returns -  tableNames -
+func (c *Database) GetDatabaseTableNames(databaseId string) ([]string, error) {
+	var v DatabaseGetDatabaseTableNamesParams
+	v.DatabaseId = databaseId
+	return c.GetDatabaseTableNamesWithParams(&v)
 }

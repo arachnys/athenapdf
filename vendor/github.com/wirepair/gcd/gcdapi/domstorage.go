@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains DOMStorage functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -16,10 +16,12 @@ type DOMStorageStorageId struct {
 }
 
 //
-type DOMStorageDomStorageItemsClearedEvent struct {
+type DOMStorageDomStorageItemAddedEvent struct {
 	Method string `json:"method"`
 	Params struct {
 		StorageId *DOMStorageStorageId `json:"storageId"` //
+		Key       string               `json:"key"`       //
+		NewValue  string               `json:"newValue"`  //
 	} `json:"Params,omitempty"`
 }
 
@@ -29,16 +31,6 @@ type DOMStorageDomStorageItemRemovedEvent struct {
 	Params struct {
 		StorageId *DOMStorageStorageId `json:"storageId"` //
 		Key       string               `json:"key"`       //
-	} `json:"Params,omitempty"`
-}
-
-//
-type DOMStorageDomStorageItemAddedEvent struct {
-	Method string `json:"method"`
-	Params struct {
-		StorageId *DOMStorageStorageId `json:"storageId"` //
-		Key       string               `json:"key"`       //
-		NewValue  string               `json:"newValue"`  //
 	} `json:"Params,omitempty"`
 }
 
@@ -53,6 +45,14 @@ type DOMStorageDomStorageItemUpdatedEvent struct {
 	} `json:"Params,omitempty"`
 }
 
+//
+type DOMStorageDomStorageItemsClearedEvent struct {
+	Method string `json:"method"`
+	Params struct {
+		StorageId *DOMStorageStorageId `json:"storageId"` //
+	} `json:"Params,omitempty"`
+}
+
 type DOMStorage struct {
 	target gcdmessage.ChromeTargeter
 }
@@ -60,16 +60,6 @@ type DOMStorage struct {
 func NewDOMStorage(target gcdmessage.ChromeTargeter) *DOMStorage {
 	c := &DOMStorage{target: target}
 	return c
-}
-
-// Enables storage tracking, storage events will now be delivered to the client.
-func (c *DOMStorage) Enable() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOMStorage.enable"})
-}
-
-// Disables storage tracking, prevents storage events from being sent to the client.
-func (c *DOMStorage) Disable() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOMStorage.disable"})
 }
 
 type DOMStorageClearParams struct {
@@ -88,6 +78,16 @@ func (c *DOMStorage) Clear(storageId *DOMStorageStorageId) (*gcdmessage.ChromeRe
 	var v DOMStorageClearParams
 	v.StorageId = storageId
 	return c.ClearWithParams(&v)
+}
+
+// Disables storage tracking, prevents storage events from being sent to the client.
+func (c *DOMStorage) Disable() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOMStorage.disable"})
+}
+
+// Enables storage tracking, storage events will now be delivered to the client.
+func (c *DOMStorage) Enable() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOMStorage.enable"})
 }
 
 type DOMStorageGetDOMStorageItemsParams struct {
@@ -136,6 +136,28 @@ func (c *DOMStorage) GetDOMStorageItems(storageId *DOMStorageStorageId) ([]strin
 	return c.GetDOMStorageItemsWithParams(&v)
 }
 
+type DOMStorageRemoveDOMStorageItemParams struct {
+	//
+	StorageId *DOMStorageStorageId `json:"storageId"`
+	//
+	Key string `json:"key"`
+}
+
+// RemoveDOMStorageItemWithParams -
+func (c *DOMStorage) RemoveDOMStorageItemWithParams(v *DOMStorageRemoveDOMStorageItemParams) (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOMStorage.removeDOMStorageItem", Params: v})
+}
+
+// RemoveDOMStorageItem -
+// storageId -
+// key -
+func (c *DOMStorage) RemoveDOMStorageItem(storageId *DOMStorageStorageId, key string) (*gcdmessage.ChromeResponse, error) {
+	var v DOMStorageRemoveDOMStorageItemParams
+	v.StorageId = storageId
+	v.Key = key
+	return c.RemoveDOMStorageItemWithParams(&v)
+}
+
 type DOMStorageSetDOMStorageItemParams struct {
 	//
 	StorageId *DOMStorageStorageId `json:"storageId"`
@@ -160,26 +182,4 @@ func (c *DOMStorage) SetDOMStorageItem(storageId *DOMStorageStorageId, key strin
 	v.Key = key
 	v.Value = value
 	return c.SetDOMStorageItemWithParams(&v)
-}
-
-type DOMStorageRemoveDOMStorageItemParams struct {
-	//
-	StorageId *DOMStorageStorageId `json:"storageId"`
-	//
-	Key string `json:"key"`
-}
-
-// RemoveDOMStorageItemWithParams -
-func (c *DOMStorage) RemoveDOMStorageItemWithParams(v *DOMStorageRemoveDOMStorageItemParams) (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DOMStorage.removeDOMStorageItem", Params: v})
-}
-
-// RemoveDOMStorageItem -
-// storageId -
-// key -
-func (c *DOMStorage) RemoveDOMStorageItem(storageId *DOMStorageStorageId, key string) (*gcdmessage.ChromeResponse, error) {
-	var v DOMStorageRemoveDOMStorageItemParams
-	v.StorageId = storageId
-	v.Key = key
-	return c.RemoveDOMStorageItemWithParams(&v)
 }
