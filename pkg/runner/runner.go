@@ -199,15 +199,16 @@ func (r *Runner) Convert(req *proto.Conversion) ([]byte, error) {
 	// Generate PDF, and convert output to bytes from base64 string
 	dimensions := req.GetDimensions()
 	pdfParams := gcdapi.PagePrintToPDFParams{
-		MarginBottom:    dimensions.GetMarginBottom(),
-		MarginLeft:      dimensions.GetMarginLeft(),
-		MarginRight:     dimensions.GetMarginRight(),
-		MarginTop:       dimensions.GetMarginTop(),
-		PaperHeight:     dimensions.GetPageHeight(),
-		PaperWidth:      dimensions.GetPageWidth(),
-		Scale:           options["scale"].GetDoubleValue(),
-		Landscape:       dimensions.GetOrientation() == proto.Conversion_Dimensions_LANDSCAPE,
-		PrintBackground: !options["no_background"].GetBoolValue(),
+		MarginBottom:      dimensions.GetMarginBottom(),
+		MarginLeft:        dimensions.GetMarginLeft(),
+		MarginRight:       dimensions.GetMarginRight(),
+		MarginTop:         dimensions.GetMarginTop(),
+		PaperHeight:       dimensions.GetPageHeight(),
+		PaperWidth:        dimensions.GetPageWidth(),
+		Scale:             options["scale"].GetDoubleValue(),
+		Landscape:         dimensions.GetOrientation() == proto.Conversion_Dimensions_LANDSCAPE,
+		PrintBackground:   !options["no_background"].GetBoolValue(),
+		PreferCSSPageSize: options["preferCssPageSize"].GetBoolValue(),
 	}
 	base64String, err := r.Target.Page.PrintToPDFWithParams(&pdfParams)
 	if err != nil {

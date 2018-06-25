@@ -51,9 +51,10 @@ var (
 	userAgent = app.Flag("user-agent", "set user agent").Short('U').Default(defaultUserAgent).String()
 	mediaType = app.Flag("media-type", "set media type to emulate").Short('M').Default("print").String()
 
-	noCache      = app.Flag("no-cache", "do not use cache for any request").Bool()
-	noJavaScript = app.Flag("no-javascript", "do not execute JavaScript").Bool()
-	noBackground = app.Flag("no-background", "do not print background graphics").Bool()
+	noCache           = app.Flag("no-cache", "do not use cache for any request").Bool()
+	noJavaScript      = app.Flag("no-javascript", "do not execute JavaScript").Bool()
+	noBackground      = app.Flag("no-background", "do not print background graphics").Bool()
+	preferCssPageSize = app.Flag("prefer-css-page-size", "prefer page size as defined by css").Bool()
 
 	input  = app.Arg("input", "URL / file name of target to convert to PDF (use `-` if piping via stdin)").Required().String()
 	output = app.Arg("output", "path to store conversion output (use `-` if piping to stdout)").String()
@@ -151,6 +152,11 @@ func getOptions() map[string]*proto.Option {
 	options["scale"] = &proto.Option{
 		&proto.Option_DoubleValue{
 			*scale,
+		},
+	}
+	options["preferCssPageSize"] = &proto.Option{
+		&proto.Option_BoolValue{
+			*preferCssPageSize,
 		},
 	}
 	options["user_agent"] = &proto.Option{
