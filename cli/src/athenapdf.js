@@ -12,6 +12,7 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
 const mediaPlugin = fs.readFileSync(path.join(__dirname, "./plugin_media.js"), "utf8");
+const windowStatusPlugin = fs.readFileSync(path.join(__dirname, "./plugin_window-status.js"), "utf8");
 
 var bw = null;
 var ses = null;
@@ -46,6 +47,7 @@ athena
     .option("--no-cache", "disables caching")
     .option("--ignore-certificate-errors", "ignores certificate errors")
     .option("--ignore-gpu-blacklist", "Enables GPU in Docker environment")
+    .option("--wait-for-status", "Wait until window.status === WINDOW_STATUS")
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -231,20 +233,32 @@ app.on("ready", () => {
         app.exit(1);
     });
 
+    let canRenderStart = true;
+
     // Load plugins
     let plugins = mediaPlugin + "\n";
     if (athena.aggressive) {
         const distillerPlugin = fs.readFileSync(path.join(__dirname, "./plugin_domdistiller.js"), "utf8");
-        plugins += distillerPlugin;
+        plugins += distillerPlugin + "\n";
     }
-    bw.webContents.executeJavaScript(plugins);
+    if (athena.waitForStatus) {
+        canRenderStart = false;
+        plugins += windowStatusPlugin + "\n";
+    }
+
+    bw.webContents.executeJavaScript(plugins).then(() => {
+        canRenderStart = true;
+    });
 
     bw.webContents.on("did-finish-load", () => {
-        setTimeout(() => {
-            bw.webContents.printToPDF(pdfOpts, (err, data) => {
-                if (err) console.error(err);
-                _output(data);
-            });
+        let poller = setInterval(() => {
+            if (canRenderStart) {
+                clearInterval(poller);
+                bw.webContents.printToPDF(pdfOpts, (err, data) => {
+                    if (err) console.error(err);
+                    _output(data);
+                });
+            }
         }, (athena.delay || 200));
     });
 });
