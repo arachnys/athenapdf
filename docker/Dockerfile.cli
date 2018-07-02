@@ -19,7 +19,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.docker.cmd="docker run --rm -v $(pwd):/conversions/ -w \"/conversions/\" arachnysdocker/athenapdf" \
       maintainer="Arachnys <techteam@arachnys.com>"
 
-ARG CHROMIUM_REVISION=480469
+ARG CHROMIUM_REVISION=570019
 RUN apt-get update \
     && apt-get install -yq curl nano unzip wget \
     && apt-get install -yq \

@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains DeviceOrientation functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -15,6 +15,11 @@ type DeviceOrientation struct {
 func NewDeviceOrientation(target gcdmessage.ChromeTargeter) *DeviceOrientation {
 	c := &DeviceOrientation{target: target}
 	return c
+}
+
+// Clears the overridden Device Orientation.
+func (c *DeviceOrientation) ClearDeviceOrientationOverride() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DeviceOrientation.clearDeviceOrientationOverride"})
 }
 
 type DeviceOrientationSetDeviceOrientationOverrideParams struct {
@@ -41,9 +46,4 @@ func (c *DeviceOrientation) SetDeviceOrientationOverride(alpha float64, beta flo
 	v.Beta = beta
 	v.Gamma = gamma
 	return c.SetDeviceOrientationOverrideWithParams(&v)
-}
-
-// Clears the overridden Device Orientation.
-func (c *DeviceOrientation) ClearDeviceOrientationOverride() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "DeviceOrientation.clearDeviceOrientationOverride"})
 }

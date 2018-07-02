@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains Tethering functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 

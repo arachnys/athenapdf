@@ -1,6 +1,6 @@
 // AUTO-GENERATED Chrome Remote Debugger Protocol API Client
 // This file contains Log functionality.
-// API Version: 1.2
+// API Version: 1.3
 
 package gcdapi
 
@@ -10,15 +10,16 @@ import (
 
 // Log entry.
 type LogLogEntry struct {
-	Source           string             `json:"source"`                     // Log entry source.
-	Level            string             `json:"level"`                      // Log entry severity.
-	Text             string             `json:"text"`                       // Logged text.
-	Timestamp        float64            `json:"timestamp"`                  // Timestamp when this entry was added.
-	Url              string             `json:"url,omitempty"`              // URL of the resource if known.
-	LineNumber       int                `json:"lineNumber,omitempty"`       // Line number in the resource.
-	StackTrace       *RuntimeStackTrace `json:"stackTrace,omitempty"`       // JavaScript stack trace.
-	NetworkRequestId string             `json:"networkRequestId,omitempty"` // Identifier of the network request associated with this entry.
-	WorkerId         string             `json:"workerId,omitempty"`         // Identifier of the worker associated with this entry.
+	Source           string                 `json:"source"`                     // Log entry source.
+	Level            string                 `json:"level"`                      // Log entry severity.
+	Text             string                 `json:"text"`                       // Logged text.
+	Timestamp        float64                `json:"timestamp"`                  // Timestamp when this entry was added.
+	Url              string                 `json:"url,omitempty"`              // URL of the resource if known.
+	LineNumber       int                    `json:"lineNumber,omitempty"`       // Line number in the resource.
+	StackTrace       *RuntimeStackTrace     `json:"stackTrace,omitempty"`       // JavaScript stack trace.
+	NetworkRequestId string                 `json:"networkRequestId,omitempty"` // Identifier of the network request associated with this entry.
+	WorkerId         string                 `json:"workerId,omitempty"`         // Identifier of the worker associated with this entry.
+	Args             []*RuntimeRemoteObject `json:"args,omitempty"`             // Call arguments.
 }
 
 // Violation configuration setting.
@@ -44,9 +45,9 @@ func NewLog(target gcdmessage.ChromeTargeter) *Log {
 	return c
 }
 
-// Enables log domain, sends the entries collected so far to the client by means of the <code>entryAdded</code> notification.
-func (c *Log) Enable() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Log.enable"})
+// Clears the log.
+func (c *Log) Clear() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Log.clear"})
 }
 
 // Disables log domain, prevents further log entries from being reported to the client.
@@ -54,9 +55,9 @@ func (c *Log) Disable() (*gcdmessage.ChromeResponse, error) {
 	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Log.disable"})
 }
 
-// Clears the log.
-func (c *Log) Clear() (*gcdmessage.ChromeResponse, error) {
-	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Log.clear"})
+// Enables log domain, sends the entries collected so far to the client by means of the `entryAdded` notification.
+func (c *Log) Enable() (*gcdmessage.ChromeResponse, error) {
+	return gcdmessage.SendDefaultRequest(c.target, c.target.GetSendCh(), &gcdmessage.ParamRequest{Id: c.target.GetId(), Method: "Log.enable"})
 }
 
 type LogStartViolationsReportParams struct {

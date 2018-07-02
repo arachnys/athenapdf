@@ -76,7 +76,7 @@ func startTarget(client *gcd.Gcd) (*gcd.ChromeTarget, ExitFunc, error) {
 	t.CSS.Enable()
 	t.DOM.Enable()
 	t.Log.Enable()
-	t.Network.Enable(-1, -1)
+	t.Network.Enable(-1, -1, -1)
 	t.Page.Enable()
 	t.Runtime.Enable()
 	t.Security.Enable()
@@ -91,7 +91,7 @@ func setOptions(t *gcd.ChromeTarget, options map[string]*proto.Option) error {
 		return ErrInvalidTarget
 	}
 
-	if _, err := t.Network.SetUserAgentOverride(options["user_agent"].GetStringValue()); err != nil {
+	if _, err := t.Network.SetUserAgentOverride(options["user_agent"].GetStringValue(), "", ""); err != nil {
 		return errors.WithStack(err)
 	}
 
