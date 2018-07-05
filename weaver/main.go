@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/DeanThompson/ginpprof"
 	"github.com/arachnys/athenapdf/weaver/converter"
 	"github.com/getsentry/raven-go"
@@ -8,6 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"gopkg.in/alexcesaro/statsd.v2"
 	"log"
+	"net/http"
+	"os"
+	"os/exec"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -76,6 +82,15 @@ func InitSimpleRoutes(router *gin.Engine, conf Config) {
 	}
 }
 
+func StartX() {
+	cmd := exec.Command("Xvfb", ":99", "-ac", "-screen", "0", "1024x768x24")
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true,
+	}
+	err := cmd.Run()
+	log.Fatal("Xvfb exited:", err)
+}
+
 func main() {
 	router := gin.Default()
 	// Get config vars from the environment
@@ -98,5 +113,26 @@ func main() {
 		}()
 	}
 
-	log.Fatal(router.Run(conf.HTTPAddr))
+	server := &http.Server{
+		Addr:    conf.HTTPAddr,
+		Handler: router,
+	}
+
+	go func() {
+		log.Println(server.ListenAndServe())
+	}()
+
+	go StartX()
+
+	sigChan := make(chan os.Signal)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+
+	<-sigChan
+	log.Println("Received sigterm, gracefully shutting down")
+	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		log.Println("Error:", err)
+	}
+
 }

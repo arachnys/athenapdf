@@ -12,3 +12,5 @@ docs/
 **/.DS_STORE
 **/.git*
 **/*.env
+
+vendor/
