@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type CloudConvert struct {
@@ -25,7 +26,7 @@ type CloudConvert struct {
 type Client struct {
 	BaseURL string
 	APIKey  string
-	Timeout string
+	Timeout time.Duration
 }
 
 type Process struct {
@@ -69,8 +70,8 @@ func (c Client) QuickConversion(path string, awsS3 converter.AWSS3, inputFormat 
 	bw := multipart.NewWriter(b)
 
 	// Default timeout: 5 minutes
-	if c.Timeout == "" {
-		c.Timeout = "300"
+	if c.Timeout == 0 {
+		c.Timeout = time.Minute * 5
 	}
 
 	// Use a map so we can easily extend the parameters (options)
@@ -81,7 +82,7 @@ func (c Client) QuickConversion(path string, awsS3 converter.AWSS3, inputFormat 
 		"filename":     "tmp.html",
 		"inputformat":  inputFormat,
 		"outputformat": outputFormat,
-		"timeout":      c.Timeout,
+		"timeout":      fmt.Sprintf("%.0f", c.Timeout.Seconds()),
 	}
 
 	part, err := bw.CreateFormFile("file", filepath.Base(path))

@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"time"
 )
 
 var (
@@ -77,7 +78,7 @@ StartConversion:
 		cc := cloudconvert.Client{
 			conf.CloudConvert.APIUrl,
 			conf.CloudConvert.APIKey,
-			string(conf.WorkerTimeout + 5),
+			time.Second * time.Duration(conf.WorkerTimeout+5),
 		}
 		conversion = cloudconvert.CloudConvert{uploadConversion, cc}
 	}
