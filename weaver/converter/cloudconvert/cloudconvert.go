@@ -56,6 +56,7 @@ type Conversion struct {
 	OutputFormat string `json:"outputformat"`
 	Wait         bool   `json:"wait"`
 	Download     string `json:"download,omitempty"`
+	Timeout      string `json:"timeout,omitempty"`
 	*Output      `json:"output,omitempty"`
 }
 
@@ -216,6 +217,7 @@ func (c CloudConvert) Convert(s converter.ConversionSource, done <-chan struct{}
 		Filename:     c.AWSS3.S3Key + ".html",
 		OutputFormat: "pdf",
 		Wait:         true,
+		Timeout:      fmt.Sprintf("%.0f", c.Timeout.Seconds()),
 	}
 
 	u := uuid.NewV4()
