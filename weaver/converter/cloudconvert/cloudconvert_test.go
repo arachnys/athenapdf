@@ -25,7 +25,11 @@ func TestNewProcess(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	c := Client{ts.URL, "test cloudconvert key"}
+	c := Client{
+		ts.URL,
+		"test cloudconvert key",
+		0,
+	}
 	process, err := c.NewProcess("html", "pdf")
 	if err != nil {
 		t.Fatalf("newprocess returned an unexpected error: %+v", err)

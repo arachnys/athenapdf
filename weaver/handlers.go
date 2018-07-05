@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"time"
 )
 
 var (
@@ -74,7 +75,11 @@ func conversionHandler(c *gin.Context, source converter.ConversionSource) {
 StartConversion:
 	conversion = athenapdf.AthenaPDF{uploadConversion, conf.AthenaCMD, aggressive}
 	if attempts != 0 {
-		cc := cloudconvert.Client{conf.CloudConvert.APIUrl, conf.CloudConvert.APIKey}
+		cc := cloudconvert.Client{
+			conf.CloudConvert.APIUrl,
+			conf.CloudConvert.APIKey,
+			time.Second * time.Duration(conf.WorkerTimeout+5),
+		}
 		conversion = cloudconvert.CloudConvert{uploadConversion, cc}
 	}
 	work = converter.NewWork(wq, conversion, source)

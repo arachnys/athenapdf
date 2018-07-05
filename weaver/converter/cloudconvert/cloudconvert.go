@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type CloudConvert struct {
@@ -25,6 +26,7 @@ type CloudConvert struct {
 type Client struct {
 	BaseURL string
 	APIKey  string
+	Timeout time.Duration
 }
 
 type Process struct {
@@ -54,6 +56,7 @@ type Conversion struct {
 	OutputFormat string `json:"outputformat"`
 	Wait         bool   `json:"wait"`
 	Download     string `json:"download,omitempty"`
+	Timeout      string `json:"timeout,omitempty"`
 	*Output      `json:"output,omitempty"`
 }
 
@@ -67,6 +70,11 @@ func (c Client) QuickConversion(path string, awsS3 converter.AWSS3, inputFormat 
 	b := new(bytes.Buffer)
 	bw := multipart.NewWriter(b)
 
+	// Default timeout: 5 minutes
+	if c.Timeout == 0 {
+		c.Timeout = time.Minute * 5
+	}
+
 	// Use a map so we can easily extend the parameters (options)
 	params := map[string]string{
 		"apikey":       c.APIKey,
@@ -75,6 +83,7 @@ func (c Client) QuickConversion(path string, awsS3 converter.AWSS3, inputFormat 
 		"filename":     "tmp.html",
 		"inputformat":  inputFormat,
 		"outputformat": outputFormat,
+		"timeout":      fmt.Sprintf("%.0f", c.Timeout.Seconds()),
 	}
 
 	part, err := bw.CreateFormFile("file", filepath.Base(path))
@@ -208,6 +217,7 @@ func (c CloudConvert) Convert(s converter.ConversionSource, done <-chan struct{}
 		Filename:     c.AWSS3.S3Key + ".html",
 		OutputFormat: "pdf",
 		Wait:         true,
+		Timeout:      fmt.Sprintf("%.0f", c.Timeout.Seconds()),
 	}
 
 	u := uuid.NewV4()
