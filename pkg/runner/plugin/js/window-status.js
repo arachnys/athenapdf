@@ -9,7 +9,7 @@ var waitForWindowStatus = function(desiredStatus) {
     });
 };
 
-if (typeof WINDOW_STATUS !== "undefined") {
+if (typeof WINDOW_STATUS === "undefined") {
     var WINDOW_STATUS = "ready";
 }
 
