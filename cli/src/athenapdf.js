@@ -7,6 +7,7 @@ const rw = require("rw");
 const url = require("url");
 
 const athena = require("commander");
+const setCookie = require("set-cookie-parser");
 const electron = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
@@ -208,6 +209,21 @@ app.on("ready", () => {
         console.error(`Unable to convert an octet-stream, use stdin.`);
         app.exit(1);
     });
+
+    const cookieHeaders = athena.httpHeader
+        .filter(header => header.includes("Cookie:"))
+        .map(header =>
+             header.substring(header.indexOf("Cookie:") + "Cookie:".length).trim()
+        );
+    if (cookieHeaders) {
+        setCookie.parse(cookieHeaders, { decodeValues: false }).forEach(cookie => {
+            ses.cookies.set(Object.assign(cookie, { url: uriArg }), error => {
+                if (error) {
+                    console.error(error);
+                }
+            });
+        });
+    }
 
     bw.webContents.on("did-fail-load", (e, code, desc, url, isMainFrame) => {
         if (parseInt(code, 10) >= -3) return;
