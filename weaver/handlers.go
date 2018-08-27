@@ -2,6 +2,12 @@ package main
 
 import (
 	"errors"
+	"log"
+	"net/http"
+	"os"
+	"runtime"
+	"time"
+
 	"github.com/arachnys/athenapdf/weaver/converter"
 	"github.com/arachnys/athenapdf/weaver/converter/athenapdf"
 	"github.com/arachnys/athenapdf/weaver/converter/cloudconvert"
@@ -9,11 +15,6 @@ import (
 	"github.com/getsentry/raven-go"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/alexcesaro/statsd.v2"
-	"log"
-	"net/http"
-	"os"
-	"runtime"
-	"time"
 )
 
 var (
@@ -56,14 +57,14 @@ func conversionHandler(c *gin.Context, source converter.ConversionSource) {
 
 	t := s.NewTiming()
 
-	awsConf := converter.AWSS3{
+	awsConf := converter.NewS3(
 		c.Query("aws_region"),
 		c.Query("aws_id"),
 		c.Query("aws_secret"),
 		c.Query("s3_bucket"),
 		c.Query("s3_key"),
 		c.Query("s3_acl"),
-	}
+	)
 
 	var conversion converter.Converter
 	var work converter.Work
@@ -147,8 +148,9 @@ func convertByURLHandler(c *gin.Context) {
 	}
 
 	ext := c.Query("ext")
+	headers := c.QueryArray("header")
 
-	source, err := converter.NewConversionSource(url, nil, ext)
+	source, err := converter.NewConversionSource(url, headers, nil, ext)
 	if err != nil {
 		s.Increment("conversion_error")
 		if ravenOk {
@@ -174,7 +176,7 @@ func convertByFileHandler(c *gin.Context) {
 
 	ext := c.Query("ext")
 
-	source, err := converter.NewConversionSource("", file, ext)
+	source, err := converter.NewConversionSource("", nil, file, ext)
 	if err != nil {
 		s.Increment("conversion_error")
 		if ravenOk {

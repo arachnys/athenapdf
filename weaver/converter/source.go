@@ -1,13 +1,14 @@
 package converter
 
 import (
-	"golang.org/x/net/publicsuffix"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
 	"os"
 	"path/filepath"
+
+	"golang.org/x/net/publicsuffix"
 )
 
 // ConversionSource contains the target resource path, and its MIME type.
@@ -30,6 +31,9 @@ type ConversionSource struct {
 	// and false if the target is a remote source (that does not require
 	// pre-processing).
 	IsLocal bool
+	// Headers are for the initial request to the URI. If they contain
+	// cookies, those are set for subsequent AJAX requests (with AthenaPDF)
+	Headers []string
 }
 
 // readerContentType attempts to determine the content type using bytes from a
@@ -157,7 +161,7 @@ func setCustomExtension(s *ConversionSource, ext string) error {
 // of bytes. If both parameters are specified, the reader takes precedence.
 // The ConversionSource is prepared using one of two strategies: a local
 // conversion (see rawSource) or a remote conversion (see uriSource).
-func NewConversionSource(uri string, body io.Reader, ext string) (*ConversionSource, error) {
+func NewConversionSource(uri string, headers []string, body io.Reader, ext string) (*ConversionSource, error) {
 	s := new(ConversionSource)
 
 	var err error
@@ -165,6 +169,7 @@ func NewConversionSource(uri string, body io.Reader, ext string) (*ConversionSou
 		err = rawSource(s, body)
 	} else {
 		err = uriSource(s, uri)
+		s.Headers = headers
 	}
 
 	if err != nil {

@@ -2,13 +2,15 @@ package converter
 
 import (
 	"bytes"
+	"log"
+	"os"
+	"time"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"log"
-	"time"
 )
 
 type AWSS3 struct {
@@ -23,6 +25,19 @@ type AWSS3 struct {
 type UploadConversion struct {
 	Conversion
 	AWSS3
+}
+
+func NewS3(region string, accessKey string, accessSecret string, bucket string, bucketKey string, acl string) AWSS3 {
+	if region == "" {
+		region = os.Getenv("AWS_REGION")
+	}
+	if accessKey == "" {
+		accessKey = os.Getenv("AWS_ACCESS_KEY")
+	}
+	if accessSecret == "" {
+		accessSecret = os.Getenv("AWS_SECRET")
+	}
+	return AWSS3{region, accessKey, accessSecret, bucket, bucketKey, acl}
 }
 
 func uploadToS3(awsConf AWSS3, b []byte) error {
