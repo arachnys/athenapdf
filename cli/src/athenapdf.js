@@ -46,6 +46,7 @@ athena
     .option("--no-cache", "disables caching")
     .option("--ignore-certificate-errors", "ignores certificate errors")
     .option("--ignore-gpu-blacklist", "Enables GPU in Docker environment")
+    .option("--disable-http-cache", "Disables Electron disk cache for HTTP requests.")
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -103,6 +104,10 @@ if (athena.ignoreCertificateErrors) {
 }
 
 app.commandLine.appendSwitch('ignore-gpu-blacklist', athena.ignoreGpuBlacklist || "false");
+
+if (athena.disableHttpCache) {
+    app.commandLine.appendSwitch("disable-http-cache");
+}
 
 // Preferences
 var bwOpts = {
