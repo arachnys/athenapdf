@@ -50,7 +50,7 @@ func readerContentType(r io.Reader) (string, error) {
 // It returns the full temporary file path, and its mime type if successful.
 func readerTmpFile(r io.Reader) (string, string, error) {
 	// Create a temporary file
-	f, err := ioutil.TempFile("/tmp", "tmp")
+	f, err := ioutil.TempFile("/tmp", "athena.tmp.*")
 	if err != nil {
 		return "", "", err
 	}
@@ -169,6 +169,10 @@ func NewConversionSource(uri string, body io.Reader, ext string) (*ConversionSou
 
 	if err != nil {
 		return nil, err
+	}
+
+	if ext == "" {
+		ext = "html"
 	}
 
 	if err := setCustomExtension(s, ext); err != nil {
