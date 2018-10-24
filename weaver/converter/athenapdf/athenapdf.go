@@ -46,6 +46,9 @@ func (c AthenaPDF) Convert(s converter.ConversionSource, done <-chan struct{}) (
 
 	// Construct the command to execute
 	cmd := constructCMD(c.CMD, s.URI, c.Aggressive)
+
+	log.Printf("[AthenaPDF] executing: %s\n", cmd)
+
 	out, err := gcmd.Execute(cmd, done)
 	if err != nil {
 		return nil, err
