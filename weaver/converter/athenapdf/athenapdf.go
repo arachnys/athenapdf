@@ -22,6 +22,11 @@ type AthenaPDF struct {
 	// an '-A' command-line flag to indicate aggressive content extraction
 	// (ideal for a clutter-free reading experience).
 	Aggressive bool
+	// NoPortrait will set the output PDF to be in landscape instead of in
+	// portrait orientation
+	NoPortrait bool
+	// Sets the page size for the PDF
+	PageSize string
 }
 
 // constructCMD returns a string array containing the AthenaPDF command to be
@@ -29,11 +34,17 @@ type AthenaPDF struct {
 // string.
 // It will set an additional '-A' flag if aggressive is set to true.
 // See athenapdf CLI for more information regarding the aggressive mode.
-func constructCMD(base string, path string, aggressive bool) []string {
+func constructCMD(base string, path string, aggressive bool, noPortrait bool, pageSize string) []string {
 	args := strings.Fields(base)
 	args = append(args, path)
 	if aggressive {
 		args = append(args, "-A")
+	}
+	if noPortrait {
+		args = append(args, "--no-portrait")
+	}
+	if len(pageSize) > 0 {
+		args = append(args, "-P", pageSize);
 	}
 	return args
 }
@@ -45,7 +56,7 @@ func (c AthenaPDF) Convert(s converter.ConversionSource, done <-chan struct{}) (
 	log.Printf("[AthenaPDF] converting to PDF: %s\n", s.GetActualURI())
 
 	// Construct the command to execute
-	cmd := constructCMD(c.CMD, s.URI, c.Aggressive)
+	cmd := constructCMD(c.CMD, s.URI, c.Aggressive, c.NoPortrait, c.PageSize)
 	out, err := gcmd.Execute(cmd, done)
 	if err != nil {
 		return nil, err

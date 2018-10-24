@@ -48,6 +48,8 @@ func conversionHandler(c *gin.Context, source converter.ConversionSource) {
 	}
 
 	_, aggressive := c.GetQuery("aggressive")
+	_, noPortrait := c.GetQuery("no_portrait")
+	pageSize := c.Query("page_size")
 
 	conf := c.MustGet("config").(Config)
 	wq := c.MustGet("queue").(chan<- converter.Work)
@@ -73,7 +75,7 @@ func conversionHandler(c *gin.Context, source converter.ConversionSource) {
 	uploadConversion := converter.UploadConversion{baseConversion, awsConf}
 
 StartConversion:
-	conversion = athenapdf.AthenaPDF{uploadConversion, conf.AthenaCMD, aggressive}
+	conversion = athenapdf.AthenaPDF{uploadConversion, conf.AthenaCMD, aggressive, noPortrait, pageSize}
 	if attempts != 0 {
 		cc := cloudconvert.Client{
 			conf.CloudConvert.APIUrl,
