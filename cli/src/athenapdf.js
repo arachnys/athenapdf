@@ -46,7 +46,7 @@ athena
     .option("--no-cache", "disables caching")
     .option("--ignore-certificate-errors", "ignores certificate errors")
     .option("--ignore-gpu-blacklist", "Enables GPU in Docker environment")
-    .option("--wait-for-status", "Wait until window.status === WINDOW_STATUS")
+    .option("--wait-for-status", "Wait until window.status === WINDOW_STATUS (default: wait for page to load)")
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -258,7 +258,7 @@ app.on("ready", () => {
  
     if (!athena.waitForStatus) {
         bw.webContents.on("did-finish-load", () => {
-            setTimeout(() => printToPDF(), athena.delay || 200);
+            setTimeout(printToPDF, athena.delay || 200);
         });
     }
 });
