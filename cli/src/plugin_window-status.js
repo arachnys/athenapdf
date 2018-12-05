@@ -5,7 +5,7 @@ var waitForWindowStatus = function(desiredStatus) {
                 clearInterval(poller);
                 resolve(desiredStatus);
             }
-        }, 1000);
+        }, 100);
     });
 };
 
