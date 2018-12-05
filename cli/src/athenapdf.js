@@ -12,7 +12,6 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
 const mediaPlugin = fs.readFileSync(path.join(__dirname, "./plugin_media.js"), "utf8");
-const windowStatusPlugin = fs.readFileSync(path.join(__dirname, "./plugin_window-status.js"), "utf8");
 
 var bw = null;
 var ses = null;
@@ -233,8 +232,6 @@ app.on("ready", () => {
         app.exit(1);
     });
 
-    let canRenderStart = true;
-
     // Load plugins
     let plugins = mediaPlugin + "\n";
     if (athena.aggressive) {
@@ -242,25 +239,28 @@ app.on("ready", () => {
         plugins += distillerPlugin + "\n";
     }
     if (athena.waitForStatus) {
-        canRenderStart = false;
+        const windowStatusPlugin = fs.readFileSync(path.join(__dirname, "./plugin_window-status.js"), "utf8");
         plugins += windowStatusPlugin + "\n";
     }
 
+    const printToPDF = () => {
+        bw.webContents.printToPDF(pdfOpts, (err, data) => {
+            if (err) console.error(err);
+            _output(data);
+        });
+    };
+ 
     bw.webContents.executeJavaScript(plugins).then(() => {
-        canRenderStart = true;
+        if (athena.waitForStatus) {
+            printToPDF();
+        }
     });
-
-    bw.webContents.on("did-finish-load", () => {
-        let poller = setInterval(() => {
-            if (canRenderStart) {
-                clearInterval(poller);
-                bw.webContents.printToPDF(pdfOpts, (err, data) => {
-                    if (err) console.error(err);
-                    _output(data);
-                });
-            }
-        }, (athena.delay || 200));
-    });
+ 
+    if (!athena.waitForStatus) {
+        bw.webContents.on("did-finish-load", () => {
+            setTimeout(() => printToPDF(), athena.delay || 200);
+        });
+    }
 });
 
 app.on("window-all-closed", () => {
