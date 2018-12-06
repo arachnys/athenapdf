@@ -218,12 +218,10 @@ app.on("ready", () => {
         }
     });
 
-    bw.webContents.on("did-get-response-details", (e, status, newURL, originalURL, httpResponseCode, requestMethod, referrer, headers, resourceType) => {
+    bw.webContents.on("did-navigate", (e, newURL, httpResponseCode, httpResponseText) => {
         if (httpResponseCode >= 400) {
             console.error(`Failed to load ${newURL} - got HTTP code ${httpResponseCode}`);
-            if (resourceType === "mainFrame") {
-                app.exit(1);
-            }
+            app.exit(1);
         }
     });
 
