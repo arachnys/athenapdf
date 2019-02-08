@@ -27,6 +27,9 @@ const addHeader = (header, arr) => {
     return arr;
 }
 
+// chrome crashes in docker, more info: https://github.com/GoogleChrome/puppeteer/issues/1834
+app.commandLine.appendArgument("disable-dev-shm-usage");
+
 athena
     .version("2.15.0")
     .description("convert HTML to PDF via stdin or a local / remote URI")
@@ -247,13 +250,13 @@ app.on("ready", () => {
             _output(data);
         });
     };
- 
+
     bw.webContents.executeJavaScript(plugins).then(() => {
         if (athena.waitForStatus) {
             printToPDF();
         }
     });
- 
+
     if (!athena.waitForStatus) {
         bw.webContents.on("did-finish-load", () => {
             setTimeout(printToPDF, athena.delay || 200);
