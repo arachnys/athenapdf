@@ -7,12 +7,15 @@ RUN \
   wget https://github.com/Yelp/dumb-init/releases/download/v1.0.0/dumb-init_1.0.0_amd64.deb \
   && dpkg -i dumb-init_*.deb \
   && rm dumb-init_*.deb \
-  && mkdir -p /athenapdf-service/tmp/
+  && mkdir -p /athenapdf-service/tmp/ \
+  && mkdir -p /tmp/.X11-unix/ \
+  && chmod 777 /tmp/.X11-unix/
 
 COPY build/weaver /athenapdf-service/
 WORKDIR /athenapdf-service/
 
-ENV PATH /athenapdf-service/:$PATH
+ENV PATH /athenapdf-service/:$PATH \
+    HOME=/tmp
 
 COPY conf/ /athenapdf-service/conf/
 
