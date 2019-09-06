@@ -89,8 +89,13 @@ docker run --rm -v %cd%:/converted/ arachnysdocker/athenapdf athenapdf http://bl
 
 1. `docker pull arachnysdocker/athenapdf-service`
 2. `docker run -p 8080:8080 --rm arachnysdocker/athenapdf-service`
-3. Inline conversion: `http://<docker-address>:8080/convert?auth=arachnys-weaver&url=http://blog.arachnys.com/`
-4. OR cURL, and redirect output to file: `curl http://dockerhost:8080/convert\?auth\=arachnys-weaver\&url\=http://blog.arachnys.com/ |> out.pdf`
+3. Conversion:
+    1. URL conversion: `http://<docker-address>:8080/convert?auth=arachnys-weaver&url=http://blog.arachnys.com/` OR cURL, and redirect output to file: `curl http://dockerhost:8080/convert\?auth\=arachnys-weaver\&url\=http://blog.arachnys.com/ |> out.pdf`
+    2. Inline conversion:
+        * send a POST request to the convert endpoint (`http://<docker-address>:8080/convert?auth=arachnys-weaver&ext=html`)
+        * the body should be in multipart/form-data MIME type
+        * the only field in this form should have the name `file` with the `filename` option set
+        * field value should be the plain HTML. All resources used in the HTML must be either inlined or accessible by the athenapdf container without any authentication
 5. See [`weaver`][weaver] for full documentation
 
 The default authentication key is `arachnys-weaver`. This can be changed through the `WEAVER_AUTH_KEY` environment variable.
