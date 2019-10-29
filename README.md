@@ -4,9 +4,6 @@
 [![License](http://img.shields.io/badge/license-MIT-orange.svg?style=flat)](http://opensource.org/licenses/MIT)
 [![Gitter chat](https://badges.gitter.im/arachnys/athenapdf.png)](https://gitter.im/arachnys/athenapdf)
 
-[**Live Demo / Screenshots**][athenapdf]
-
-
 Simple, Docker-powered PDF conversions.
 
 Athena is comprised of an [Electron][electron] command line interface (CLI) tool, and a [Go][go] microservice for converting HTML to PDF documents.
@@ -110,7 +107,6 @@ See [`LICENSE`](LICENSE).
 An [Arachnys][arachnys] Christmas project.
 
 
-[athenapdf]: http://www.athenapdf.com/
 [unixphil]: https://en.wikipedia.org/wiki/Unix_philosophy
 [example-1]: http://blog.arachnys.com/google-isnt-even-close-to-proper-due-diligence.-why-not?utm_campaign=athena&utm_medium=external%20website&utm_source=github&utm_content=readme
 [example-1-pdf]: https://s3-eu-west-1.amazonaws.com/athena-pdf-public/examples/d0ae9e636bb7edceac48bd9b0780ad9dd69397cc.pdf
