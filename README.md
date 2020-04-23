@@ -4,9 +4,6 @@
 [![License](http://img.shields.io/badge/license-MIT-orange.svg?style=flat)](http://opensource.org/licenses/MIT)
 [![Gitter chat](https://badges.gitter.im/arachnys/athenapdf.png)](https://gitter.im/arachnys/athenapdf)
 
-[**Live Demo / Screenshots**][athenapdf]
-
-
 Simple, Docker-powered PDF conversions.
 
 Athena is comprised of an [Electron][electron] command line interface (CLI) tool, and a [Go][go] microservice for converting HTML to PDF documents.
