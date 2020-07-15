@@ -10,7 +10,7 @@ import (
 )
 
 func TestConstructCMD(t *testing.T) {
-	got := constructCMD("athenapdf -S -T 120", "test_file.html", false)
+	got := constructCMD("athenapdf -S -T 120", "test_file.html", false, false)
 	want := []string{"athenapdf", "-S", "-T", "120", "test_file.html"}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("expected constructed athenapdf command to be %+v, got %+v", want, got)
@@ -18,7 +18,7 @@ func TestConstructCMD(t *testing.T) {
 }
 
 func TestConstructCMD_aggressive(t *testing.T) {
-	cmd := constructCMD("athenapdf -S -T 60", "test_file.html", true)
+	cmd := constructCMD("athenapdf -S -T 60", "test_file.html", true, false)
 	if got, want := cmd[len(cmd)-1], "-A"; got != want {
 		t.Errorf("expected last argument of constructed athenapdf command to be %s, got %+v", want, got)
 	}

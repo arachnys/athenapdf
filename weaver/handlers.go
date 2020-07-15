@@ -48,6 +48,7 @@ func conversionHandler(c *gin.Context, source converter.ConversionSource) {
 	}
 
 	_, aggressive := c.GetQuery("aggressive")
+	_, waitForStatus := c.GetQuery("waitForStatus")
 
 	conf := c.MustGet("config").(Config)
 	wq := c.MustGet("queue").(chan<- converter.Work)
@@ -73,7 +74,7 @@ func conversionHandler(c *gin.Context, source converter.ConversionSource) {
 	uploadConversion := converter.UploadConversion{baseConversion, awsConf}
 
 StartConversion:
-	conversion = athenapdf.AthenaPDF{uploadConversion, conf.AthenaCMD, aggressive}
+	conversion = athenapdf.AthenaPDF{uploadConversion, conf.AthenaCMD, aggressive, waitForStatus}
 	if attempts != 0 {
 		cc := cloudconvert.Client{
 			conf.CloudConvert.APIUrl,

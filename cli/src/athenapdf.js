@@ -27,8 +27,11 @@ const addHeader = (header, arr) => {
     return arr;
 }
 
+// chrome crashes in docker, more info: https://github.com/GoogleChrome/puppeteer/issues/1834
+app.commandLine.appendArgument("disable-dev-shm-usage");
+
 athena
-    .version("2.13.0")
+    .version("2.16.0")
     .description("convert HTML to PDF via stdin or a local / remote URI")
     .option("--debug", "show GUI", false)
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
@@ -46,7 +49,8 @@ athena
     .option("--no-cache", "disables caching")
     .option("--ignore-certificate-errors", "ignores certificate errors")
     .option("--ignore-gpu-blacklist", "Enables GPU in Docker environment")
-    .option("--disable-http-cache", "Disables Electron disk cache for HTTP requests.")
+    .option("--wait-for-status", "Wait until window.status === WINDOW_STATUS (default: wait for page to load)")
+
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -105,10 +109,6 @@ if (athena.ignoreCertificateErrors) {
 
 app.commandLine.appendSwitch('ignore-gpu-blacklist', athena.ignoreGpuBlacklist || "false");
 
-if (athena.disableHttpCache) {
-    app.commandLine.appendSwitch("disable-http-cache");
-}
-
 // Preferences
 var bwOpts = {
     show: (athena.debug || false),
@@ -131,8 +131,10 @@ if (process.platform === "linux") {
 // Add custom headers if specified
 var extraHeaders = athena.httpHeader;
 
-// Toggle cache headers
 if (!athena.cache) {
+    // Disable disk cache
+    app.commandLine.appendSwitch("disable-http-cache");
+    // Toggle cache headers
     extraHeaders.push("pragma: no-cache");
 }
 const loadOpts = {
@@ -222,12 +224,10 @@ app.on("ready", () => {
         }
     });
 
-    bw.webContents.on("did-get-response-details", (e, status, newURL, originalURL, httpResponseCode, requestMethod, referrer, headers, resourceType) => {
+    bw.webContents.on("did-navigate", (e, newURL, httpResponseCode, httpResponseText) => {
         if (httpResponseCode >= 400) {
             console.error(`Failed to load ${newURL} - got HTTP code ${httpResponseCode}`);
-            if (resourceType === "mainFrame") {
-                app.exit(1);
-            }
+            app.exit(1);
         }
     });
 
@@ -240,18 +240,31 @@ app.on("ready", () => {
     let plugins = mediaPlugin + "\n";
     if (athena.aggressive) {
         const distillerPlugin = fs.readFileSync(path.join(__dirname, "./plugin_domdistiller.js"), "utf8");
-        plugins += distillerPlugin;
+        plugins += distillerPlugin + "\n";
     }
-    bw.webContents.executeJavaScript(plugins);
+    if (athena.waitForStatus) {
+        const windowStatusPlugin = fs.readFileSync(path.join(__dirname, "./plugin_window-status.js"), "utf8");
+        plugins += windowStatusPlugin + "\n";
+    }
 
-    bw.webContents.on("did-finish-load", () => {
-        setTimeout(() => {
-            bw.webContents.printToPDF(pdfOpts, (err, data) => {
-                if (err) console.error(err);
-                _output(data);
-            });
-        }, (athena.delay || 200));
+    const printToPDF = () => {
+        bw.webContents.printToPDF(pdfOpts, (err, data) => {
+            if (err) console.error(err);
+            _output(data);
+        });
+    };
+
+    bw.webContents.executeJavaScript(plugins).then(() => {
+        if (athena.waitForStatus) {
+            printToPDF();
+        }
     });
+
+    if (!athena.waitForStatus) {
+        bw.webContents.on("did-finish-load", () => {
+            setTimeout(printToPDF, athena.delay || 200);
+        });
+    }
 });
 
 app.on("window-all-closed", () => {
