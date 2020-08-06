@@ -14,7 +14,7 @@ RUN \
 COPY build/weaver /athenapdf-service/
 WORKDIR /athenapdf-service/
 
-ENV PATH /athenapdf-service/:$PATH \
+ENV PATH=/athenapdf-service/:$PATH \
     HOME=/tmp
 
 COPY conf/ /athenapdf-service/conf/
