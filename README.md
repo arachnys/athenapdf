@@ -116,7 +116,7 @@ An [Arachnys][arachnys] Christmas project.
 [example-2-pdf]: https://s3-eu-west-1.amazonaws.com/athena-pdf-public/examples/f86e19ea13661e47c1f5f83bbde650eb3fe85aad.pdf
 [example-2-aggressive]: https://s3-eu-west-1.amazonaws.com/athena-pdf-public/examples/f86e19ea13661e47c1f5f83bbde650eb3fe85aad-aggressive.pdf
 [aggressive]: cli/docs/aggressive.md
-[electron]: http://electron.atom.io/
+[electron]: https://www.electronjs.org/
 [go]: https://golang.org/
 [cli]: cli/
 [weaver]: weaver/
