@@ -107,7 +107,6 @@ See [`LICENSE`](LICENSE).
 An [Arachnys][arachnys] Christmas project.
 
 
-[athenapdf]: http://www.athenapdf.com/
 [unixphil]: https://en.wikipedia.org/wiki/Unix_philosophy
 [example-1]: https://www.arachnys.com/the-long-road-to-achieving-true-perpetual-kyc/?utm_campaign=athena&utm_medium=external%20website&utm_source=github&utm_content=readme
 [example-1-pdf]: https://s3-eu-west-1.amazonaws.com/athena-pdf-public/examples/d0ae9e636bb7edceac48bd9b0780ad9dd69397cc.pdf
