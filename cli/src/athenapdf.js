@@ -50,6 +50,7 @@ athena
     .option("--ignore-certificate-errors", "ignores certificate errors")
     .option("--ignore-gpu-blacklist", "Enables GPU in Docker environment")
     .option("--wait-for-status", "Wait until window.status === WINDOW_STATUS (default: wait for page to load)")
+
     .arguments("<URI> [output]")
     .action((uri, output) => {
         uriArg = uri;
@@ -130,8 +131,10 @@ if (process.platform === "linux") {
 // Add custom headers if specified
 var extraHeaders = athena.httpHeader;
 
-// Toggle cache headers
 if (!athena.cache) {
+    // Disable disk cache
+    app.commandLine.appendSwitch("disable-http-cache");
+    // Toggle cache headers
     extraHeaders.push("pragma: no-cache");
 }
 const loadOpts = {
