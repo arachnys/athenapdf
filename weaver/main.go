@@ -7,6 +7,8 @@ import (
 	"github.com/getsentry/raven-go"
 	"github.com/gin-gonic/contrib/sentry"
 	"github.com/gin-gonic/gin"
+	gintrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gin-gonic/gin"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 	"gopkg.in/alexcesaro/statsd.v2"
 	"log"
 	"net/http"
@@ -58,6 +60,11 @@ func InitMiddleware(router *gin.Engine, conf Config) {
 		router.Use(sentry.Recovery(r, true))
 	}
 
+	// Datadog APM
+	if conf.DatadogAgentAddress != "" {
+		router.Use(gintrace.Middleware(conf.DatadogAPMServiceName))
+	}
+
 	// Error handler
 	router.Use(ErrorMiddleware())
 }
@@ -98,6 +105,14 @@ func main() {
 	InitMiddleware(router, conf)
 	InitSecureRoutes(router, conf)
 	InitSimpleRoutes(router, conf)
+
+	if conf.DatadogAgentAddress != "" {
+		tracer.Start(
+			tracer.WithAgentAddr(conf.DatadogAgentAddress),
+			tracer.WithServiceName(conf.DatadogAPMServiceName),
+		)
+		defer tracer.Stop()
+	}
 
 	if conf.HTTPSAddr != "" {
 		if conf.TLSCertFile == "" {

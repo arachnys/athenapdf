@@ -67,6 +67,12 @@ type Config struct {
 	// The data source name (DSN) for a Sentry server (used for logging errors).
 	// Defaults to none.
 	SentryDSN string
+	// Hostname (and port) for reporting Datadog APM traces.
+	// Defaults to none (no trace reporting).
+	DatadogAgentAddress string
+	// Service name to report to Datadog APM
+	// Defaults to "weaver"
+	DatadogAPMServiceName string
 }
 
 // NewEnvConfig initialises configuration variables from the environment.
@@ -74,14 +80,15 @@ func NewEnvConfig() Config {
 	// Set defaults
 	cloudconvert := CloudConvert{APIUrl: "https://api.cloudconvert.com"}
 	conf := Config{
-		CloudConvert:       cloudconvert,
-		HTTPAddr:           ":8080",
-		AuthKey:            "arachnys-weaver",
-		AthenaCMD:          "athenapdf -S",
-		MaxWorkers:         10,
-		MaxConversionQueue: 50,
-		WorkerTimeout:      90,
-		ConversionFallback: false,
+		CloudConvert:          cloudconvert,
+		HTTPAddr:              ":8080",
+		AuthKey:               "arachnys-weaver",
+		AthenaCMD:             "athenapdf -S",
+		MaxWorkers:            10,
+		MaxConversionQueue:    50,
+		WorkerTimeout:         90,
+		ConversionFallback:    false,
+		DatadogAPMServiceName: "weaver",
 	}
 
 	if httpAddr := os.Getenv("WEAVER_HTTP_ADDR"); httpAddr != "" {
@@ -143,6 +150,14 @@ func NewEnvConfig() Config {
 
 	if sentryDSN := os.Getenv("SENTRY_DSN"); sentryDSN != "" {
 		conf.SentryDSN = sentryDSN
+	}
+
+	if datadogAgentAddress := os.Getenv("DATADOG_AGENT_ADDRESS"); datadogAgentAddress != "" {
+		conf.DatadogAgentAddress = datadogAgentAddress
+	}
+
+	if datadogAPMServiceName := os.Getenv("DATADOG_APM_SERVICE_NAME"); datadogAPMServiceName != "" {
+		conf.DatadogAPMServiceName = datadogAPMServiceName
 	}
 
 	return conf

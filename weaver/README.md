@@ -26,6 +26,7 @@ Although it was predominantly designed for generating a PDF from a HTML using [`
 - Strong service visibility for quality control:
     - Metrics collection ([statsd])
     - Error logging ([Sentry][sentry])
+    - APM ([Datadog APM][ddapm])
 - Dockerized:
     - Easy to set up, distribute, and deploy
     - Runs in headless mode (the display server is handled for you)
@@ -52,3 +53,4 @@ See [`docs/building.md`](docs/building.md).
 [cloudconvert]: https://cloudconvert.com/
 [statsd]: https://github.com/etsy/statsd
 [sentry]: https://getsentry.com/
+[ddapm]: https://www.datadoghq.com/apm/
