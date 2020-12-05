@@ -96,7 +96,7 @@ The microservice can be deployed scalably to [ECS][ecs] if you want to build you
 
 ## License
 
-Please note `athenapdf` is NEITHER affiliated with NOR endorsed by Google Inc. and GitHub Inc.
+Please note `athenapdf` is NEITHER affiliated with NOR endorsed by Google Inc. or GitHub Inc.
 
 See [`LICENSE`](LICENSE).
 
