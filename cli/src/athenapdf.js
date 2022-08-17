@@ -3,20 +3,17 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
-const rw = require("rw");
 const url = require("url");
 
-const athena = require("commander");
-const electron = require("electron");
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
+const program = require("commander");
+const { app, BrowserWindow } = require('electron')
 
 const mediaPlugin = fs.readFileSync(path.join(__dirname, "./plugin_media.js"), "utf8");
 
-var bw = null;
-var ses = null;
-var uriArg = null;
-var outputArg = null;
+let bw = null;
+let ses = null;
+let uriArg = null;
+let outputArg = null;
 
 if (!process.defaultApp) {
     process.argv.unshift("--");
@@ -27,13 +24,18 @@ const addHeader = (header, arr) => {
     return arr;
 }
 
+app.disableHardwareAcceleration();
 // chrome crashes in docker, more info: https://github.com/GoogleChrome/puppeteer/issues/1834
 app.commandLine.appendArgument("disable-dev-shm-usage");
+app.commandLine.appendSwitch("enable-logging", "file")
+app.commandLine.appendSwitch("log-file", "/converted/chromium-crash.log")
 
-athena
+
+program
     .version("2.16.0")
-    .description("convert HTML to PDF via stdin or a local / remote URI")
-    .option("--debug", "show GUI", false)
+    .description("convert HTML to PDF via stdin or a local / remote URL")
+    .usage("[options] <HTML file>/<URL> [output file].pdf")
+    .option("-d, --debug", "show GUI", false)
     .option("-T, --timeout <seconds>", "seconds before timing out (default: 120)", parseInt)
     .option("-D, --delay <milliseconds>", "milliseconds delay before saving (default: 200)", parseInt)
     .option("-P, --pagesize <size>", "page size of the generated PDF (default: A4)", /^(A3|A4|A5|Legal|Letter|Tabloid)$/i, "A4")
@@ -50,17 +52,14 @@ athena
     .option("--ignore-certificate-errors", "ignores certificate errors")
     .option("--ignore-gpu-blacklist", "Enables GPU in Docker environment")
     .option("--wait-for-status", "Wait until window.status === WINDOW_STATUS (default: wait for page to load)")
-    .arguments("<URI> [output]")
+    .arguments("<URL> [output]")
     .action((uri, output) => {
         uriArg = uri;
         outputArg = output;
     })
     .parse(process.argv);
 
-// Display help information by default
-if (!process.argv.slice(2).length) {
-    athena.outputHelp();
-}
+const athena = program.opts();
 
 if (!uriArg) {
     console.error("No URI given. Set the URI to `-` to pipe HTML via stdin.");
@@ -69,7 +68,7 @@ if (!uriArg) {
 
 // Handle stdin
 if (uriArg === "-") {
-    let base64Html = new Buffer(rw.readFileSync("/dev/stdin", "utf8"), "utf8").toString("base64");
+    let base64Html = new Buffer.from(fs.readFileSync("/dev/stdin", "utf8"), "utf8").toString("base64");
     uriArg = "data:text/html;base64," + base64Html;
 // Handle local paths
 } else if (!uriArg.toLowerCase().startsWith("http") && !uriArg.toLowerCase().startsWith("chrome://")) {
@@ -106,12 +105,13 @@ if (athena.ignoreCertificateErrors) {
     app.commandLine.appendSwitch("ignore-certificate-errors");
 }
 
-app.commandLine.appendSwitch('ignore-gpu-blacklist', athena.ignoreGpuBlacklist || "false");
+app.commandLine.appendSwitch('ignore-gpu-blacklist', athena.ignoreGpuBlacklist);
 
 // Preferences
-var bwOpts = {
+let bwOpts = {
     show: (athena.debug || false),
     webPreferences: {
+        offscreen: true,
         nodeIntegration: false,
         webSecurity: false,
         zoomFactor: (athena.zoom || 1)
@@ -128,7 +128,7 @@ if (process.platform === "linux") {
 }
 
 // Add custom headers if specified
-var extraHeaders = athena.httpHeader;
+let extraHeaders = athena.httpHeader;
 
 // Toggle cache headers
 if (!athena.cache) {
@@ -173,7 +173,7 @@ const _output = (data) => {
     }
 };
 
-app.on("ready", () => {
+app.whenReady().then(() => {
     if (!athena.stdout) {
         console.time("PDF Conversion");
     }
@@ -228,7 +228,7 @@ app.on("ready", () => {
         }
     });
 
-    bw.webContents.on("crashed", () => {
+    bw.webContents.on("render-process-gone", () => {
         console.error(`The renderer process has crashed.`);
         app.exit(1);
     });
@@ -245,9 +245,10 @@ app.on("ready", () => {
     }
 
     const printToPDF = () => {
-        bw.webContents.printToPDF(pdfOpts, (err, data) => {
-            if (err) console.error(err);
+        bw.webContents.printToPDF(pdfOpts).then(data => {
             _output(data);
+        }).catch(err => {
+            console.error(err);
         });
     };
 
