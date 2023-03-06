@@ -1,10 +1,12 @@
-# Athena
+# Athena - deprecated
 
 [![Build Status](https://travis-ci.org/arachnys/athenapdf.svg?branch=master)](https://travis-ci.org/arachnys/athenapdf)
 [![License](http://img.shields.io/badge/license-MIT-orange.svg?style=flat)](http://opensource.org/licenses/MIT)
 [![Gitter chat](https://badges.gitter.im/arachnys/athenapdf.png)](https://gitter.im/arachnys/athenapdf)
 
 Simple, Docker-powered PDF conversions.
+
+**This project has been deprecated and is no longer supported.**
 
 Athena is comprised of an [Electron][electron] command line interface (CLI) tool, and a [Go][go] microservice for converting HTML to PDF documents.
 
