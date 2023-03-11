@@ -1,10 +1,14 @@
-FROM debian:8.7
-MAINTAINER Arachnys <techteam@arachnys.com>
+FROM debian:11.4-slim
+
+ARG USERNAME=athenapdf
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
 
 RUN echo 'deb http://httpredir.debian.org/debian/ stable main contrib non-free' >> /etc/apt/sources.list
 
-RUN apt-get -yq update && \
-    apt-get -yq install \
+RUN apt update -yq && \
+    apt install -yq \
+        sudo \
         wget \
         xvfb \
         libasound2 \
@@ -13,7 +17,8 @@ RUN apt-get -yq update && \
         libnotify4 \
         libnss3 \
         libxss1 \
-        libXtst6 \
+        libxtst6 \
+        libgbm-dev \
         culmus \
         fonts-beng \
         fonts-dejavu \
@@ -29,8 +34,8 @@ RUN apt-get -yq update && \
         fonts-sil-padauk \
         fonts-telu \
         fonts-thai-tlwg \
-        ttf-liberation \
-        ttf-unfonts-core \
+        fonts-liberation \
+        fonts-unfonts-core \
         ttf-wqy-zenhei \
     && apt-get -yq autoremove \
     && apt-get -yq clean \
@@ -47,7 +52,16 @@ ENV PATH /athenapdf/:$PATH
 COPY entrypoint.sh /athenapdf/entrypoint.sh
 
 RUN mkdir -p /converted/
+RUN mkdir /run/dbus
 WORKDIR /converted/
+
+# Create the user
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+USER $USERNAME
 
 CMD ["athenapdf"]
 

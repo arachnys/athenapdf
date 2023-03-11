@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:6
+FROM mhart/alpine-node:14
 MAINTAINER Arachnys <techteam@arachnys.com>
 
 RUN mkdir -p /athenapdf/build/artifacts/

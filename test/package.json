@@ -1,0 +1,17 @@
+{
+  "name": "athenapdf-tests",
+  "version": "1.0.0",
+  "description": "Tests to be run when changing/updating Athenapdf",
+  "main": "compare.js",
+  "dependencies": {
+    "chai": "^4.3.6",
+    "compare-pdf": "^1.1.8",
+    "mocha": "^10.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --timeout 10000 compare.js"
+  },
+  "author": "Razvan Pelau",
+  "license": "ISC"
+}

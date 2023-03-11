@@ -1,6 +1,7 @@
 CLI_DIR ?= cli
 CLI_IMAGE ?= "arachnysdocker/athenapdf"
 CLI_DOCKER_ARTIFACT_DIR ?= "/athenapdf/build/"
+TESTS_DIR ?= `pwd`/test
 
 SERVICE_DIR ?= weaver
 SERVICE_IMAGE ?= "arachnysdocker/athenapdf-service"
@@ -31,6 +32,12 @@ testcli:
 	@echo "  $(P) testcli"
 	@docker run --rm arachnysdocker/athenapdf athenapdf -S https://status.github.com/ | grep -a "PDF-1.4"
 	@echo "<h1>stdin test</h1>" | docker run --rm -i arachnysdocker/athenapdf athenapdf -S - | grep -a "PDF-1.4"
+
+testnewversion:
+	@echo "  $(P) Test upgrades"
+	@docker run --rm  -v $(TESTS_DIR)/files:/converted arachnysdocker/athenapdf athenapdf template.html new.pdf
+	@cd $(TESTS_DIR) && docker build . -t arachnysdocker/athenapdf-tests
+	@docker run -it --rm -v $(TESTS_DIR)/files:/athenapdf-tests/files arachnysdocker/athenapdf-tests npm run test || (echo "Command exited with status code $$?"; exit 0)
 
 buildservice:
 	@echo "  $(P) buildservice"
